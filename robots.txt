@@ -2,8 +2,15 @@ User-agent: *
 Allow: /
 
 # Admin panel nema šta da traži u pretrazi.
-# Napomena: ovo je molba pretraživačima, a NE zaštita — pravu zaštitu
-# radi server kada se panel poveže sa backendom.
+# Napomena: ovo je molba pretraživačima, a NE zaštita — pravu zaštitu radi
+# RLS u bazi, koji svakog ko nije u tabeli `admins` odbija bez obzira na to
+# kako je stigao do panela.
 Disallow: /#/admin
+
+# /app servira ISTI sajt kao i koren (vidi rewrites u vercel.json). Da se
+# indeksira, Google bi imao dve adrese sa istim sadržajem i sam birao koju
+# da prikaže — a to je po pravilu ona pogrešna. Zato /app ostaje van
+# pretrage i pošto sajt krene uživo.
+Disallow: /app
 
 Sitemap: https://crazywolves.rs/sitemap.xml

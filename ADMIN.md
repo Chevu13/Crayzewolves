@@ -13,7 +13,7 @@ i u vanilla JavaScript-u, jer je sajt takav.
 ## Otvaranje
 
 ```
-tvoj-sajt.netlify.app/#/admin
+tvoj-sajt.vercel.app/app#/admin
 ```
 
 Prijava: **bilo koja ispravna imejl adresa i lozinka od šest ili više
