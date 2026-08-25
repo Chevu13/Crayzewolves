@@ -1,155 +1,140 @@
-# CrazyWolves Community — B2C Website
+# CrazyWolves Community
 
-Phase 1: the complete public-facing experience. One website with two halves —
-a community/gaming/streaming platform and the official merchandise shop —
-sharing a single shell, design system and component library.
+Zvanični sajt i prodavnica CrazyWolves zajednice.
 
-**No admin panel.** Everything here is customer-facing. The data layer is
-deliberately shaped like an API response so a backend and admin panel can be
-connected in phase 2 without a redesign.
+**Dve prodavnice** — merch (šolje, odeća, dodaci) i Wolfpack Store (igre,
+gift kartice, Steam ključevi, pretplate) — plus blog i admin panel, na
+jednoj ljusci, jednom dizajn sistemu i jednoj bazi.
 
 ---
 
-## Running it
+## Pokretanje
 
-Open `index.html` in a browser. No build step, no `npm install`, no server.
-
-Scripts are classic (non-module) specifically so the site also runs from the
-file system — `file://` blocks ES module imports.
-
----
-
-## Files
-
-| File | Contains |
-|---|---|
-| `index.html` | Document shell, font loading, script order, pre-boot screen |
-| `cw-theme.css` | **Design tokens.** Every colour, font, space, radius, shadow |
-| `cw-base.css` | Reset, typography scale, layout primitives, a11y utilities |
-| `cw-components.css` | The full component library and all of its states |
-| `cw-pages.css` | Page layouts + the complete responsive system |
-| `cw-data-community.js` | Games, teams, players, streams, matches, achievements, news, events, partners |
-| `cw-data-shop.js` | Products, variants, categories, collections, coupons, FAQ, legal copy |
-| `cw-core.js` | Utilities, icon set, formatting, storage, store, router, toasts |
-| `cw-components.js` | Header, mobile nav, footer, drawers, search, card library |
-| `cw-pages-community.js` | 14 community/platform views |
-| `cw-pages-shop.js` | 6 shop and checkout views |
-| `cw-pages-account.js` | Account, FAQ, policy and 404 views |
-| `cw-app.js` | Route table, page behaviour, form validation, boot |
-| `cw-theme-pack-gold.md` | The custom theme, documented |
-
-Flat filenames rather than folders — the authoring environment could not create
-subdirectories. Renaming to `assets/css/theme.css` etc. only requires updating
-the `<link>` and `<script>` paths in `index.html`.
-
----
-
-## Pages
-
-**Community** — Home · News listing · News article · Streaming schedule ·
-Matches & tournaments · Players · Player profile · Teams · Team detail ·
-Achievements · Events · Community · About · Partners · Contact
-
-**Shop** — Shop landing · Category listing · Product detail · Cart ·
-Checkout · Order confirmation (plus a cart drawer available site-wide)
-
-**Account** — Login · Register · Forgot password · Overview · Personal
-information · Saved addresses · Order history · Order detail · Wishlist
-
-**Support & legal** — FAQ · Shipping · Returns · Privacy · Terms · Cookies · 404
-
----
-
-## Architecture
-
-### Data → view separation
-
-Views never hold data. They read from `CW.data.*`, which mirrors API shapes:
-
-```js
-CW.data.players   // GET /api/players
-CW.data.products  // GET /api/products   — variants[] carry the sellable SKUs
-CW.data.streams   // GET /api/streams?from=&to=
+```bash
+npx serve -l 4321 .
 ```
 
-Relations are by ID, dates are ISO strings, prices are integers in cents.
-Schedule dates use a `dayOffset` resolved at load so the demo always shows
-live / upcoming / completed states — replace `CW.resolveDate` with server
-timestamps at integration.
+Otvori `http://localhost:4321`.
 
-### Store
+Radi i duplim klikom na `index.html`, bez servera. Skripte su namerno
+klasične (ne ES moduli) baš zato — `file://` blokira module.
 
-`CW.store` owns cart, wishlist, session, recently-viewed and coupon state, and
-persists through a storage adapter that falls back to memory if `localStorage`
-is unavailable. Swap the adapter for a server session without touching views.
-
-### Router
-
-Hash-based (`#/shop/apparel?collection=limited`), so deep links and the back
-button work with no server config. Filters, sort and pagination all live in the
-query string, which makes every filtered view shareable.
-
-### Rendering
-
-Views are functions returning HTML strings; behaviour is attached through
-delegated `[data-act]` handlers. Nothing holds a reference to a DOM node across
-renders, so any surface can be re-rendered freely. This is the layer a React or
-Next.js port would replace — the data files and all CSS carry over untouched.
+**Nema build koraka.** Nema `npm install`, nema bundler-a. Ono što je u
+repou je ono što se servira.
 
 ---
 
-## What is demonstrated
+## Fajlovi
 
-**States** — default, hover, active, focus, disabled, loading, empty, success,
-warning, error, out-of-stock, live, upcoming, completed, sale, new,
-limited edition.
-
-**Toasts** — added to cart, added/removed from wishlist, coupon applied,
-coupon rejected, form submitted, form error, stock limit reached,
-event registered, calendar reminder.
-
-**Loading** — skeleton screens on news, players and the product grid; button
-spinners on every form; a route progress bar.
-
-**Validation** — the product page blocks add-to-cart until a required
-variation is chosen, with a shake, an inline message and a toast. Checkout
-validates per-field with focus management. Card fields are only required when
-card is the selected payment method.
-
-**Responsive** — every page at mobile, tablet, laptop and desktop. Mobile is
-not a shrunken desktop: the week grid collapses to a day list, the schedule
-date block becomes a header row, the product gallery becomes a swipe rail,
-add-to-cart goes sticky, modals become bottom sheets, and filters move into a
-drawer.
-
-**Accessibility** — semantic landmarks, visible focus rings, a skip link,
-labelled controls, `aria-live` regions for toasts and form status, focus
-trapping in overlays, `prefers-reduced-motion` support, and status that is
-never signalled by colour alone.
+| Fajl | Sadrži |
+|---|---|
+| `index.html` | Ljuska, učitavanje fontova, redosled skripti, pre-boot ekran |
+| `cw-config.js` | **Ključevi.** Jedino mesto gde stoje |
+| `cw-theme.css` | **Dizajn tokeni.** Svaka boja, font, razmak, radijus, senka |
+| `cw-base.css` | Reset, tipografija, raspored, pristupačnost |
+| `cw-components.css` | Biblioteka komponenti i sva njihova stanja |
+| `cw-pages.css` | Rasporedi stranica + responzivni sistem |
+| `cw-images.js` | Registar slika sa dimenzijama i kadriranjem |
+| `cw-supabase.js` | Klijent za bazu — prijava, čitanje, upis, otpremanje |
+| `cw-hydrate.js` | Puni sajt iz baze; ugrađeni podaci su rezerva |
+| `cw-core.js` | Alati, ikone, formatiranje, korpa, ruter, poruke |
+| `cw-components.js` | Zaglavlje, navigacija, podnožje, fioke, kartice |
+| `cw-data-*.js` | Ugrađeni sadržaj — rezerva kad baza ćuti |
+| `cw-pages-*.js` | Prikazi stranica: zajednica, shop, nalog |
+| `cw-orders.js` | Slanje porudžbine |
+| `cw-admin*.js` | Admin panel — podaci, ekrani, porudžbine, slike |
+| `cw-app.js` | Tabela ruta, ponašanje stranica, provera formi, boot |
 
 ---
 
-## Before launch
+## Baza
 
-1. **Legal review.** Returns, Privacy, Terms and Cookies are structured
-   placeholders and are flagged in the UI with an amber "Requires legal review"
-   badge. Individual unfinished clauses carry an inline "To be completed" flag.
-2. **Replace image placeholders.** Every `.ph` element is a styled stand-in
-   carrying a `data-ph` label describing the shot required. Swap for `<img>`
-   with the photography direction from the brand guide.
-3. **Real payment processing.** The checkout is a front-end demonstration —
-   nothing is transmitted or stored.
-4. **Confirm the entity details** in the Privacy Policy and Terms.
+Supabase. Kompletna postavka je **jedan fajl**:
+[`supabase-postavka.sql`](supabase-postavka.sql) — nalepiš ceo u SQL Editor.
+Uputstvo korak po korak je u [BAZA.md](BAZA.md).
+
+Šema je pokrenuta nad pravim Postgres-om pre nego što je puštena u rad —
+**31 provera**, uključujući napad u kojem kupac pokušava da obriše proizvod:
+
+```bash
+cd supabase/test && npm install && npm test
+```
+
+### Ko šta sme
+
+| | anon (posetilac) | kupac | admin |
+|---|---|---|---|
+| Objavljene objave, aktivni proizvodi | čita | čita | čita |
+| Nacrti, neaktivni proizvodi | — | — | čita |
+| Svoj profil i svoje porudžbine | — | čita, menja profil | — |
+| Sve porudžbine, kupci, Steam kodovi | — | — | čita, menja |
+| Proizvodi, objave, cene, podešavanja | — | — | menja |
+
+Razlika između kupca i admina je tabela `admins`. Bez nje bi „prijavljen
+korisnik" značilo i kupca — pa bi svaki registrovani kupac mogao da obriše
+ceo shop.
+
+### Cene
+
+U **najmanjoj jedinici valute**: `149000` = 1.490 RSD, `1290` = 12,90 €.
+Cena u evrima se upisuje **ručno**, nije preračun — shop radi za ceo region
+i cena po zemlji sme da se razlikuje iz komercijalnih razloga.
 
 ---
 
-## Phase 2 hooks
+## Objavljivanje
 
-- `CW.data.*` → REST or GraphQL endpoints
-- `CW.storage` → server-backed session
-- `CW.store.placeOrder` → real order API
-- `CW.store.applyCoupon` → server-side validation (the client-side check is
-  demonstration only and must not be trusted)
-- Every page is admin-manageable as-is: products, players, schedules,
-  articles, achievements, events and partners are all flat, ID-keyed
-  collections with no derived state stored in the view layer.
+Vercel, bez build koraka. Podešavanja i režim „sajt u izradi" su u
+[VERCEL.md](VERCEL.md).
+
+Dok je taj režim uključen, koren domena pokazuje informativnu stranicu, a
+pun sajt radi na **`/app`**, panel na **`/app#/admin`**.
+
+---
+
+## Dizajn
+
+Jedan izvor istine: [`cw-theme.css`](cw-theme.css). Nijedan drugi fajl ne
+sme da upiše boju direktno.
+
+Sajt je zlato na crnom, ali **nije taman svuda**. Zaglavlje, hero blokovi,
+CTA trake i podnožje su zlatno-crni; sadržaj koji se čita i kupuje stoji na
+kremastoj podlozi. To radi klasa `.on-light`, koja ne piše nove boje
+komponentama nego **predefiniše iste tokene** — pa svaka komponenta radi u
+obe teme bez ijedne izmene.
+
+Kontrast je meren u pregledaču nad svakom rutom; nijedan tekst nije ispod
+WCAG AA praga.
+
+---
+
+## Slike
+
+Sve u `images/`, u WebP formatu. Registar je `cw-images.js` — svaki unos
+nosi prave dimenzije (`w`, `h`) i oznaku `crop`, pa pregledač rezerviše
+prostor pre učitavanja i raspored ne poskakuje.
+
+`CW.img()` sam bira kadriranje: fotografija sme da se seče, poster sa
+tekstom ne. Ako fajl nedostaje, na njegovom mestu se pojavi stilizovani
+placeholder — raspored se ne lomi.
+
+Originali su u `Nove slike/`.
+
+---
+
+## Šta još nije gotovo
+
+- **Razdvajanje dve prodavnice u navigaciji** — baza ih razlikuje kolonom
+  `shop`, sajt još ne. Digitalni proizvod se trenutno pojavljuje u merch
+  mreži.
+- **Prava registracija kupca** — dugme „Napravi nalog" sada piše u
+  `localStorage`, ne pravi nalog u bazi. `cw-supabase.js` zna `signIn` i
+  `signOut`, ali ne i `signUp`.
+- **Profil kupca** — istorija kupovine i lični podaci.
+- **Admin: porudžbine i Steam kodovi** — tabele i funkcije u bazi postoje,
+  ekrani još ne.
+- **Kartično plaćanje** — mesto je pripremljeno (`payment_ref`), čeka izbor
+  procesora.
+- **Podaci firme** u Uslovima korišćenja (naziv, PIB, matični broj, adresa).
+- **Pravna provera** teksta o povraćaju, privatnosti i uslovima — sada su
+  označeni u interfejsu kao nedovršeni.
