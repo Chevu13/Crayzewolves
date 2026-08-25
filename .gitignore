@@ -1,0 +1,17 @@
+# Zavisnosti — vraćaju se sa `npm install`, ne idu u git
+node_modules/
+
+# Windows i macOS smeće
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Sigurnosne kopije napravljene pre veće izmene.
+# Od kad postoji git, istorija je git — ove ne trebaju.
+*.bak
+
+# Tajne. Anon ključ SME u cw-config.js jer je javan po nameni; sve ostalo
+# (service_role, Resend API ključ) živi u Supabase secrets, nikad ovde.
+.env
+.env.*
+!.env.example

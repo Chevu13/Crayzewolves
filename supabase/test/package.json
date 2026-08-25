@@ -1,0 +1,12 @@
+{
+  "name": "crazywolves-baza-test",
+  "private": true,
+  "type": "module",
+  "description": "Pokrece supabase-postavka.sql nad pravim Postgres-om (PGlite, WASM) i proverava sta baza brani.",
+  "scripts": {
+    "test": "node test-sema.mjs && node test-transakcija.mjs && node test-ponasanje.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.7"
+  }
+}

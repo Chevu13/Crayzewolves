@@ -1,0 +1,12 @@
+# Netlify ekvivalent onoga što je u vercel.json.
+# Vercel ovaj fajl ignoriše, Netlify ignoriše vercel.json — pa se drže
+# usklađeni da sajt izgleda isto na oba mesta dok traje selidba.
+#
+# Prvi red je režim „sajt u izradi". Kad se sajt pušta uživo, obriši ga.
+
+/            /uskoro.html   200
+/app         /index.html    200
+
+# Osiguranje za slučaj prelaska na rutiranje bez # — duboki linkovi
+# nastavljaju da rade bez izmena.
+/*           /index.html    200

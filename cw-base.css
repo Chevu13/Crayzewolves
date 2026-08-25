@@ -1,0 +1,435 @@
+/* ==========================================================================
+   CRAZYWOLVES — BASE
+   Reset, document defaults, typography scale, layout primitives, a11y.
+   Depends on: cw-theme.css
+   ========================================================================== */
+
+/* ---------- RESET ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + var(--space-3));
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-black);
+  background-image: var(--texture-hairline);
+  color: var(--color-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+body.is-locked { overflow: hidden; }
+
+h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img, picture, svg, video { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+table { border-collapse: collapse; width: 100%; }
+
+::selection { background: var(--color-gold); color: var(--color-black); }
+
+/* ---------- SCROLLBAR ---------- */
+* { scrollbar-width: thin; scrollbar-color: var(--color-scroll-thumb) var(--color-black); }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--color-black); }
+*::-webkit-scrollbar-thumb { background: var(--color-scroll-thumb); border: 2px solid var(--color-black); }
+*::-webkit-scrollbar-thumb:hover { background: var(--color-bronze); }
+
+/* ---------- FOCUS ----------
+   Visible keyboard focus everywhere. Never removed, only refined. */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: var(--radius-button);
+}
+
+/* ==========================================================================
+   TYPOGRAPHY
+   ========================================================================== */
+.t-hero,
+.t-h1, .t-h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--color-offwhite);
+  letter-spacing: var(--ls-display);
+  text-transform: uppercase;
+}
+
+.t-hero { font-size: var(--fs-hero); line-height: var(--lh-tight); }
+.t-h1   { font-size: var(--fs-h1);   line-height: 1.02; }
+.t-h2   { font-size: var(--fs-h2);   line-height: 1.1; }
+
+.t-h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  color: var(--color-offwhite);
+}
+
+.t-h4 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-h4);
+  color: var(--color-offwhite);
+}
+
+/* Eyebrow — the "01 — Section" device from the brand guide */
+.t-eyebrow {
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--color-amber);
+}
+
+.t-eyebrow--gold { color: var(--color-gold); }
+
+.t-label {
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.t-body    { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--color-body); }
+.t-body-lg { font-size: var(--fs-body-lg); line-height: var(--lh-loose); color: var(--color-body); }
+.t-sm      { font-size: var(--fs-sm); color: var(--color-muted); }
+.t-xs      { font-size: var(--fs-xs); color: var(--color-muted); }
+
+.t-lead {
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-loose);
+  color: var(--color-body);
+  max-width: 62ch;
+}
+
+/* Numeric / stat treatment — Condensed Bold + muted unit */
+.t-stat {
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--color-offwhite);
+  font-variant-numeric: tabular-nums;
+}
+.t-stat__unit { font-size: 0.8125rem; color: var(--color-muted); font-weight: 600; }
+
+/* Price — Condensed Bold */
+.t-price {
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-offwhite);
+  font-variant-numeric: tabular-nums;
+}
+.t-price--sale { color: var(--color-gold); }
+.t-price--was {
+  font-size: 1rem;
+  color: var(--color-muted);
+  text-decoration: line-through;
+  font-weight: 600;
+}
+
+.t-gold     { color: var(--color-gold); }
+.t-offwhite { color: var(--color-offwhite); }
+.t-muted    { color: var(--color-muted); }
+.t-error    { color: var(--color-error); }
+.t-success  { color: var(--color-success); }
+
+/* Links */
+a { color: var(--color-gold); text-decoration: none; transition: color var(--dur-fast) var(--ease-out); }
+a:hover { color: var(--color-gold-light); }
+
+.link-underline {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(212, 162, 78, 0.4);
+}
+.link-underline:hover { text-decoration-color: var(--color-gold-light); }
+
+/* Inline "read more" arrow link */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+.link-arrow svg { transition: transform var(--dur-base) var(--ease-out); }
+.link-arrow:hover svg { transform: translateX(4px); }
+
+/* ==========================================================================
+   LAYOUT PRIMITIVES
+   ========================================================================== */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.container--wide { max-width: var(--container-wide); }
+.container--text { max-width: var(--container-text); }
+
+.section { padding-block: var(--section-y); }
+.section--sm { padding-block: var(--section-y-sm); }
+.section--tight { padding-block: var(--space-5); }
+
+.section--surface { background: var(--color-sunken); }
+.section--charcoal { background: var(--color-charcoal); }
+.section--bordered { border-top: var(--border); }
+
+/* Section header: eyebrow + title + optional action, used site-wide */
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+.section-head__text { min-width: 0; }
+.section-head__title { margin-top: var(--space-1); }
+.section-head__desc { margin-top: var(--space-2); max-width: 60ch; }
+
+/* Grids */
+.grid { display: grid; gap: var(--gutter); }
+.grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.grid--6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+/* Content + rail (article pages, product page, filters) */
+.grid--rail   { grid-template-columns: minmax(0, 1fr) 320px; gap: var(--space-5); }
+.grid--rail-l { grid-template-columns: 280px minmax(0, 1fr); gap: var(--space-5); }
+.grid--split  { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+
+.stack   { display: flex; flex-direction: column; }
+.stack-1 { gap: var(--space-1); }
+.stack-2 { gap: var(--space-2); }
+.stack-3 { gap: var(--space-3); }
+.stack-4 { gap: var(--space-4); }
+.stack-5 { gap: var(--space-5); }
+
+.row { display: flex; align-items: center; gap: var(--space-2); }
+.row--wrap { flex-wrap: wrap; }
+.row--between { justify-content: space-between; }
+.row--end { justify-content: flex-end; }
+.row--top { align-items: flex-start; }
+
+.spacer { flex: 1 1 auto; }
+
+/* Horizontal scroll rail — used for mobile carousels of cards */
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 1fr);
+  gap: var(--space-2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-2);
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+}
+.rail > * { scroll-snap-align: start; }
+
+/* ==========================================================================
+   BRAND DEVICES
+   ========================================================================== */
+
+/* Gold divider converging on a diamond — the approved section divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-block: var(--space-4);
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+}
+.divider::before { background: linear-gradient(90deg, transparent, var(--color-gold)); }
+.divider::after  { background: linear-gradient(270deg, transparent, var(--color-gold)); }
+.divider__mark {
+  width: 8px; height: 8px;
+  background: var(--color-gold);
+  transform: rotate(45deg);
+  flex: none;
+}
+
+/* Thin gold rule under a name/heading */
+.rule-gold {
+  width: 40px; height: 2px;
+  background: var(--gradient-gold);
+  border: 0;
+  margin: var(--space-2) 0;
+}
+
+/* HUD-style corner brackets for featured cards / banners */
+.brackets { position: relative; }
+.brackets::before,
+.brackets::after {
+  content: '';
+  position: absolute;
+  width: 22px; height: 22px;
+  border-color: var(--color-gold);
+  border-style: solid;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.brackets::before { top: 10px; left: 10px; border-width: 1px 0 0 1px; }
+.brackets::after { bottom: 10px; right: 10px; border-width: 0 1px 1px 0; }
+
+/* ==========================================================================
+   IMAGE PLACEHOLDERS
+   Stand-ins for real photography, styled to the brand's photo direction so
+   layouts read correctly before assets exist. Swap for <img> at integration.
+   ========================================================================== */
+.ph {
+  position: relative;
+  background-color: var(--color-tile);
+  background-image: var(--texture-weave);
+  border: var(--border);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.ph::after {
+  content: attr(data-ph);
+  font-family: var(--font-condensed);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--color-faint);
+  text-align: center;
+  padding: var(--space-2);
+  line-height: 1.4;
+}
+.ph--16x9    { aspect-ratio: 16 / 9; }
+.ph--4x3     { aspect-ratio: 4 / 3; }
+.ph--1x1     { aspect-ratio: 1 / 1; }
+.ph--3x4     { aspect-ratio: 3 / 4; }
+.ph--portrait{ aspect-ratio: 4 / 5; }
+.ph--wide    { aspect-ratio: 21 / 9; }
+
+/* Product placeholders use the cleaner "seamless backdrop" treatment */
+.ph--product {
+  background-color: var(--color-tile);
+  background-image: radial-gradient(ellipse at 50% 38%, rgba(212,162,78,0.10), transparent 62%);
+}
+
+/* Portrait placeholders get the warm rim-light suggestion */
+.ph--person {
+  background-image:
+    radial-gradient(ellipse at 62% 22%, rgba(212,162,78,0.16), transparent 58%),
+    var(--texture-weave);
+}
+
+/* Scrim overlay for text placed on imagery */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim-bottom);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   ACCESSIBILITY UTILITIES
+   ========================================================================== */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: var(--z-toast);
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-button);
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 0 0 var(--radius-button) var(--radius-button);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.skip-link:focus { transform: translate(-50%, 0); color: var(--color-black); }
+
+/* ==========================================================================
+   UTILITIES
+   ========================================================================== */
+.tnum { font-variant-numeric: tabular-nums; }
+.nowrap { white-space: nowrap; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clamp-2, .clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clamp-2 { -webkit-line-clamp: 2; }
+.clamp-3 { -webkit-line-clamp: 3; }
+
+.text-center { text-align: center; }
+.mx-auto { margin-inline: auto; }
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-5 { margin-top: var(--space-5); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.full { width: 100%; }
+.hidden { display: none !important; }
+
+/* Animation entrances — subtle, never blocking content */
+@keyframes cw-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes cw-fade {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes cw-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.86); }
+}
+@keyframes cw-shimmer {
+  from { background-position: -420px 0; }
+  to   { background-position: 420px 0; }
+}
+@keyframes cw-spin { to { transform: rotate(360deg); } }
+
+.anim-in { animation: cw-fade-up var(--dur-slow) var(--ease-out) both; }

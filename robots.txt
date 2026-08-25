@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin panel nema šta da traži u pretrazi.
+# Napomena: ovo je molba pretraživačima, a NE zaštita — pravu zaštitu
+# radi server kada se panel poveže sa backendom.
+Disallow: /#/admin
+
+Sitemap: https://crazywolves.rs/sitemap.xml

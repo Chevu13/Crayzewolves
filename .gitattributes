@@ -1,0 +1,9 @@
+# Radi se na Windows-u, hostuje na Linux-u. Bez ovoga bi svaka izmena iz
+# drugog uređivača izgledala kao da je promenjen ceo fajl.
+* text=auto eol=lf
+
+# Binarno — git ne sme da dira sadržaj
+*.png  binary
+*.jpg  binary
+*.webp binary
+*.pdf  binary

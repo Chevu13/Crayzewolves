@@ -1,0 +1,57 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "//": [
+    "CrazyWolves — Vercel konfiguracija. Statički sajt, bez build koraka.",
+    "",
+    "REŽIM 'SAJT U IZRADI'",
+    "Prvo pravilo u 'rewrites' šalje koren domena na uskoro.html. Dok stoji",
+    "tu, posetilac na crazywolves.rs vidi informativnu stranicu, a pun sajt",
+    "je i dalje dostupan na /app — tamo se radi i ulazi u panel (/app#/admin).",
+    "",
+    "KAD SE SAJT PUŠTA UŽIVO: obriši SAMO prvi red iz 'rewrites'.",
+    "Drugi red ostaje — /app i dalje vodi na isti sajt, pa stari linkovi rade.",
+    "",
+    "Zašto rewrite a ne redirect: rewrite ne menja adresu u pregledaču i ne",
+    "ostavlja 301 koji pretraživači i pregledači kešriaju mesecima. Kad sajt",
+    "krene, domen radi odmah, bez čišćenja keša."
+  ],
+
+  "rewrites": [
+    { "source": "/", "destination": "/uskoro.html" },
+    { "source": "/app", "destination": "/index.html" }
+  ],
+
+  "headers": [
+    {
+      "//": "HTML uvek svež — izmene su odmah vidljive.",
+      "source": "/(.*\\.html)?",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "//": "Slike se menjaju retko, a teške su — keširaju se godinu dana.",
+      "source": "/images/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "//": "Skripte i stilovi nemaju heš u imenu, pa ne smeju 'immutable'. Sat vremena je dovoljno da se sajt ne skida iznova, a izmena stigne isti dan.",
+      "source": "/(cw-.*\\.(js|css))",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()" }
+      ]
+    }
+  ]
+}

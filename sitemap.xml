@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Sajt je jednostrani (hash rutiranje), pa pretrazivaci indeksiraju
+     jednu adresu. Kada se predje na server rendering, ovde ulaze sve rute. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://crazywolves.rs/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

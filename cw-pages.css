@@ -1,0 +1,1009 @@
+/* ==========================================================================
+   CRAZYWOLVES — PAGE LAYOUTS + RESPONSIVE SYSTEM
+   Depends on: cw-theme.css, cw-base.css, cw-components.css
+   Breakpoints: mobile 0–639 · tablet 640–1023 · desktop 1024–1439 · wide 1440+
+   Authored mobile-first; desktop enhancements are added upward, and a small
+   number of desktop-only patterns are collapsed downward where that is clearer.
+   ========================================================================== */
+
+/* ==========================================================================
+   HOME — HERO
+   ========================================================================== */
+.home-hero { position: relative; }
+.home-hero {
+  position: relative;
+  min-height: min(78vh, 760px);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-bottom: var(--border);
+}
+
+/* Fotografija puni ceo hero. Na vrlo širokim monitorima slika bi inače
+   ostavila prazan pojas ispod teksta, pa je razvlačimo preko cele visine. */
+.home-hero__bg { position: absolute; inset: 0; z-index: 0; }
+.home-hero__bg .cw-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
+  aspect-ratio: auto !important;
+}
+
+/* Dvostruki zastor: odozdo za čitljivost teksta, sleva za dubinu. */
+.home-hero__scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top, var(--color-black) 4%, rgba(11,11,10,0.82) 34%, rgba(11,11,10,0.28) 68%, rgba(11,11,10,0.45) 100%),
+    linear-gradient(to right, rgba(11,11,10,0.88) 0%, rgba(11,11,10,0.30) 52%, transparent 78%);
+}
+
+.home-hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-block: var(--space-7) var(--space-5);
+}
+
+.home-hero__copy { max-width: 62ch; }
+
+.home-hero__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  line-height: 0.94;
+  text-transform: uppercase;
+  color: var(--color-offwhite);
+  letter-spacing: 0.005em;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.75);
+}
+.home-hero__title em { font-style: normal; color: var(--color-gold); }
+.home-hero__lede { margin-top: var(--space-3); max-width: 48ch; }
+.home-hero__actions { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-4); }
+
+/* Brojevi stoje u traci po dnu heroja, pa hero i na monitoru ima "pod". */
+.home-hero__meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(212, 162, 78, 0.28);
+}
+.home-hero__stat .t-stat { font-size: clamp(1.5rem, 2.4vw, 2.25rem); }
+
+
+/* Live / next-stream panel that anchors the hero right column */
+.live-panel {
+  background: var(--color-charcoal);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.live-panel__head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border);
+  background: var(--color-surface);
+}
+.live-panel__media { position: relative; aspect-ratio: 16 / 9; }
+.live-panel__body { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
+.live-panel__next {
+  padding: var(--space-2) var(--space-3);
+  border-top: var(--border);
+  background: var(--color-surface);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
+}
+
+/* Limited drop banner */
+.drop-banner {
+  position: relative; overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--space-5);
+  align-items: center;
+  padding: clamp(28px, 4vw, 48px);
+  border: 1px solid rgba(212, 162, 78, 0.45);
+  border-radius: var(--radius-card);
+  background-color: var(--color-charcoal);
+  background-image: var(--glow-gold), var(--texture-hairline);
+}
+.drop-banner__num {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.86;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(212, 162, 78, 0.5);
+}
+
+/* "Wear the Pack" shop rail on home — one rail, not a section fight */
+.shop-rail__head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: var(--space-3); flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+/* ==========================================================================
+   NEWS
+   ========================================================================== */
+.news-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-5); }
+.news-rail { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.trending-list { display: flex; flex-direction: column; }
+.trending-item {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: var(--space-2);
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--color-border-soft);
+}
+.trending-item:last-child { border-bottom: 0; }
+.trending-item__rank {
+  font-family: var(--font-display); font-size: 1.375rem; line-height: 1;
+  color: rgba(212, 162, 78, 0.4);
+}
+.trending-item__title { font-size: var(--fs-sm); font-weight: 600; color: var(--color-offwhite); line-height: 1.4; }
+.trending-item:hover .trending-item__title { color: var(--color-gold); }
+
+/* Article page */
+.article-head { max-width: var(--container-text); margin-inline: auto; }
+.article-hero { position: relative; aspect-ratio: 21 / 9; border-radius: var(--radius-card); overflow: hidden; border: var(--border); }
+.article-body { max-width: var(--container-text); margin-inline: auto; }
+.article-meta {
+  display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;
+  padding-block: var(--space-3);
+  border-block: var(--border);
+}
+.article-author { display: flex; align-items: center; gap: 10px; }
+
+/* ==========================================================================
+   SCHEDULES (streaming + tournaments)
+   ========================================================================== */
+.sched-toolbar {
+  display: flex; align-items: center; gap: var(--space-2);
+  flex-wrap: wrap;
+  padding-block: var(--space-3);
+  border-bottom: var(--border);
+  position: sticky;
+  top: var(--header-h);
+  background: rgba(11,11,10,0.95);
+  backdrop-filter: blur(8px);
+  z-index: 20;
+}
+
+.day-group { margin-top: var(--space-4); }
+.day-group__head {
+  display: flex; align-items: baseline; gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-2);
+  border-bottom: var(--border);
+}
+.day-group__day { font-family: var(--font-display); font-size: 1.25rem; text-transform: uppercase; color: var(--color-offwhite); }
+.day-group__date { font-family: var(--font-condensed); font-size: var(--fs-sm); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted); }
+.day-group__today {
+  font-family: var(--font-condensed); font-weight: 700; font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--color-black); background: var(--color-gold);
+  padding: 2px 8px; border-radius: var(--radius-pill);
+}
+.day-list { display: flex; flex-direction: column; gap: var(--space-1); }
+
+/* Week grid (desktop only — collapses to the day list on small screens) */
+.week-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--color-border); border: var(--border); border-radius: var(--radius-card); overflow: hidden; }
+.week-col { background: var(--color-black); min-height: 220px; display: flex; flex-direction: column; }
+.week-col__head { padding: var(--space-2); border-bottom: var(--border); background: var(--color-surface); text-align: center; }
+.week-col__body { padding: var(--space-1); display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.week-col.is-today .week-col__head { background: var(--wash-gold); }
+.week-slot {
+  padding: 8px;
+  background: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-button);
+  border-left: 2px solid var(--color-gold);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.week-slot:hover { border-color: var(--color-gold); }
+.week-slot__time { font-family: var(--font-condensed); font-weight: 700; font-size: var(--fs-label); color: var(--color-gold); }
+.week-slot__title { font-size: var(--fs-xs); color: var(--color-offwhite); font-weight: 600; line-height: 1.3; margin-top: 2px; }
+
+/* Countdown hero strip on the streaming page */
+.next-up {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-4);
+  align-items: center;
+  padding: clamp(24px, 3.4vw, 40px);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background-color: var(--color-charcoal);
+  background-image: var(--glow-gold);
+}
+
+/* Tournament bracket-ish stage marker */
+.stage-tag {
+  font-family: var(--font-condensed); font-weight: 700; font-size: var(--fs-label);
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-amber);
+}
+
+/* ==========================================================================
+   PLAYERS / TEAMS
+   ========================================================================== */
+.player-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: end;
+  padding-block: clamp(32px, 5vw, 64px);
+}
+.player-hero__portrait {
+  aspect-ratio: 4 / 5;
+  border: var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.player-hero__nick {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6.5vw, 4.5rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+  color: var(--color-offwhite);
+}
+.player-hero__meta { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-3); }
+
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--color-border);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  margin-top: var(--space-4);
+}
+.stat-strip__cell { background: var(--color-surface); padding: var(--space-3); }
+
+.setup-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+
+/* Team roster block */
+.team-block {
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+.team-block__head {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3);
+  border-bottom: var(--border);
+  background: var(--color-charcoal);
+  flex-wrap: wrap;
+}
+.team-block__body { padding: var(--space-3); }
+
+/* ==========================================================================
+   ACHIEVEMENTS
+   ========================================================================== */
+.achv-feature {
+  position: relative; overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--space-5);
+  align-items: center;
+  padding: clamp(28px, 4vw, 52px);
+  border: 1px solid rgba(212,162,78,0.45);
+  border-radius: var(--radius-card);
+  background-color: var(--color-charcoal);
+  background-image: var(--glow-gold), var(--texture-hairline);
+}
+.trophy-ring {
+  width: 168px; height: 168px;
+  margin-inline: auto;
+  border-radius: 50%;
+  border: 1px solid var(--color-gold);
+  background: radial-gradient(circle, rgba(212,162,78,0.16), transparent 68%);
+  display: grid; place-items: center;
+  color: var(--color-gold);
+}
+
+/* ==========================================================================
+   EVENTS
+   ========================================================================== */
+.event-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: var(--space-5);
+  align-items: center;
+}
+.gallery-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); }
+
+/* ==========================================================================
+   COMMUNITY / ABOUT / PARTNERS
+   ========================================================================== */
+.philosophy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.benefit {
+  padding: var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  display: flex; flex-direction: column; gap: 10px;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+.benefit:hover { border-color: var(--border-hover); }
+.benefit__icon {
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border: var(--border);
+  border-radius: var(--radius-button);
+  color: var(--color-gold);
+}
+
+.rules-list { display: flex; flex-direction: column; gap: var(--space-2); counter-reset: rule; }
+.rule-item {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  counter-increment: rule;
+}
+.rule-item::before {
+  content: counter(rule, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: rgba(212,162,78,0.55);
+}
+
+.ugc-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-2); }
+
+/* About — milestones */
+.milestone {
+  display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-bottom: var(--border);
+}
+.milestone__year {
+  font-family: var(--font-display);
+  font-size: 1.625rem; line-height: 1;
+  color: var(--color-gold);
+}
+
+/* Partners — tier sections */
+.tier-head {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.tier-head__line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--color-gold), transparent); }
+
+.audience-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--color-border); border: var(--border); border-radius: var(--radius-card); overflow: hidden; }
+
+/* Contact */
+.contact-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-5); }
+.contact-method {
+  display: flex; gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.contact-method svg { color: var(--color-gold); flex: none; }
+
+/* ==========================================================================
+   SHOP
+   ========================================================================== */
+.shop-page { background: var(--color-shop-ground); }
+
+.shop-hero {
+  position: relative; overflow: hidden;
+  border-bottom: var(--border);
+  background-color: var(--color-shop-ground);
+  background-image: var(--glow-gold), var(--texture-hairline);
+}
+.shop-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: var(--space-5);
+  align-items: center;
+  padding-block: clamp(44px, 7vw, 88px);
+}
+
+.collection-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.collection-tile {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border: var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: var(--space-3);
+  background-color: var(--color-tile);
+  background-image: var(--texture-weave);
+  transition: border-color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.collection-tile:hover { border-color: var(--color-gold); transform: translateY(-3px); }
+.collection-tile__content { position: relative; z-index: 2; }
+.collection-tile__title {
+  font-family: var(--font-display);
+  font-size: 1.5rem; line-height: 1.05;
+  text-transform: uppercase; color: var(--color-offwhite);
+}
+
+.category-tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-2); }
+.category-tile {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: var(--space-3) var(--space-2);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-shop-surface);
+  text-align: center;
+  transition: all var(--dur-base) var(--ease-out);
+}
+.category-tile:hover { border-color: var(--color-gold); transform: translateY(-2px); }
+.category-tile__icon { color: var(--color-gold); }
+.category-tile__name {
+  font-family: var(--font-condensed); font-weight: 600; font-size: var(--fs-sm);
+  letter-spacing: 0.09em; text-transform: uppercase; color: var(--color-offwhite);
+}
+.category-tile__count { font-family: var(--font-condensed); font-size: var(--fs-label); color: var(--color-muted); }
+
+/* Promo banner */
+.promo {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.promo__panel {
+  position: relative; overflow: hidden;
+  min-height: 220px;
+  padding: var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background-color: var(--color-shop-surface);
+  background-image: var(--texture-hairline);
+  display: flex; flex-direction: column; justify-content: center; gap: 10px;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+.promo__panel:hover { border-color: var(--color-gold); }
+
+/* Category / listing layout */
+.catalog { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+.catalog__filters {
+  position: sticky;
+  top: calc(var(--header-h) + var(--space-2));
+  max-height: calc(100vh - var(--header-h) - var(--space-4));
+  overflow-y: auto;
+  padding-right: var(--space-1);
+}
+.product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.product-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.active-filters { display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; padding-block: var(--space-2); }
+
+/* Mobile filter trigger — hidden on desktop */
+.filter-trigger { display: none; }
+
+/* Product detail */
+.pdp { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: var(--space-5); align-items: start; }
+.pdp__info { display: flex; flex-direction: column; gap: var(--space-3); position: sticky; top: calc(var(--header-h) + var(--space-3)); }
+.pdp__price-row { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.pdp__actions { display: flex; gap: var(--space-2); }
+.pdp__actions .btn { flex: 1; }
+
+.story-panel {
+  padding: var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background-color: var(--color-charcoal);
+  background-image: var(--texture-hairline);
+}
+
+/* Cart page */
+.cart-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-5); align-items: start; }
+.summary-card {
+  padding: var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  position: sticky;
+  top: calc(var(--header-h) + var(--space-3));
+}
+.coupon-row { display: flex; gap: var(--space-1); }
+
+/* Checkout */
+.checkout-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--space-5); align-items: start; }
+.checkout-header {
+  border-bottom: var(--border);
+  background: var(--color-black);
+}
+.checkout-header__inner {
+  height: var(--header-h);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+}
+
+/* Order confirmation */
+.confirm-hero { text-align: center; padding-block: var(--space-6); }
+.confirm-seal {
+  width: 92px; height: 92px;
+  margin-inline: auto;
+  border-radius: 50%;
+  border: 1px solid var(--color-success);
+  background: var(--wash-success);
+  display: grid; place-items: center;
+  color: var(--color-success);
+  margin-bottom: var(--space-3);
+}
+.next-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.next-step {
+  padding: var(--space-3);
+  border: var(--border); border-radius: var(--radius-card);
+  background: var(--color-surface);
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+/* ==========================================================================
+   404
+   ========================================================================== */
+.notfound { text-align: center; padding-block: clamp(64px, 12vw, 140px); }
+.notfound__code {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 22vw, 15rem);
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(212,162,78,0.42);
+  margin-bottom: var(--space-3);
+}
+.notfound__links { display: flex; gap: var(--space-2); flex-wrap: wrap; justify-content: center; margin-top: var(--space-4); }
+
+/* ==========================================================================
+   LEGAL / SUPPORT
+   ========================================================================== */
+.legal-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+.legal-toc {
+  position: sticky;
+  top: calc(var(--header-h) + var(--space-3));
+  display: flex; flex-direction: column; gap: 2px;
+}
+.legal-toc__link {
+  padding: 8px 10px;
+  font-family: var(--font-condensed);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  border-left: 2px solid var(--color-border);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.legal-toc__link:hover { color: var(--color-gold); border-color: var(--color-gold); }
+.legal-toc__link.is-active { color: var(--color-gold); border-color: var(--color-gold); background: var(--wash-gold); }
+
+.faq-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+
+/* ==========================================================================
+   ============================  RESPONSIVE  ================================
+   ========================================================================== */
+
+/* -------------------- WIDE (1440+) -------------------- */
+@media (min-width: 1440px) {
+  .container { padding-inline: var(--space-4); }
+  .home-hero { min-height: min(80vh, 820px); }
+}
+
+/* -------------------- ULTRA-WIDE (1680+) --------------------
+   Sadržaj je do sada stajao u 1440px i na monitoru od 2560px, pa je
+   ostavljao široke prazne pojaseve sa strane. Ovde puštamo mreže da
+   dišu, ali merilo teksta ostaje ograničeno da red ne postane predug. */
+@media (min-width: 1680px) {
+  :root {
+    --container-max:  1360px;
+    --container-wide: 1680px;
+    --gutter:         40px;
+  }
+  .home-hero__title { font-size: clamp(4rem, 5.2vw, 6.25rem); }
+  .product-grid--4  { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* -------------------- ≤ 1200 : tighten dense layouts -------------------- */
+@media (max-width: 1200px) {
+  .catalog { grid-template-columns: 232px minmax(0, 1fr); gap: var(--space-4); }
+  .product-grid--4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .footer__grid { grid-template-columns: 1.4fr repeat(3, 1fr); }
+  .footer__grid > *:nth-child(5) { grid-column: span 3; }
+  .dropdown__panel--wide { min-width: 460px; }
+}
+
+/* -------------------- ≤ 1023 : TABLET -------------------- */
+@media (max-width: 1023px) {
+  :root { --header-h: 64px; }
+
+  /* Desktop nav out, mobile trigger in */
+  .nav, .header__desktop-only { display: none !important; }
+  .header__mobile-only { display: inline-grid !important; }
+
+  /* Single-column page shells */
+  .news-layout,
+  .contact-layout,
+  .cart-layout,
+  .checkout-layout,
+  .catalog,
+  .pdp,
+  .account,
+  .legal-layout,
+  .faq-layout,
+  .grid--rail,
+  .grid--rail-l,
+  .event-hero,
+  .achv-feature,
+  .drop-banner,
+  .next-up,
+  .shop-hero__grid,
+  .player-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Sticky rails release on tablet */
+  .pdp__info,
+  .summary-card,
+  .catalog__filters,
+  .legal-toc { position: static; max-height: none; }
+
+  .player-hero { gap: var(--space-4); }
+  .player-hero__portrait { max-width: 300px; }
+
+  /* Filters move into a drawer */
+  .catalog__filters { display: none; }
+  .filter-trigger { display: inline-flex; }
+
+  /* Week grid is unreadable at this width — day list takes over */
+  .week-grid { display: none; }
+
+  .grid--4, .grid--5, .grid--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .product-grid, .product-grid--4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .philosophy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .collection-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .category-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ugc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .trust-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .next-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .news-feature { grid-template-columns: minmax(0, 1fr); }
+  .news-feature .card__media { min-height: 0; aspect-ratio: 16 / 9; }
+  .news-feature .card__body { padding: var(--space-4); }
+
+  .footer__grid { grid-template-columns: repeat(3, 1fr); }
+  .footer__brand { grid-column: span 3; max-width: 52ch; }
+  .footer__grid > *:nth-child(5) { grid-column: auto; }
+
+  .sched-toolbar { position: static; }
+}
+
+/* -------------------- ≤ 767 : LARGE PHONE / SMALL TABLET -------------------- */
+@media (max-width: 767px) {
+  .grid--3, .grid--4, .grid--5, .grid--6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .product-grid, .product-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .collection-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .category-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ugc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .next-steps { grid-template-columns: minmax(0, 1fr); }
+  .promo { grid-template-columns: minmax(0, 1fr); }
+  .setup-list { grid-template-columns: minmax(0, 1fr); }
+  .field-row, .field-row--3 { grid-template-columns: minmax(0, 1fr); }
+  .pagenav { grid-template-columns: minmax(0, 1fr); }
+  .grid--2, .grid--split { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* -------------------- ≤ 639 : MOBILE -------------------- */
+@media (max-width: 639px) {
+  :root {
+    --gutter: var(--gutter-mobile);
+    --header-h: 60px;
+  }
+
+  .container { padding-inline: var(--gutter-mobile); }
+
+  /* --- Typography: keep hierarchy, lose the drama that breaks lines --- */
+  .home-hero__title { font-size: clamp(2.5rem, 12vw, 3.25rem); line-height: 0.98; }
+  .player-hero__nick { font-size: clamp(2.25rem, 11vw, 3rem); }
+
+  /* --- Header --- */
+  .announce { font-size: 10px; letter-spacing: 0.1em; padding-block: 6px; }
+  .logo__word { font-size: 1.0625rem; }
+  .logo__sub { display: none; }
+  .header__actions { gap: 0; }
+  .header__inner { gap: var(--space-1); }
+
+  /* --- Hero --- */
+  .hero__inner { padding-block: var(--space-5); }
+  .home-hero { min-height: auto; }
+  .home-hero__content { padding-block: var(--space-6) var(--space-4); }
+  /* Četiri broja u jednom redu su na telefonu pretesna; idu dva po dva. */
+  .home-hero__meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2) var(--space-3); }
+  .home-hero__actions .btn { flex: 1; min-width: 140px; }
+  /* Bez bočnog zastora — na uskom ekranu bi progutao celu sliku. */
+  .home-hero__scrim {
+    background: linear-gradient(to top, var(--color-black) 6%, rgba(11,11,10,0.86) 42%, rgba(11,11,10,0.42) 100%);
+  }
+
+  /* --- Cards: two-up is too tight for products with variants --- */
+  .product-grid, .product-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+  .product-card__quick { display: none; }  /* no hover on touch — use PDP */
+  .product-card .card__body { padding: var(--space-2); gap: 8px; }
+  .product-card__title { font-size: var(--fs-sm); }
+  .t-price { font-size: 1.25rem; }
+
+  .grid--3, .grid--4, .grid--5, .grid--6 { grid-template-columns: minmax(0, 1fr); }
+  .philosophy-grid { grid-template-columns: minmax(0, 1fr); }
+  .collection-tiles { grid-template-columns: minmax(0, 1fr); }
+  .category-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ugc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .trust-strip { grid-template-columns: minmax(0, 1fr); }
+  .audience-grid { grid-template-columns: minmax(0, 1fr); }
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* --- Schedule: the date block becomes a header row, not a column --- */
+  .schedule-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2);
+  }
+  .schedule-card__lead {
+    display: flex; align-items: center; gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+  .date-block {
+    flex-direction: row; align-items: baseline; gap: 7px;
+    padding: 0; background: transparent; border: 0;
+  }
+  .date-block__day { font-size: 1.125rem; }
+  .schedule-card__actions { display: flex; }
+  .schedule-card__actions .btn { flex: 1; }
+
+  .versus { gap: var(--space-1); }
+  .versus__name { font-size: var(--fs-sm); }
+
+  .countdown { gap: 6px; }
+  .countdown__unit { min-width: 0; flex: 1; padding: 6px 4px; }
+  .countdown__num { font-size: 1.25rem; }
+
+  /* --- Player profile --- */
+  .player-hero__portrait { max-width: 100%; }
+  .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* --- Article --- */
+  .article-hero { aspect-ratio: 4 / 3; border-radius: 0; margin-inline: calc(var(--gutter-mobile) * -1); border-inline: 0; }
+  .prose { font-size: var(--fs-body); }
+  .prose blockquote { font-size: 1.125rem; padding: var(--space-2); }
+
+  /* --- PDP: gallery becomes a swipe rail, add-to-cart goes sticky --- */
+  .pdp { gap: var(--space-4); }
+  .pdp__info { gap: var(--space-3); }
+  .gallery { grid-template-columns: minmax(0, 1fr); }
+  .gallery__thumbs {
+    flex-direction: row;
+    overflow-x: auto;
+    order: 2;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+  .gallery__thumb { width: 62px; flex: none; }
+  .gallery__main { order: 1; }
+  .sticky-atc { display: flex; }
+  .pdp__actions--inline { display: none; }
+  /* Room for the sticky bar so nothing is trapped behind it */
+  .pdp-page { padding-bottom: 84px; }
+
+  /* --- Cart / checkout --- */
+  .line-item { grid-template-columns: 68px minmax(0, 1fr); }
+  .line-item__media { width: 68px; }
+  .line-item__right {
+    grid-column: 1 / -1;
+    flex-direction: row; align-items: center; justify-content: space-between;
+    padding-top: var(--space-1);
+  }
+  .checkout-layout { gap: var(--space-3); }
+  .summary-card { padding: var(--space-2); }
+
+  /* --- Footer --- */
+  .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .footer__brand { grid-column: span 2; }
+  .footer__bottom { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+
+  /* --- Toasts full width at the bottom --- */
+  .toast-region {
+    left: var(--space-2); right: var(--space-2); bottom: var(--space-2);
+    max-width: none;
+  }
+
+  /* --- Modals become bottom sheets --- */
+  .modal {
+    top: auto; bottom: 0; left: 0;
+    transform: none;
+    width: 100%;
+    max-height: 88vh;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    animation-name: cw-drawer-in-bottom;
+  }
+  .modal__foot { flex-direction: column-reverse; }
+  .modal__foot .btn { width: 100%; }
+
+  /* --- Tables scroll rather than crush --- */
+  .table { min-width: 560px; }
+
+  /* --- Section rhythm --- */
+  .section { padding-block: var(--space-5); }
+  .section-head { margin-bottom: var(--space-3); }
+
+  /* --- Empty states --- */
+  .empty { padding: var(--space-5) var(--space-2); }
+
+  /* --- Buttons stack full width in form footers --- */
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions .btn { width: 100%; }
+}
+
+/* -------------------- ≤ 379 : SMALL PHONE -------------------- */
+@media (max-width: 379px) {
+  .product-grid, .product-grid--4 { grid-template-columns: minmax(0, 1fr); }
+  .category-tiles { grid-template-columns: minmax(0, 1fr); }
+  .stat-grid { grid-template-columns: minmax(0, 1fr); }
+  .logo__word { font-size: 0.9375rem; }
+}
+
+/* -------------------- HOVER-CAPABLE ONLY --------------------
+   Hover-only affordances are suppressed on touch so nothing is unreachable. */
+@media (hover: none) {
+  .product-card__quick { opacity: 1; transform: none; position: static; margin-top: var(--space-1); }
+  a.card:hover,
+  .card--link:hover,
+  .product-card:hover,
+  .event-card:hover { transform: none; box-shadow: none; }
+  a.card:hover .card__media .ph,
+  .product-card:hover .card__media .ph,
+  .event-card:hover .card__media .ph { transform: none; }
+}
+
+/* -------------------- PRINT -------------------- */
+@media print {
+  .header, .footer, .toast-region, .sticky-atc, .drawer, .overlay { display: none !important; }
+  body { background: #fff; color: #000; }
+  .card, .summary-card { border-color: #ccc; box-shadow: none; }
+}
+
+/* ==========================================================================
+   POČETNA — IZDVOJENI PROIZVOD I KATEGORIJE
+   Shop je prva sekcija ispod heroja, pa mu treba više težine nego običnoj
+   mreži kartica.
+   ========================================================================== */
+.home-drop {
+  display: grid;
+  /* Poster šolje je uspravan (0.58). U polovini širine ekrana ispadao je
+     ogroman i gurao ceo tekst ispod pregiba, pa slika dobija uži stubac. */
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: center;
+}
+.home-drop__media {
+  border: 1px solid rgba(212, 162, 78, 0.45);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  max-width: 300px;
+}
+.home-drop__body { min-width: 0; }
+
+/* Pločice kategorija — kratke, bez opisa, da posetilac odmah bira put. */
+.cat-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-offwhite);
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+.cat-tile:hover {
+  border-color: var(--color-gold);
+  background: var(--color-surface-2);
+  color: var(--color-gold);
+}
+.cat-tile__name {
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: var(--ls-nav);
+  text-transform: uppercase;
+}
+.cat-tile svg { color: var(--color-gold); flex: none; }
+
+@media (max-width: 900px) {
+  .home-drop { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+  /* Na užem ekranu slika ide iznad teksta i ostaje centrirana. */
+  .home-drop__media { max-width: 260px; margin-inline: auto; }
+}
+@media (max-width: 639px) {
+  .cat-tile { padding: var(--space-2) var(--space-3); }
+  .cat-tile__name { font-size: 0.9375rem; }
+}
+
+/* ==========================================================================
+   IZDVOJENI BLOK — baner preko cele širine + traka sa podacima
+   --------------------------------------------------------------------------
+   Zamenjuje .home-drop i .home-partner. Oba su bila mreža „uska slika levo,
+   tekst desno", napravljena za uspravan poster. Novi baneri su 2.5 : 1 —
+   u stupcu od 300px svodili bi se na traku, a pola ekrana bi ostalo prazno.
+
+   Sada slika ide punom širinom u svom prirodnom odnosu, a naziv, cena i
+   dugme stoje u traci ispod nje. Isti oblik nosi i proizvod i partnera, pa
+   početna ima jedan ritam umesto dva.
+   ========================================================================== */
+.feature-drop {
+  border: var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.feature-drop__media {
+  display: block;
+  position: relative;
+  /* Baner je zlatno-crn i uvek nosi tekst, pa ivicu dobija u zlatu —
+     ista uokvirena tvrdnja kao raniji .brackets, samo bez uglova. */
+  border-bottom: 1px solid rgba(212, 162, 78, 0.45);
+}
+a.feature-drop__media img { transition: transform var(--dur-slow) var(--ease-out); }
+a.feature-drop__media:hover img { transform: scale(1.02); }
+
+.feature-drop__badge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 2;
+}
+
+.feature-drop__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  flex-wrap: wrap;
+}
+.feature-drop__text { min-width: 0; flex: 1 1 320px; }
+.feature-drop__buy {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+.feature-drop__price { font-size: 1.75rem; }
+
+@media (max-width: 639px) {
+  .feature-drop__bar { padding: var(--space-3); gap: var(--space-3); }
+  .feature-drop__buy { width: 100%; justify-content: space-between; }
+  .feature-drop__price { font-size: 1.5rem; }
+}
+
+/* ==========================================================================
+   POČETNA — SARADNJA
+   Poster partnera je uspravan, pa dobija uži stubac kao i poster šolje.
+   ========================================================================== */
+.home-partner {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: center;
+}
+.home-partner__media {
+  border: var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  max-width: 320px;
+}
+
+@media (max-width: 900px) {
+  .home-partner { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+  .home-partner__media { max-width: 280px; margin-inline: auto; }
+}
