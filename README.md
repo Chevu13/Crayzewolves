@@ -14,9 +14,7 @@ jednoj ljusci, jednom dizajn sistemu i jednoj bazi.
 npx serve -l 4321 .
 ```
 
-Otvori `http://localhost:4321`.
-
-Otvori `http://localhost:4321/app.html` — na korenu stoji pokazna stranica.
+Otvori **`http://localhost:4321/app.html`** — na korenu stoji pokazna stranica.
 Radi i duplim klikom na `app.html`, bez servera. Skripte su namerno
 klasične (ne ES moduli) baš zato — `file://` blokira module.
 
