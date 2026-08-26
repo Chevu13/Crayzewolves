@@ -357,9 +357,13 @@ CW.c.cartDrawer = function () {
 CW.c.lineItem = function (line, compact) {
   var p = CW.product(line.productId);
   if (!p) return '';
+
+  /* `v` treba i dalje — ne za ispis naziva varijante (to radi
+     CW.variantLabel), nego za zalihu: upozorenje „još N na stanju" i
+     gašenje dugmeta „+" kad se dođe do poslednjeg komada. */
   var v = null;
   p.variants.forEach(function (x) { if (x.id === line.variantId) v = x; });
-  var color = v ? CW.shopOptions.colors[v.colorId] : null;
+
   var key = 'data-pid="' + p.id + '" data-vid="' + line.variantId + '"';
 
   var thumb = p.image
@@ -373,7 +377,7 @@ CW.c.lineItem = function (line, compact) {
     '<div class="stack stack-1" style="min-width:0">' +
       '<a class="line-item__title" href="#/proizvod/' + p.slug + '" data-act="close-overlays">' + CW.esc(p.name) + '</a>' +
       '<div class="line-item__variant">' +
-        CW.esc(CW.variantLabel(p, l.variantId)) +
+        CW.esc(CW.variantLabel(p, line.variantId)) +
       '</div>' +
       (v && v.stock <= CW.shopConfig.lowStockThreshold && v.stock > 0
         ? '<div class="t-xs" style="color:var(--color-warning)">Još ' + v.stock + ' na stanju</div>' : '') +

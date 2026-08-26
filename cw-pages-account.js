@@ -568,9 +568,6 @@ CW.pages.accountOrder = function (ctx) {
           o.items.map(function (i) {
             var p = CW.product(i.productId);
             if (!p) return '';
-            var v = null;
-            p.variants.forEach(function (x) { if (x.id === i.variantId) v = x; });
-            var c = v ? CW.shopOptions.colors[v.colorId] : null;
             return '<div class="line-item">' +
               '<a class="line-item__media" href="#/product/' + p.slug + '"></a>' +
               '<div class="stack stack-1">' +

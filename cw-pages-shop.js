@@ -1002,9 +1002,6 @@ CW.pages.checkout = function (ctx) {
         '<div class="stack stack-2 mb-3">' +
           cart.map(function (l) {
             var p = CW.product(l.productId);
-            var v = null;
-            p.variants.forEach(function (x) { if (x.id === l.variantId) v = x; });
-            var c = v ? CW.shopOptions.colors[v.colorId] : null;
             return '<div class="row row--top" style="gap:12px">' +
               '<div class="line-item__media" style="width:56px;position:relative">' +
                 (p.image ? CW.img(p.image, { ratio: '1 / 1', ph: p.name }) : '') +
@@ -1089,9 +1086,6 @@ CW.pages.confirmation = function () {
         '<div style="border-top:var(--border)">' +
           order.items.map(function (l) {
             var p = CW.product(l.productId);
-            var v = null;
-            p.variants.forEach(function (x) { if (x.id === l.variantId) v = x; });
-            var c = v ? CW.shopOptions.colors[v.colorId] : null;
             return '<div class="line-item">' +
               '<div class="line-item__media">' + (p.image ? CW.img(p.image, { ratio: '1 / 1', ph: p.name }) : '') + '</div>' +
               '<div class="stack stack-1">' +
