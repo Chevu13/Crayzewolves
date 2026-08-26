@@ -63,9 +63,25 @@ odmah, bez čišćenja keša.
 
 | Šta | Koliko | Zašto |
 |---|---|---|
-| HTML | 0, uvek se proverava | izmene su odmah vidljive |
-| `images/*` | godinu dana, `immutable` | teške su, a menjaju se retko |
-| `cw-*.js`, `cw-*.css` | sat vremena | nemaju heš u imenu, pa ne smeju `immutable` |
+| `images/*` | godinu dana, `immutable` | 2 MB banera koji se menjaju retko |
+| sve ostalo | Vercel-ov podrazumevani | `max-age=0, must-revalidate` — svaka izmena je odmah vidljiva, a nepromenjen fajl vraća jeftin 304 |
+
+Ranije je ovde stajalo i posebno pravilo za `cw-*.js` i `cw-*.css`. Izbačeno je
+iz dva razloga: Vercel ga je odbijao (vidi dole), a podrazumevano ponašanje je
+ionako bolje od onoga što je pravilo radilo.
+
+## Šablon adrese u `source` nije regex
+
+Vercel koristi **path-to-regexp**, ne običan regularni izraz. Ugnježdena grupa
+ruši deploy:
+
+```
+Error: Header at index 2 has invalid `source` pattern "/(cw-.*\.(js|css))".
+```
+
+Dozvoljeno je jedno `(.*)` ili imenovani parametar `/:ime(sablon)`. Ako ovde
+ikad zatreba složeniji šablon, napiši ga kao dva odvojena unosa umesto kao
+jedan sa `|` unutar grupe.
 
 ## Posle prvog deploy-a
 
