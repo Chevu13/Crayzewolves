@@ -233,7 +233,7 @@
     var v = pdpVariant();
     if (line) {
       if (!pdp.size || !pdp.color) {
-        line.innerHTML = '<div class="status status--upcoming"><span class="status__dot"></span>Select options to see availability</div>';
+        line.innerHTML = '<div class="status status--upcoming"><span class="status__dot"></span>Izaberi opciju da vidiš dostupnost</div>';
       } else if (!v || v.stock === 0) {
         line.innerHTML = '<div class="status status--offline"><span class="status__dot"></span>Sold out in this combination</div>';
       } else if (v.stock <= CW.shopConfig.lowStockThreshold) {
@@ -247,7 +247,7 @@
     if (sticky) {
       sticky.textContent = (pdp.size && pdp.color)
         ? pdp.size + ' · ' + CW.shopOptions.colors[pdp.color].name
-        : 'Select options';
+        : 'Izaberi opciju';
     }
 
     /* Quantity cannot exceed the selected variant's stock */

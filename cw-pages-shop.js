@@ -461,7 +461,7 @@ CW.pages.product = function (ctx) {
         '<span class="t-price' + (p.compareAt ? ' t-price--sale' : '') + '" style="font-size:2rem">' + CW.money(p.price) + '</span>' +
         (p.compareAt ? '<span class="t-price--was" style="font-size:1.25rem">' + CW.money(p.compareAt) + '</span>' +
           '<span class="badge badge--sale">Save ' + CW.money(p.compareAt - p.price) + '</span>' : '') +
-        '<span class="t-xs">VAT included</span>' +
+        '<span class="t-xs">Sa PDV-om</span>' +
       '</div>' +
 
       '<p class="t-body-lg">' + CW.esc(p.shortDesc) + '</p>' +
@@ -637,7 +637,7 @@ CW.pages.product = function (ctx) {
     '<div class="sticky-atc">' +
       '<div class="sticky-atc__price">' +
         '<div class="t-price">' + CW.money(p.price) + '</div>' +
-        '<div class="t-xs" data-sticky-variant>Select options</div>' +
+        '<div class="t-xs" data-sticky-variant>Izaberi opciju</div>' +
       '</div>' +
       '<button class="btn btn--primary btn--lg" style="flex:1" type="button" data-act="add-to-cart" data-pid="' + p.id + '"' + (soldout ? ' disabled' : '') + '>' +
         (soldout ? 'Sold out' : 'Dodaj u korpu') + '</button>' +
@@ -727,15 +727,15 @@ CW.pages.cart = function (ctx) {
       '</div>' +
 
       '<aside class="summary-card">' +
-        '<h2 class="t-h3 mb-3">Order summary</h2>' +
+        '<h2 class="t-h3 mb-3">Tvoja porudžbina</h2>' +
 
         '<form class="coupon-row mb-3" data-act="coupon-form" novalidate>' +
-          '<label class="visually-hidden" for="coupon">Discount code</label>' +
-          '<input class="input" id="coupon" name="code" type="text" placeholder="Discount code" ' +
+          '<label class="visually-hidden" for="coupon">Kod za popust</label>' +
+          '<input class="input" id="coupon" name="code" type="text" placeholder="Kod za popust" ' +
             'value="' + (coupon ? CW.esc(coupon.code) : '') + '"' + (coupon ? ' readonly' : '') + '>' +
           (coupon
-            ? '<button class="btn btn--quiet" type="button" data-act="remove-coupon">Remove</button>'
-            : '<button class="btn btn--secondary" type="submit">Apply</button>') +
+            ? '<button class="btn btn--quiet" type="button" data-act="remove-coupon">Ukloni</button>'
+            : '<button class="btn btn--secondary" type="submit">Primeni</button>') +
         '</form>' +
 
         (coupon ? '<div class="alert alert--success mb-3">' + CW.icon('check', 16) +
@@ -753,10 +753,10 @@ CW.pages.cart = function (ctx) {
         '</div>' +
 
         '<div class="spec-list">' +
-          '<div class="spec-list__row"><span class="spec-list__k">Subtotal</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
-          (t.discount ? '<div class="spec-list__row"><span class="spec-list__k">Discount</span><span class="spec-list__v t-gold">−' + CW.money(t.discount) + '</span></div>' : '') +
-          '<div class="spec-list__row"><span class="spec-list__k">Shipping</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Free' : CW.money(t.shipping)) + '</span></div>' +
-          '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Total</span><span class="spec-list__v">' + CW.money(t.total) + '</span></div>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
+          (t.discount ? '<div class="spec-list__row"><span class="spec-list__k">Popust</span><span class="spec-list__v t-gold">−' + CW.money(t.discount) + '</span></div>' : '') +
+          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Free' : CW.money(t.shipping)) + '</span></div>' +
+          '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Ukupno</span><span class="spec-list__v">' + CW.money(t.total) + '</span></div>' +
         '</div>' +
 
         (t.freeShippingGap > 0
@@ -814,7 +814,7 @@ CW.pages.checkout = function (ctx) {
         '<span class="stepper__bar"></span>' +
         '<div class="stepper__step"><span class="stepper__num">3</span><span class="stepper__label">Confirm</span></div>' +
       '</div>' +
-      '<a class="btn btn--ghost btn--sm" href="#/cart">' + CW.icon('arrowL', 15) + 'Back to cart</a>' +
+      '<a class="btn btn--ghost btn--sm" href="#/korpa">' + CW.icon('arrowL', 15) + 'Nazad u korpu</a>' +
     '</div>' +
   '</div>' +
 
@@ -825,25 +825,25 @@ CW.pages.checkout = function (ctx) {
 
         /* ---------- CONTACT ---------- */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">1 — Contact information</legend>' +
+          '<legend class="fieldset__legend">1 — Podaci za kontakt</legend>' +
           (user ? '' :
             '<div class="alert alert--info">' + CW.icon('user', 18) +
             '<span>Već imaš nalog? <a class="link-underline" href="#/account/login">Prijavi se</a> to fill this in automatically.</span></div>') +
           '<div class="field">' +
             '<label class="field__label" for="co-email">Imejl adresa <span class="field__req">*</span></label>' +
             '<input class="input" id="co-email" name="email" type="email" autocomplete="email" required value="' + (user ? CW.esc(user.email) : '') + '">' +
-            '<div class="field__hint">Your order confirmation and tracking go here.</div>' +
+            '<div class="field__hint">Ovde stižu potvrda porudžbine i broj za praćenje.</div>' +
             '<div class="field__error hidden" data-error-for="co-email"></div>' +
           '</div>' +
           '<div class="field">' +
-            '<label class="field__label" for="co-phone">Phone <span class="t-muted">(for the courier)</span></label>' +
+            '<label class="field__label" for="co-phone">Telefon <span class="t-muted">(za kurira)</span></label>' +
             '<input class="input" id="co-phone" name="phone" type="tel" autocomplete="tel" value="' + (addr ? CW.esc(addr.phone) : '') + '">' +
           '</div>' +
         '</fieldset>' +
 
         /* ---------- SHIPPING ADDRESS ---------- */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">2 — Shipping address</legend>' +
+          '<legend class="fieldset__legend">2 — Adresa za dostavu</legend>' +
           '<div class="field-row">' +
             '<div class="field">' +
               '<label class="field__label" for="co-first">First name <span class="field__req">*</span></label>' +
@@ -988,7 +988,7 @@ CW.pages.checkout = function (ctx) {
           '</label>' +
 
           '<button class="btn btn--primary btn--lg btn--full mt-2" type="submit" data-place-order>' +
-            CW.icon('lock', 17) + 'Place order — ' + CW.money(t.total) +
+            CW.icon('lock', 17) + 'Poruči — ' + CW.money(t.total) +
           '</button>' +
 
           '<div data-form-status role="status" aria-live="polite"></div>' +
@@ -997,7 +997,7 @@ CW.pages.checkout = function (ctx) {
 
       /* ---------- ORDER SUMMARY ---------- */
       '<aside class="summary-card">' +
-        '<h2 class="t-h3 mb-3">Order summary</h2>' +
+        '<h2 class="t-h3 mb-3">Tvoja porudžbina</h2>' +
 
         '<div class="stack stack-2 mb-3">' +
           cart.map(function (l) {
@@ -1007,10 +1007,11 @@ CW.pages.checkout = function (ctx) {
             var c = v ? CW.shopOptions.colors[v.colorId] : null;
             return '<div class="row row--top" style="gap:12px">' +
               '<div class="line-item__media" style="width:56px;position:relative">' +
+                (p.image ? CW.img(p.image, { ratio: '1 / 1', ph: p.name }) : '') +
                 '<span class="btn-icon__count" style="top:-6px;right:-6px">' + l.qty + '</span></div>' +
               '<div style="flex:1;min-width:0">' +
                 '<div class="t-sm t-offwhite" style="font-weight:600">' + CW.esc(p.name) + '</div>' +
-                '<div class="line-item__variant">' + (v ? CW.esc(v.size) : '') + (c ? ' · ' + CW.esc(c.name) : '') + '</div>' +
+                '<div class="line-item__variant">' + CW.esc(CW.variantLabel(p, l.variantId)) + '</div>' +
               '</div>' +
               '<div class="t-sm t-offwhite tnum">' + CW.money(p.price * l.qty) + '</div>' +
             '</div>';
@@ -1018,23 +1019,23 @@ CW.pages.checkout = function (ctx) {
         '</div>' +
 
         '<form class="coupon-row mb-3" data-act="coupon-form" novalidate>' +
-          '<label class="visually-hidden" for="co-coupon">Discount code</label>' +
-          '<input class="input" id="co-coupon" name="code" type="text" placeholder="Discount code" ' +
+          '<label class="visually-hidden" for="co-coupon">Kod za popust</label>' +
+          '<input class="input" id="co-coupon" name="code" type="text" placeholder="Kod za popust" ' +
             'value="' + (coupon ? CW.esc(coupon.code) : '') + '"' + (coupon ? ' readonly' : '') + '>' +
           (coupon
-            ? '<button class="btn btn--quiet" type="button" data-act="remove-coupon">Remove</button>'
-            : '<button class="btn btn--secondary" type="submit">Apply</button>') +
+            ? '<button class="btn btn--quiet" type="button" data-act="remove-coupon">Ukloni</button>'
+            : '<button class="btn btn--secondary" type="submit">Primeni</button>') +
         '</form>' +
 
         '<div class="spec-list">' +
-          '<div class="spec-list__row"><span class="spec-list__k">Subtotal</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
           (t.discount ? '<div class="spec-list__row"><span class="spec-list__k">Discount' + (coupon ? ' (' + CW.esc(coupon.code) + ')' : '') + '</span>' +
             '<span class="spec-list__v t-gold">−' + CW.money(t.discount) + '</span></div>' : '') +
-          '<div class="spec-list__row"><span class="spec-list__k">Shipping</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Free' : CW.money(t.shipping)) + '</span></div>' +
-          '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Total</span><span class="spec-list__v">' + CW.money(t.total) + '</span></div>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Free' : CW.money(t.shipping)) + '</span></div>' +
+          '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Ukupno</span><span class="spec-list__v">' + CW.money(t.total) + '</span></div>' +
         '</div>' +
 
-        '<div class="t-xs mt-2">VAT included where applicable.</div>' +
+        '<div class="t-xs mt-2">Cene su sa PDV-om.</div>' +
 
         '<div class="stack stack-1 mt-3">' +
           '<div class="row" style="gap:8px">' + CW.icon('lock', 15) + '<span class="t-xs">Secure checkout</span></div>' +
@@ -1057,7 +1058,7 @@ CW.pages.confirmation = function () {
       CW.c.empty({
         icon: 'package', title: 'No recent order',
         text: 'There is no order to show. If you have just ordered, check your email for the confirmation.',
-        actions: '<a class="btn btn--primary" href="#/shop">Back to the shop</a>'
+        actions: '<a class="btn btn--primary" href="#/shop">Nazad u shop</a>'
       }) + '</section>';
   }
 
@@ -1092,10 +1093,10 @@ CW.pages.confirmation = function () {
             p.variants.forEach(function (x) { if (x.id === l.variantId) v = x; });
             var c = v ? CW.shopOptions.colors[v.colorId] : null;
             return '<div class="line-item">' +
-              '<div class="line-item__media"></div>' +
+              '<div class="line-item__media">' + (p.image ? CW.img(p.image, { ratio: '1 / 1', ph: p.name }) : '') + '</div>' +
               '<div class="stack stack-1">' +
                 '<a class="line-item__title" href="#/product/' + p.slug + '">' + CW.esc(p.name) + '</a>' +
-                '<div class="line-item__variant">' + (v ? CW.esc(v.size) : '') + (c ? ' · ' + CW.esc(c.name) : '') + ' · Qty ' + l.qty + '</div>' +
+                '<div class="line-item__variant">' + [CW.variantLabel(p, l.variantId), 'Količina ' + l.qty].filter(Boolean).map(CW.esc).join(' · ') + '</div>' +
               '</div>' +
               '<div class="line-item__right"><div class="t-price" style="font-size:1.125rem">' + CW.money(p.price * l.qty) + '</div></div>' +
             '</div>';
@@ -1103,10 +1104,10 @@ CW.pages.confirmation = function () {
         '</div>' +
 
         '<div class="spec-list mt-3">' +
-          '<div class="spec-list__row"><span class="spec-list__k">Subtotal</span><span class="spec-list__v">' + CW.money(order.totals.subtotal) + '</span></div>' +
-          (order.totals.discount ? '<div class="spec-list__row"><span class="spec-list__k">Discount</span>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(order.totals.subtotal) + '</span></div>' +
+          (order.totals.discount ? '<div class="spec-list__row"><span class="spec-list__k">Popust</span>' +
             '<span class="spec-list__v t-gold">−' + CW.money(order.totals.discount) + '</span></div>' : '') +
-          '<div class="spec-list__row"><span class="spec-list__k">Shipping</span><span class="spec-list__v">' + (order.totals.shipping === 0 ? 'Free' : CW.money(order.totals.shipping)) + '</span></div>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (order.totals.shipping === 0 ? 'Free' : CW.money(order.totals.shipping)) + '</span></div>' +
           '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Total paid</span><span class="spec-list__v">' + CW.money(order.totals.total) + '</span></div>' +
         '</div>' +
       '</div></div>' +

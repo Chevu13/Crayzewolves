@@ -26,6 +26,41 @@ CW.plural = function (n, one, few, many) {
   return many;
 };
 
+/**
+ * Opis varijante uz naziv proizvoda — „M · Crna".
+ *
+ * Vraća prazno kad proizvod ima JEDNU varijantu. Šolja, stikeri i sve
+ * uneto kroz panel imaju tačno jednu, pa je ispisivati „Univerzalna · Crna"
+ * znači saopštiti kupcu izbor koji ne postoji. Veličina se tiče odeće.
+ *
+ * Uslov je broj varijanti, a ne kategorija, jer se kategorije dodaju kroz
+ * panel — pravilo vezano za `apparel` bi puklo kod prve nove kategorije.
+ */
+CW.variantLabel = function (product, variantId) {
+  if (!product || !product.variants || product.variants.length <= 1) return '';
+  var v = null;
+  product.variants.forEach(function (x) { if (x.id === variantId) v = x; });
+  if (!v) return '';
+  var color = v.colorId && CW.shopOptions ? CW.shopOptions.colors[v.colorId] : null;
+  return [v.size, color ? color.name : ''].filter(Boolean).join(' · ');
+};
+
+/**
+ * Inicijali korisnika, za dugme naloga u zaglavlju.
+ *
+ * Ime + prezime daju dva slova; ako imena nema (nalog napravljen samo
+ * imejlom), uzima se prvo slovo imejla — jedno slovo je bolje od praznog
+ * kruga, a nikad se ne ispisuje cela adresa.
+ */
+CW.initialsOf = function (user) {
+  if (!user) return '';
+  var a = String(user.firstName || '').trim();
+  var b = String(user.lastName || '').trim();
+  if (a || b) return ((a.charAt(0) || '') + (b.charAt(0) || '')).toUpperCase();
+  var mail = String(user.email || '').trim();
+  return mail ? mail.charAt(0).toUpperCase() : '';
+};
+
 CW.esc = function (v) {
   if (v === null || v === undefined) return '';
   return String(v)

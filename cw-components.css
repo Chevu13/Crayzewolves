@@ -724,21 +724,37 @@ a.news-card:hover .news-card__title { color: var(--color-gold); }
 }
 .input::placeholder, .textarea::placeholder { color: var(--color-placeholder); }
 .input:hover, .select:hover, .textarea:hover { border-color: var(--color-scroll-thumb); }
+/* Fokus podiže polje za jedan stepen, u obe teme.
+   Ranije je ovde stajalo `background: #0F0D0B` — skoro crna, upisana ručno.
+   Na svetloj sekciji je to značilo da polje pri kucanju POCRNI, a tekst je
+   `--color-offwhite`, koji na svetlom znači skoro crno. Crno na crnom:
+   korisnik ne vidi šta kuca. Zato boja mora da dolazi iz tokena. */
 .input:focus, .select:focus, .textarea:focus {
   border-color: var(--color-gold);
-  background: #0F0D0B;
+  background: var(--color-surface);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(212, 162, 78, 0.15);
+  box-shadow: 0 0 0 3px var(--wash-gold-strong);
 }
 .textarea { min-height: 128px; resize: vertical; line-height: var(--lh-body); }
 
 .select {
   appearance: none;
   padding-right: var(--space-5);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239C927E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: var(--select-arrow);
   background-repeat: no-repeat;
   background-position: right var(--space-2) center;
   cursor: pointer;
+}
+/* Strelica je slika, pa ne može `currentColor` — mora dva puta.
+   Bez ovoga bi svetla strelica ostala i na kremastoj podlozi. */
+:root {
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23AFA697' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+.on-light, body:not(.is-admin) #app {
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236F654F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+.on-dark, .hero, .page-hero, .shop-hero, .cta-band, .card__media {
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23AFA697' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
 }
 
 /* Input states */
@@ -767,6 +783,22 @@ a.news-card:hover .news-card__title { color: var(--color-gold); }
 .input-wrap > svg { position: absolute; left: var(--space-2); color: var(--color-muted); pointer-events: none; }
 .input-wrap .input { padding-left: 42px; }
 .input-wrap__clear { position: absolute; right: 8px; }
+
+/* Dugme naloga sa inicijalima. Isti okvir i ista veličina kao ostala
+   .btn-icon dugmad u zaglavlju — red ikonica ne sme da poskoči kad se
+   korisnik prijavi. */
+.avatar-btn__initials {
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--color-gold);
+}
+.avatar-btn { border: 1px solid var(--color-gold); }
+.avatar-btn:hover .avatar-btn__initials { color: var(--color-black); }
+.avatar-btn:hover { background: var(--color-gold); border-color: var(--color-gold); }
+
 
 /* Checkbox / radio */
 .check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; user-select: none; }

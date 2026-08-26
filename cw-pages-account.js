@@ -29,7 +29,7 @@ CW.pages._accountShell = function (activePath, title, body) {
       '<div class="row row--between row--wrap mt-3" style="gap:var(--space-3)">' +
         '<div>' +
           '<h1 class="t-h1">' + CW.esc(title) + '</h1>' +
-          (user ? '<p class="t-lead mt-2">Signed in as ' + CW.esc(user.email) + '</p>' : '') +
+          (user ? '<p class="t-lead mt-2">Prijavljen kao ' + CW.esc(user.email) + '</p>' : '') +
         '</div>' +
         (user ? '<div class="row" style="gap:12px">' +
           '<span class="avatar avatar--lg">' + CW.esc((user.firstName[0] || '') + (user.lastName[0] || '')) + '</span>' +
@@ -215,7 +215,7 @@ CW.pages.forgot = function () {
       '</form>' +
 
       '<div class="divider"><span class="divider__mark"></span></div>' +
-      '<p class="t-sm text-center"><a class="link-underline" href="#/account/login">Back to sign in</a></p>' +
+      '<p class="t-sm text-center"><a class="link-underline" href="#/nalog/prijava">Nazad na prijavu</a></p>' +
     '</div>' +
   '</section>';
 };
@@ -292,7 +292,7 @@ CW.pages.account = function () {
       '</div>' : '') +
     '</div>';
 
-  return CW.pages._accountShell('/account', 'Account overview', body);
+  return CW.pages._accountShell('/nalog', 'Moj nalog', body);
 };
 
 CW.pages._orderRow = function (o) {
@@ -518,7 +518,7 @@ CW.pages.accountOrder = function (ctx) {
   var o = orders.filter(function (x) { return x.id === ctx.params.id; })[0];
   if (!o) return CW.pages._accountShell('/account/orders', 'Order not found',
     CW.c.empty({ icon: 'package', title: 'Order not found', text: 'We could not find that order number on your account.',
-      actions: '<a class="btn btn--primary" href="#/account/orders">Back to order history</a>' }));
+      actions: '<a class="btn btn--primary" href="#/nalog/porudzbine">Nazad na porudžbine</a>' }));
 
   var addr = CW.data.demoAccount.addresses.filter(function (a) { return a.id === o.addressId; })[0] || CW.data.demoAccount.addresses[0];
   var subtotal = o.items.reduce(function (n, i) { return n + i.price * i.qty; }, 0);
@@ -533,7 +533,7 @@ CW.pages.accountOrder = function (ctx) {
 
   var body =
     '<div class="stack stack-4">' +
-      '<a class="link-arrow" href="#/account/orders">' + CW.icon('arrowL', 15) + ' Back to order history</a>' +
+      '<a class="link-arrow" href="#/nalog/porudzbine">' + CW.icon('arrowL', 15) + ' Nazad na porudžbine</a>' +
 
       '<div class="card"><div class="card__body" style="padding:var(--space-4)">' +
         '<div class="row row--between row--wrap" style="gap:12px">' +
@@ -575,7 +575,7 @@ CW.pages.accountOrder = function (ctx) {
               '<a class="line-item__media" href="#/product/' + p.slug + '"></a>' +
               '<div class="stack stack-1">' +
                 '<a class="line-item__title" href="#/product/' + p.slug + '">' + CW.esc(p.name) + '</a>' +
-                '<div class="line-item__variant">' + (v ? CW.esc(v.size) : '') + (c ? ' · ' + CW.esc(c.name) : '') + ' · Qty ' + i.qty + '</div>' +
+                '<div class="line-item__variant">' + [CW.variantLabel(p, i.variantId), 'Količina ' + i.qty].filter(Boolean).map(CW.esc).join(' · ') + '</div>' +
                 '<div class="line-item__actions">' +
                   '<a class="line-item__action" href="#/product/' + p.slug + '">Buy again</a>' +
                   '<a class="line-item__action" href="#/returns">Return this item</a>' +
@@ -590,7 +590,7 @@ CW.pages.accountOrder = function (ctx) {
           '<div class="card"><div class="card__body">' +
             '<div class="t-eyebrow t-eyebrow--gold">Payment summary</div>' +
             '<div class="spec-list mt-2">' +
-              '<div class="spec-list__row"><span class="spec-list__k">Subtotal</span><span class="spec-list__v">' + CW.money(subtotal) + '</span></div>' +
+              '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(subtotal) + '</span></div>' +
               (o.discount ? '<div class="spec-list__row"><span class="spec-list__k">Discount</span><span class="spec-list__v t-gold">−' + CW.money(o.discount) + '</span></div>' : '') +
               '<div class="spec-list__row"><span class="spec-list__k">Shipping</span><span class="spec-list__v">' + (o.shipping === 0 ? 'Free' : CW.money(o.shipping)) + '</span></div>' +
               '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Total</span><span class="spec-list__v">' + CW.money(o.total) + '</span></div>' +

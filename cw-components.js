@@ -110,9 +110,18 @@ CW.c.header = function () {
             (wish ? '<span class="btn-icon__count">' + wish + '</span>' : '') +
           '</a>' +
 
-          '<a class="btn-icon header__desktop-only" href="#' + (user ? '/nalog' : '/nalog/prijava') + '" aria-label="' + (user ? 'Tvoj nalog' : 'Prijava') + '">' +
-            CW.icon('user', 20) +
-          '</a>' +
+          /* Prijavljen korisnik vidi svoje inicijale, ne ikonicu čoveka.
+             Inicijali su jedini pokazatelj na ekranu da si uopšte prijavljen
+             i pod kojim nalogom — ikonica izgleda isto u oba slučaja. */
+          (user
+            ? '<a class="btn-icon avatar-btn header__desktop-only" href="#/nalog" ' +
+                'aria-label="Nalog — ' + CW.esc(CW.initialsOf(user)) + ', ' + CW.esc(user.email || '') + '" ' +
+                'title="' + CW.esc(user.email || 'Tvoj nalog') + '">' +
+                '<span class="avatar-btn__initials" aria-hidden="true">' + CW.esc(CW.initialsOf(user)) + '</span>' +
+              '</a>'
+            : '<a class="btn-icon header__desktop-only" href="#/nalog/prijava" aria-label="Prijava">' +
+                CW.icon('user', 20) +
+              '</a>') +
 
           '<button class="btn-icon" type="button" data-act="open-cart" aria-label="Korpa' + (count ? ' — ' + count + ' artikala' : ' — prazna') + '">' +
             CW.icon('cart', 20) +
@@ -325,7 +334,7 @@ CW.c.cartDrawer = function () {
     '<div class="drawer__foot">' +
       gapNote +
       '<div class="spec-list mb-2">' +
-        '<div class="spec-list__row"><span class="spec-list__k">Međuzbir</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
+        '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
         (t.discount ? '<div class="spec-list__row"><span class="spec-list__k">Popust</span><span class="spec-list__v t-gold">−' + CW.money(t.discount) + '</span></div>' : '') +
         '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Besplatno' : CW.money(t.shipping)) + '</span></div>' +
         '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Ukupno</span><span class="spec-list__v">' + CW.money(t.total) + '</span></div>' +
@@ -358,7 +367,7 @@ CW.c.lineItem = function (line, compact) {
     '<div class="stack stack-1" style="min-width:0">' +
       '<a class="line-item__title" href="#/proizvod/' + p.slug + '" data-act="close-overlays">' + CW.esc(p.name) + '</a>' +
       '<div class="line-item__variant">' +
-        (v ? CW.esc(v.size) : '') + (color ? ' · ' + CW.esc(color.name) : '') +
+        CW.esc(CW.variantLabel(p, l.variantId)) +
       '</div>' +
       (v && v.stock <= CW.shopConfig.lowStockThreshold && v.stock > 0
         ? '<div class="t-xs" style="color:var(--color-warning)">Još ' + v.stock + ' na stanju</div>' : '') +

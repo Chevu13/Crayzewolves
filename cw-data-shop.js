@@ -202,9 +202,11 @@ CW.data.shippingMethods = [
   { id: 'licno',   name: 'Lično preuzimanje', eta: 'Po dogovoru',    price: 0,     desc: 'Dogovara se preko Discorda.' }
 ];
 
+/* Uplata na račun je sklonjena iz ponude — traži ručno izdavanje
+   predračuna i ručno praćenje uplate. U bazi vrednost `bank` OSTAJE
+   dozvoljena, da se ranije porudžbine i dalje čitaju u panelu. */
 CW.data.paymentMethods = [
   { id: 'pouzece', name: 'Plaćanje pouzećem', desc: 'Plaćaš kuriru pri preuzimanju.' },
-  { id: 'racun',   name: 'Uplata na račun',   desc: 'Šaljemo predračun, roba ide po evidentiranoj uplati.' },
   { id: 'kartica', name: 'Kartica',           desc: 'U pripremi — biće dostupno uskoro.' }
 ];
 

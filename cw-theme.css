@@ -346,7 +346,16 @@ body:not(.is-admin) #app {
    tamnu sliku i dala 3.2:1. */
 .card__media,
 .player-card__overlay,
-.live-panel__media {
+.live-panel__media,
+/* Trake i pločice koje su NAMERNO tamne i kad stoje na svetloj stranici:
+   staklena traka „dodaj u korpu" na telefonu, oznaka preko slike, traka
+   filtera, dugme za pokretanje snimka. Sve one imaju tamnu podlogu upisanu
+   u sopstvenom pravilu — bez ovoga bi im sadržaj nasledio svetlu temu i
+   ispao tamno na tamnom. Cena na traci je tako davala kontrast 1.06. */
+.sticky-atc,
+.tag,
+.sched-toolbar,
+.embed__play {
   --color-black:        #14120E;
   --color-charcoal:     #221C15;
   --color-surface:      #1E1A14;
