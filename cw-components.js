@@ -20,9 +20,13 @@ CW.ui = {};
    iz ove faze — njihov kod je ostao, samo se ne prikazuje. */
 CW.nav = {
   primary: [
-    /* Vodi na početnu — ona je shop. Zaseban /shop bi bio ista stvar
-       na drugoj adresi. */
-    { label: 'Shop', path: '/', children: [
+    /* `path` je gde vodi klik, `match` je koje adrese pale ovu stavku.
+       Razdvojeni su namerno: SHOP vodi pravo u katalog (/shop/all), ali mora
+       da ostane osvetljen i dok kupac gleda /shop/drinkware ili /shop.
+
+       Ranije je i logo i SHOP vodilo na `/`, pa je dugme SHOP izgledalo kao
+       da ne radi ništa — klik na njega je vraćao na istu stranicu. */
+    { label: 'Shop', path: '/shop/all', match: '/shop', children: [
       { label: 'Sve iz shopa', path: '/shop/all',        desc: 'Ceo asortiman na jednom mestu' },
       { label: 'Šolje',        path: '/shop/drinkware',  desc: 'Keramika sa zvaničnim grbom' },
       { label: 'Odeća',        path: '/shop/apparel',    desc: 'Majice i duksevi — u pripremi' },
@@ -70,10 +74,10 @@ CW.c.header = function () {
 
   var primary = CW.nav.primary.map(function (item) {
     if (!item.children) {
-      return '<a class="nav__link" href="#' + item.path + '" data-nav="' + item.path + '">' + CW.esc(item.label) + '</a>';
+      return '<a class="nav__link" href="#' + item.path + '" data-nav="' + (item.match || item.path) + '">' + CW.esc(item.label) + '</a>';
     }
     return '<div class="dropdown" data-dropdown>' +
-        '<a class="nav__link" href="#' + item.path + '" data-nav="' + item.path + '" aria-haspopup="true" aria-expanded="false">' +
+        '<a class="nav__link" href="#' + item.path + '" data-nav="' + (item.match || item.path) + '" aria-haspopup="true" aria-expanded="false">' +
           CW.esc(item.label) + CW.icon('chevronD', 14) +
         '</a>' +
         '<div class="dropdown__panel dropdown__panel--wide hidden" data-dropdown-panel>' +
@@ -149,7 +153,7 @@ CW.c.mobileNav = function () {
   var user = CW.store.user();
 
   var main = CW.nav.primary.map(function (item) {
-    return '<a class="mobile-nav__link" href="#' + item.path + '" data-nav="' + item.path + '" data-act="close-overlays">' +
+    return '<a class="mobile-nav__link" href="#' + item.path + '" data-nav="' + (item.match || item.path) + '" data-act="close-overlays">' +
       CW.esc(item.label) + CW.icon('chevronR', 18) + '</a>';
   }).join('');
 
@@ -163,7 +167,9 @@ CW.c.mobileNav = function () {
     '<div class="mobile-nav__body">' +
       '<a class="mobile-nav__link" href="#/" data-nav="/" data-act="close-overlays">Početna' + CW.icon('chevronR', 18) + '</a>' +
       main +
-      '<a class="mobile-nav__link" href="#/shop" data-nav="/shop" data-act="close-overlays" style="color:var(--color-gold)">Shop' + CW.icon('chevronR', 18) + '</a>' +
+      /* Zaseban „Shop" red je izbačen: dok je stavka iz `primary` vodila na
+         početnu, ovaj je bio jedini put do kataloga. Sada oba vode na isto
+         mesto, pa bi stajala dva ista reda jedan ispod drugog. */
 
       '<div class="mobile-nav__section">Shop</div>' +
       CW.nav.shopMenu.map(function (c) {
