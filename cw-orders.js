@@ -71,20 +71,68 @@ window.CW = window.CW || {};
         notes: payload.notes || null
       };
 
-      return fetch(CW.sb.config.url + '/functions/v1/create-order', {
+      return CW.orders.send(body);
+    },
+
+    /**
+     * Šalje porudžbinu bazi.
+     *
+     * Ranije je ovo išlo na Edge funkciju `create-order`. Ona nikad nije bila
+     * deployovana, pa je svaka porudžbina padala na mreži. Sada ide na
+     * funkciju `create_order` u samoj bazi — ista zaštita, bez zasebnog
+     * deploy-a: funkcija je `security definer` i cenu čita iz tabele, pa
+     * iznos koji pregledač pošalje nema nikakav uticaj.
+     *
+     * Ako je kupac prijavljen, ide njegov token — porudžbina se tada veže za
+     * nalog i pojavi mu se u profilu. Ako nije, ide anon ključ.
+     */
+    send: function (body) {
+      var sess = CW.sb.session && CW.sb.session();
+      var token = (sess && sess.access_token) || CW.sb.config.anonKey;
+
+      return fetch(CW.sb.config.url + '/rest/v1/rpc/create_order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           apikey: CW.sb.config.anonKey,
-          Authorization: 'Bearer ' + CW.sb.config.anonKey
+          Authorization: 'Bearer ' + token
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify({ payload: body })
       }).then(function (res) {
-        return res.json().then(function (data) {
-          if (!res.ok || data.error) {
-            throw new Error(data.error || 'Porudžbina nije prošla. Pokušaj ponovo.');
+        return res.text().then(function (text) {
+          var data = null;
+          try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
+
+          if (!res.ok) {
+            /* Postgres poruke iz RAISE stižu u polju `message` i već su na
+               srpskom — „Nema dovoljno na stanju.", „Digitalna roba se ne
+               plaća pouzećem." — pa se prosleđuju kupcu takve kakve jesu. */
+            var msg = (data && (data.message || data.hint || data.details)) || '';
+            if (/function .*create_order.* does not exist/i.test(msg)) {
+              msg = 'Porudžbine još nisu uključene u bazi. Pokreni supabase-porudzbine.sql.';
+            }
+            throw new Error(msg || 'Porudžbina nije prošla. Pokušaj ponovo.');
           }
-          return data;
+
+          if (!data || !data.orderNumber) {
+            throw new Error('Porudžbina nije prošla. Pokušaj ponovo.');
+          }
+
+          /* Iznosi koje sajt prikazuje na potvrdi su OVI — iz baze, ne oni
+             koje je korpa sabrala u pregledaču. */
+          return {
+            id: data.orderNumber,
+            orderNumber: data.orderNumber,
+            currency: data.currency,
+            status: data.status,
+            items: data.items || [],
+            totals: {
+              subtotal: data.subtotal,
+              shipping: data.shipping,
+              discount: 0,
+              total: data.total
+            }
+          };
         });
       });
     }

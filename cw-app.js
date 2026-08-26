@@ -889,14 +889,12 @@
              prikazivao — merodavan je server. */
           CW.store.recordOrder({
             id: res.orderNumber,
-            totals: {
-              subtotal: res.subtotal,
-              shipping: res.shippingCost,
-              total: res.total
-            },
+            totals: res.totals,
             currency: res.currency,
             status: res.status,
-            emailSent: res.email === 'poslato',
+            /* Mejl potvrde jos ne salje niko - porudzbina je u bazi i vidi se
+               u panelu. Kad Edge funkcija bude postavljena, ovde se vraca. */
+            emailSent: false,
             details: {
               email: cv.values.email,
               firstName: cv.values.firstName,
