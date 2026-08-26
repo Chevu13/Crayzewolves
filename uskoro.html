@@ -3,25 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14120E">
+<meta name="theme-color" content="#F4F0E6">
 
-<title>CrazyWolves Community — sajt je u izradi</title>
-<meta name="description" content="CrazyWolves dobija svoj dom na internetu. Zvanični shop, Wolfpack Store i blog stižu uskoro. U međuvremenu, čopor živi na Discordu.">
+<title>CrazyWolves Community — web sajt je u izradi</title>
+<meta name="description" content="CrazyWolves dobija svoj dom na internetu. Ovo je prva faza. U međuvremenu, čopor živi na Discordu.">
 
 <link rel="canonical" href="https://crazywolves.rs/">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="CrazyWolves Community">
-<meta property="og:title" content="CrazyWolves Community — sajt je u izradi">
-<meta property="og:description" content="Radimo na nečemu velikom. Zvanični shop, Wolfpack Store i blog stižu uskoro.">
+<meta property="og:title" content="CrazyWolves Community — web sajt je u izradi">
+<meta property="og:description" content="CrazyWolves dobija svoj dom na internetu. Ovo je prva faza.">
 <meta property="og:image" content="images/og-banner.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
-<!-- Grb je nacrtan u samom linku, bez dodatnog zahteva -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 40'%3E%3Cpath d='M18 1.5 34 7v13.5C34 29.4 27.2 36.4 18 38.5 8.8 36.4 2 29.4 2 20.5V7z' fill='%230B0B0A' stroke='%23D4A24E' stroke-width='2'/%3E%3Cpath d='M10.5 12.5l2.6 4.2 4.9-2.6 4.9 2.6 2.6-4.2v7.8c0 4-3.4 7.4-7.5 8.8-4.1-1.4-7.5-4.8-7.5-8.8z' fill='%23D4A24E'/%3E%3C/svg%3E">
 
-<!-- Baner je jedina slika na stranici i jedino što se čeka; zato ide u
-     preload, da krene da se skida pre nego što CSS bude gotov. -->
+<!-- Baner je jedina slika i jedino što se čeka, pa kreće da se skida pre CSS-a. -->
 <link rel="preload" as="image" href="images/banner-construction-sr.webp" fetchpriority="high">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,17 +27,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
 
 <!-- ==========================================================================
-     Stranica je namerno samostalna: sve je u ovom fajlu, ništa se ne uvozi
-     iz cw-*.css ni cw-*.js. Razlog je što ona stoji na domenu dok sajt nije
-     pušten — ako se u međuvremenu nešto slomi u kodu sajta, ovo ostaje
-     netaknuto. Boje su iste kao u cw-theme.css, prepisane ručno.
+     POKAZNA STRANICA — jedino što se vidi na domenu dok sajt nije pušten.
+
+     NAMERNO SAMOSTALNA: sve je u ovom fajlu, ništa se ne uvozi iz cw-*.css
+     ni cw-*.js. Ako se sutra nešto slomi u kodu sajta, ovo ostaje netaknuto.
+     Boje su iste kao u cw-theme.css, prepisane ručno.
+
+     NA STRANICI POSTOJI TAČNO JEDAN LINK — dugme za Discord.
+     Nema navigacije, nema podnožja sa linkovima, nema mejl adrese kao
+     linka, nema Instagrama. Ako se ovde ikad doda još jedan <a href>,
+     stranica prestaje da bude pokazna.
      ========================================================================== -->
 <style>
   :root {
-    --black:      #14120E;
-    --charcoal:   #221C15;
-    --surface:    #1E1A14;
-    --border:     #3A3123;
+    /* Svetla podloga — ista kremasta kao na sajtu */
+    --paper:      #F4F0E6;
+    --card:       #FFFFFF;
+    --line:       #DCD2BC;
+    --ink:        #171309;
+    --ink-2:      #403829;
+    --ink-3:      #6F654F;
+    --gold-ink:   #8A5714;   /* zlatna koja se ČITA na kremastoj */
+
+    /* Tamna kartica poziva na Discord */
+    --dark:       #221C15;
+    --dark-line:  #3A3123;
     --gold:       #D4A24E;
     --gold-light: #EFC983;
     --offwhite:   #F8F5ED;
@@ -48,7 +60,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-
   html { -webkit-text-size-adjust: 100%; }
 
   body {
@@ -56,182 +67,154 @@
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background-color: var(--black);
-    background-image:
-      radial-gradient(ellipse at 50% -10%, rgba(212,162,78,.16) 0%, transparent 60%),
-      repeating-linear-gradient(115deg, transparent 0 60px, rgba(212,162,78,.03) 60px 62px);
-    color: var(--body);
+    background-color: var(--paper);
+    background-image: repeating-linear-gradient(115deg,
+      transparent 0 60px, rgba(138,87,20,.035) 60px 62px);
+    color: var(--ink-2);
     font-family: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
-  img { display: block; max-width: 100%; }
+  img { display: block; max-width: 100%; height: auto; }
 
   .wrap {
-    width: 100%;
-    max-width: 1080px;
-    margin-inline: auto;
-    padding: 28px 20px 40px;
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(24px, 4vw, 40px);
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: clamp(28px, 5vw, 56px) clamp(16px, 4vw, 32px) clamp(40px, 6vw, 72px);
   }
 
-  /* ---------- ZAGLAVLJE ---------- */
+  /* ---------- grb ---------- */
   .brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: clamp(28px, 5vw, 48px);
   }
   .brand__word {
+    display: block;
     font-family: 'Anton', 'Arial Narrow', sans-serif;
-    font-size: clamp(1.25rem, 3.4vw, 1.6rem);
-    letter-spacing: .02em;
-    text-transform: uppercase;
-    color: var(--offwhite);
-    line-height: 1;
+    font-size: 20px; letter-spacing: .02em;
+    text-transform: uppercase; color: var(--ink);
   }
-  .brand__word em { font-style: normal; color: var(--gold); }
+  .brand__word em { font-style: normal; color: var(--gold-ink); }
   .brand__sub {
     display: block;
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: .75rem;
-    letter-spacing: .3em;
-    color: var(--muted);
-    margin-top: 3px;
+    font-weight: 600; font-size: 11px; letter-spacing: .28em;
+    text-transform: uppercase; color: var(--ink-3);
   }
 
-  /* ---------- BANER ---------- */
-  .banner {
-    border: 1px solid rgba(212,162,78,.45);
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 28px 60px rgba(0,0,0,.6);
-  }
-  .banner img { width: 100%; height: auto; aspect-ratio: 1983 / 793; object-fit: cover; }
+  /* ---------- naslovni blok ---------- */
+  .head { text-align: center; margin-bottom: clamp(24px, 4vw, 40px); }
 
-  /* ---------- TEKST ---------- */
-  .copy { text-align: center; max-width: 62ch; margin-inline: auto; }
-
-  .eyebrow {
+  .chip {
+    display: inline-block;
+    padding: 5px 12px;
+    background: var(--gold);
+    color: #14120E;
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: .8125rem;
-    letter-spacing: .18em;
+    font-weight: 700; font-size: 12px; letter-spacing: .16em;
     text-transform: uppercase;
-    color: var(--gold);
-    margin: 0 0 10px;
+    border-radius: 2px;
   }
 
   h1 {
+    margin: 16px 0 0;
     font-family: 'Anton', 'Arial Narrow', sans-serif;
     font-weight: 400;
-    font-size: clamp(2rem, 6vw, 3.25rem);
-    line-height: 1.04;
+    font-size: clamp(2.125rem, 5.4vw, 3.5rem);
+    line-height: 1.02;
     letter-spacing: .01em;
     text-transform: uppercase;
-    color: var(--offwhite);
-    margin: 0;
+    color: var(--ink);
   }
 
-  .lede { font-size: clamp(1rem, 2vw, 1.125rem); margin: 14px 0 0; }
-  .lede strong { color: var(--offwhite); font-weight: 600; }
+  .dek {
+    margin: 14px auto 0;
+    max-width: 62ch;
+    font-size: clamp(1rem, 1.4vw, 1.125rem);
+    color: var(--ink-2);
+  }
 
-  /* ---------- TRI TAČKE ---------- */
-  .points {
-    list-style: none;
-    margin: clamp(20px, 3vw, 28px) 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
+  /* ---------- baner ---------- */
+  .banner {
+    border: 1px solid var(--line);
     border-radius: 4px;
     overflow: hidden;
-    text-align: left;
+    background: #14120E;
+    box-shadow: 0 14px 30px rgba(45, 34, 12, .10);
   }
-  .points li {
-    background: var(--surface);
-    padding: 16px 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .points svg { flex: none; color: var(--gold); margin-top: 2px; }
-  .points b {
-    display: block;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: .9375rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--offwhite);
-  }
-  .points span { font-size: .875rem; color: var(--muted); }
 
-  /* ---------- DUGMAD ---------- */
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    margin-top: clamp(22px, 3vw, 30px);
+  /* ---------- poziv na Discord ---------- */
+  .cta {
+    position: relative;
+    margin-top: clamp(28px, 5vw, 48px);
+    padding: clamp(28px, 4.5vw, 48px);
+    background-color: var(--dark);
+    background-image:
+      radial-gradient(ellipse at 30% 20%, rgba(212,162,78,.22) 0%, transparent 62%),
+      repeating-linear-gradient(115deg, transparent 0 60px, rgba(212,162,78,.03) 60px 62px);
+    border: 1px solid var(--dark-line);
+    border-radius: 4px;
   }
+  /* Uglovi — isti znak kao .brackets na sajtu */
+  .cta::before, .cta::after {
+    content: ''; position: absolute; width: 18px; height: 18px;
+    border: 2px solid var(--gold); pointer-events: none;
+  }
+  .cta::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+  .cta::after { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
+  .cta__eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--gold);
+  }
+  .cta h2 {
+    margin: 8px 0 0;
+    font-family: 'Anton', 'Arial Narrow', sans-serif;
+    font-weight: 400;
+    font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+    line-height: 1.1; letter-spacing: .01em;
+    text-transform: uppercase; color: var(--offwhite);
+  }
+  .cta p { margin: 12px 0 0; max-width: 56ch; color: var(--body); }
+
+  /* Jedini link na stranici. */
   .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    min-height: 50px;
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 24px;
+    min-height: 52px;
     padding: 0 26px;
-    border: 1px solid transparent;
+    background: var(--gold);
+    color: #14120E;
+    border: 1px solid var(--gold);
     border-radius: 2px;
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: .08em;
+    font-weight: 700; font-size: 15px; letter-spacing: .06em;
     text-transform: uppercase;
     text-decoration: none;
-    transition: background-color .14s ease, color .14s ease, border-color .14s ease;
+    transition: background-color .14s cubic-bezier(.22,1,.36,1),
+                border-color .14s cubic-bezier(.22,1,.36,1);
   }
-  .btn--gold { background: var(--gold); color: #14120E; }
-  .btn--gold:hover { background: var(--gold-light); }
-  .btn--ghost { border-color: var(--border); color: var(--body); }
-  .btn--ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn:hover { background: var(--gold-light); border-color: var(--gold-light); }
+  .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
-  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
-
-  /* ---------- PODNOŽJE ---------- */
   footer {
-    border-top: 1px solid var(--border);
-    background: #0D0B08;
-    padding: 20px;
+    padding: 20px clamp(16px, 4vw, 32px) 32px;
     text-align: center;
-    font-size: .8125rem;
-    color: var(--muted);
+    font-size: 13px;
+    color: var(--ink-3);
+    border-top: 1px solid var(--line);
   }
-  footer a { color: var(--gold); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
   .footer__tag {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    letter-spacing: .22em;
-    text-transform: uppercase;
-    color: var(--gold);
     display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--gold-ink);
     margin-bottom: 6px;
-  }
-
-  /* ---------- TELEFON ---------- */
-  @media (max-width: 760px) {
-    .points { grid-template-columns: minmax(0, 1fr); }
-    .actions .btn { flex: 1 1 100%; justify-content: center; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -246,13 +229,19 @@
 
   <div class="brand">
     <svg width="34" height="38" viewBox="0 0 36 40" fill="none" aria-hidden="true">
-      <path d="M18 1.5 34 7v13.5C34 29.4 27.2 36.4 18 38.5 8.8 36.4 2 29.4 2 20.5V7z" stroke="#D4A24E" stroke-width="1.6" fill="#14120E"/>
+      <path d="M18 1.5 34 7v13.5C34 29.4 27.2 36.4 18 38.5 8.8 36.4 2 29.4 2 20.5V7z" stroke="#8A5714" stroke-width="1.6" fill="#14120E"/>
       <path d="M10.5 12.5l2.6 4.2 4.9-2.6 4.9 2.6 2.6-4.2v7.8c0 4-3.4 7.4-7.5 8.8-4.1-1.4-7.5-4.8-7.5-8.8z" fill="#D4A24E"/>
     </svg>
     <span>
       <span class="brand__word">CRAZY<em>WOLVES</em></span>
       <span class="brand__sub">COMMUNITY</span>
     </span>
+  </div>
+
+  <div class="head">
+    <span class="chip">Objave</span>
+    <h1>Web sajt je u izradi</h1>
+    <p class="dek">CrazyWolves dobija svoj dom na internetu. Ovo je prva faza.</p>
   </div>
 
   <div class="banner">
@@ -262,47 +251,23 @@
          alt="Sajt je trenutno u izradi — radimo na nečemu velikom. Hvala na strpljenju.">
   </div>
 
-  <div class="copy">
-    <p class="eyebrow">Objava — sajt</p>
-    <h1>Web sajt je u izradi</h1>
-    <p class="lede">
-      <strong>CrazyWolves dobija svoj dom na internetu.</strong>
-      Do sada je sve živelo na Discordu i Instagramu. Sajt je sledeći korak —
-      jedno mesto gde stoje zvanični shop, Wolfpack Store, usluge i zajednica.
-    </p>
+  <section class="cta">
+    <p class="cta__eyebrow">Dopalo ti se?</p>
+    <h2>Sve stiže prvo na Discord</h2>
+    <p>Najave, drops i događaji objavljuju se u zajednici pre nego bilo gde drugde.</p>
 
-    <ul class="points">
-      <li>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>
-        <span><b>Bolje iskustvo</b><span>Sajt napravljen za telefon i za monitor.</span></span>
-      </li>
-      <li>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l7 7M20 4l-7 7M9 15l-5 5M15 15l5 5"/><circle cx="12" cy="13" r="2.5"/></svg>
-        <span><b>Novi sadržaj</b><span>Zvanični shop, Wolfpack Store i blog.</span></span>
-      </li>
-      <li>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
-        <span><b>Uskoro dostupno</b><span>Radovi su u toku. Hvala na strpljenju.</span></span>
-      </li>
-    </ul>
-
-    <div class="actions">
-      <a class="btn btn--gold" href="https://discord.gg/crazywolves">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 8.5c2.3-.9 4.7-.9 7 0M8 16c2.6 1.1 5.4 1.1 8 0"/><path d="M9 4.5S5.5 5 4 8s-1 8 .5 10.5c0 0 2 1.5 4 1L9.5 18M15 4.5s3.5.5 5 3.5.9 8-.5 10.5c0 0-2 1.5-4 1L14.5 18"/><circle cx="9.5" cy="12" r="1.2"/><circle cx="14.5" cy="12" r="1.2"/></svg>
-        Uđi u čopor
-      </a>
-      <a class="btn btn--ghost" href="https://instagram.com/crazywolves.rs">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
-        Instagram
-      </a>
-    </div>
-  </div>
+    <!-- JEDINI LINK NA STRANICI -->
+    <a class="btn" href="https://discord.gg/crazywolves">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 8.5c2.3-.9 4.7-.9 7 0M8 16c2.6 1.1 5.4 1.1 8 0"/><path d="M9 4.5S5.5 5 4 8s-1 8 .5 10.5c0 0 2 1.5 4 1L9.5 18M15 4.5s3.5.5 5 3.5.9 8-.5 10.5c0 0-2 1.5-4 1L14.5 18"/><circle cx="9.5" cy="12" r="1.2"/><circle cx="14.5" cy="12" r="1.2"/></svg>
+      Uđi na Discord
+    </a>
+  </section>
 
 </main>
 
 <footer>
   <span class="footer__tag">One pack. One goal. Endless victories.</span>
-  crazywolves.rs · <a href="mailto:kontakt@crazywolves.rs">kontakt@crazywolves.rs</a>
+  crazywolves.rs · kontakt@crazywolves.rs
 </footer>
 
 </body>
