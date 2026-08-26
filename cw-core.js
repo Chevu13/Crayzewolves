@@ -239,9 +239,27 @@ CW.icon = function (name, size, cls) {
          'aria-hidden="true" focusable="false">' + path + '</svg>';
 };
 
-/* Wolf-shield mark, drawn rather than loaded — simplified single stroke
-   weight per the brand guide's production-mark refinement. */
+/**
+ * Grb — PRAVI logo, kao slika.
+ *
+ * Ranije je ovde stajao crtani SVG: gruba silueta vuka u štitu, napravljena
+ * dok prava slika nije postojala. Pojavljivala se u panelu, na prijavi, na
+ * registraciji i na kasi — svuda gde nije išao pun lockup — i pored pravog
+ * logoa je izgledala kao njegova bleda senka.
+ *
+ * Crtež ostaje kao POSLEDNJA odbrana, u `CW.logoMarkSvg`: ako slika ne
+ * stigne, bolje gruba silueta nego prazan kvadrat.
+ */
 CW.logoMark = function (size) {
+  var s = size || 38;
+  return '<img class="logo__mark" src="images/logo-mark.webp" alt="" ' +
+    'width="' + s + '" height="' + s + '" decoding="async" ' +
+    'style="width:' + s + 'px;height:' + s + 'px;object-fit:contain;border-radius:3px;flex:none" ' +
+    'onerror="this.onerror=null;this.outerHTML=CW.logoMarkSvg(' + s + ');">';
+};
+
+/* Crtani grb — samo kao rezerva kad slika ne stigne. Ne koristiti direktno. */
+CW.logoMarkSvg = function (size) {
   var s = size || 38;
   return '<svg class="logo__mark" width="' + (s * 0.9) + '" height="' + s + '" viewBox="0 0 36 40" fill="none" aria-hidden="true" focusable="false">' +
     '<path d="M18 1.5 34 7v13.5C34 29.4 27.2 36.4 18 38.5 8.8 36.4 2 29.4 2 20.5V7z" stroke="#D4A24E" stroke-width="1.6" fill="#0B0B0A"/>' +

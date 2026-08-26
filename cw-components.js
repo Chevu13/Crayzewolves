@@ -47,15 +47,15 @@ CW.nav = {
 /* Logo lockup — koristi pravu sliku grba, sa SVG fallback-om */
 CW.c.logoLockup = function (size, withSub) {
   var s = size || 38;
-  var meta = CW.IMAGES['logo-shield'];
-  var w = Math.round(s * 0.9);
+  var meta = CW.IMAGES['logo-mark'] || CW.IMAGES['logo-shield'];
+  var w = s;   /* isecen grb je kvadratan */
 
   /* Isti lanac kao CW.img: lokalna kopija -> crtani SVG grb */
   var mark = meta
     ? '<img class="logo__mark" src="' + meta.local + '" alt="" width="' + w + '" height="' + s + '" ' +
       'style="width:' + w + 'px;height:' + s + 'px;object-fit:contain;border-radius:3px" ' +
-      'onerror="this.onerror=null;this.outerHTML=CW.logoMark(' + s + ');">'
-    : CW.logoMark(s);
+      'onerror="this.onerror=null;this.outerHTML=CW.logoMarkSvg(' + s + ');">'
+    : CW.logoMarkSvg(s);
 
   return mark +
     '<span>' +

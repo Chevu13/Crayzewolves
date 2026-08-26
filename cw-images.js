@@ -20,6 +20,15 @@ CW.IMAGES = {
     w: 1092, h: 1092, crop: 'none', group: 'brend',
     alt: 'CrazyWolves grb — zlatni vuk u štitu'
   },
+
+  /* Tesno isecen grb, kvadratan. Puna fotografija ima zelenu podlogu oko
+     stita, pa u zaglavlju od 38px ostane vise praznog nego znaka. Ovo je
+     ista slika, samo isecena do ivice stita. */
+  'logo-mark': {
+    local: 'images/logo-mark.webp',
+    w: 600, h: 600, crop: 'none', group: 'brend',
+    alt: 'CrazyWolves grb'
+  },
   'banner-lockup': {
     local: 'images/banner-lockup.webp',
     w: 1568, h: 644, crop: 'none', group: 'brend',
