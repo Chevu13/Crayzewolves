@@ -1,16 +1,15 @@
 User-agent: *
 Allow: /
 
-# Admin panel nema šta da traži u pretrazi.
-# Napomena: ovo je molba pretraživačima, a NE zaštita — pravu zaštitu radi
-# RLS u bazi, koji svakog ko nije u tabeli `admins` odbija bez obzira na to
-# kako je stigao do panela.
-Disallow: /#/admin
-
-# /app servira ISTI sajt kao i koren (vidi rewrites u vercel.json). Da se
-# indeksira, Google bi imao dve adrese sa istim sadržajem i sam birao koju
-# da prikaže — a to je po pravilu ona pogrešna. Zato /app ostaje van
-# pretrage i pošto sajt krene uživo.
+# Pun sajt jos nije pusten. Dok traje rezim "sajt u izradi", na korenu stoji
+# pokazna stranica, a sajt radi na /app. Da se /app indeksira, Google bi imao
+# adresu koja sutra prestaje da postoji — a i danas nosi isti sadrzaj kao ono
+# sto ce koren posle prikazivati.
 Disallow: /app
+Disallow: /app.html
+
+# Admin panel nema sta da trazi u pretrazi. Ovo je molba pretrazivacima, a NE
+# zastita — pravu zastitu radi RLS u bazi.
+Disallow: /app#/admin
 
 Sitemap: https://crazywolves.rs/sitemap.xml

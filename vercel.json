@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/", "destination": "/uskoro.html" },
-    { "source": "/app", "destination": "/index.html" }
+    { "source": "/app", "destination": "/app.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {

@@ -16,7 +16,8 @@ npx serve -l 4321 .
 
 Otvori `http://localhost:4321`.
 
-Radi i duplim klikom na `index.html`, bez servera. Skripte su namerno
+Otvori `http://localhost:4321/app.html` — na korenu stoji pokazna stranica.
+Radi i duplim klikom na `app.html`, bez servera. Skripte su namerno
 klasične (ne ES moduli) baš zato — `file://` blokira module.
 
 **Nema build koraka.** Nema `npm install`, nema bundler-a. Ono što je u
@@ -28,7 +29,8 @@ repou je ono što se servira.
 
 | Fajl | Sadrži |
 |---|---|
-| `index.html` | Ljuska, učitavanje fontova, redosled skripti, pre-boot ekran |
+| `index.html` | **Pokazna stranica** — samostalna, sa jednim linkom (Discord) |
+| `app.html` | Ljuska sajta: fontovi, redosled skripti, pre-boot ekran |
 | `cw-config.js` | **Ključevi.** Jedino mesto gde stoje |
 | `cw-theme.css` | **Dizajn tokeni.** Svaka boja, font, razmak, radijus, senka |
 | `cw-base.css` | Reset, tipografija, raspored, pristupačnost |

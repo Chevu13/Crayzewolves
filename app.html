@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0A">
+
+<title>CrazyWolves Community — The hunt never ends.</title>
+<meta name="description" content="CrazyWolves Gaming Hub — dom balkanskih gejmera. Discord zajednica, timovi, giveaway-i, zvanični shop i CS2 tim. The hunt never ends.">
+
+<!-- Open Graph / društvene mreže -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CrazyWolves Community">
+<meta property="og:title" content="CrazyWolves Community — The hunt never ends.">
+<meta property="og:description" content="Dom balkanskih gejmera. Zajednica, usluge, shop i CS2 tim.">
+<meta property="og:image" content="images/og-banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Ikonica: PRAVI grb. Ranije je ovde stajao crtani SVG upisan u sam link —
+     gruba silueta koja je u kartici pregledaca stajala pored pravog logoa
+     kao njegova bleda senka. -->
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="images/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/favicon-180.png">
+
+<!-- Brand typefaces: Anton (display), Barlow (body), Barlow Condensed (labels) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- ==========================================================================
+     STYLES — cascade order matters:
+     theme (tokens) → base (reset, type, layout) → components → pages/responsive
+     ========================================================================== -->
+<link rel="stylesheet" href="cw-theme.css">
+<link rel="stylesheet" href="cw-base.css">
+<link rel="stylesheet" href="cw-components.css">
+<link rel="stylesheet" href="cw-pages.css">
+<link rel="stylesheet" href="cw-admin.css">
+
+<!-- Pre-boot shell so there is never a flash of unstyled content -->
+<style>
+  #boot {
+    position: fixed; inset: 0; z-index: 9999;
+    display: grid; place-items: center;
+    background: #0B0B0A;
+    transition: opacity .3s ease, visibility .3s ease;
+  }
+  #boot.is-done { opacity: 0; visibility: hidden; }
+  #boot .mark { animation: bootpulse 1.5s ease-in-out infinite; }
+  @keyframes bootpulse { 0%,100% { opacity:.35 } 50% { opacity:1 } }
+</style>
+</head>
+
+<body>
+
+<div id="boot" aria-hidden="true">
+  <img class="mark" src="images/logo-mark.webp" alt="" width="52" height="52"
+       style="width:52px;height:52px;object-fit:contain;border-radius:4px">
+</div>
+
+<noscript>
+  <div style="max-width:640px;margin:12vh auto;padding:32px;border:1px solid #2A241A;background:#161310;color:#C9C2B4;font-family:sans-serif;line-height:1.6">
+    <h1 style="color:#F3EEE4;margin:0 0 12px">CrazyWolves Community</h1>
+    <p style="color:#D4A24E;margin:0 0 12px;letter-spacing:.14em;text-transform:uppercase;font-size:13px">The hunt never ends</p>
+    <p>Za rad sajta potreban je uključen JavaScript. U produkciji se iste stranice
+       renderuju na serveru, pa ova poruka nestaje kada se sajt poveže sa backendom.</p>
+    <p style="margin-top:16px">U međuvremenu, zajednica živi na Discordu:
+       <a href="https://discord.gg/crazywolves" style="color:#D4A24E">discord.gg/crazywolves</a></p>
+  </div>
+</noscript>
+
+<!-- ==========================================================================
+     SCRIPTS — load order is a dependency chain:
+       1. data      — mock collections (swap for API calls later)
+       2. core      — utilities, icons, store, router, toasts
+       3. components— global shell + reusable cards
+       4. pages     — view functions
+       5. app       — route table, page behaviour, boot
+     Classic scripts (not modules) so the site also runs straight from the
+     file system without a local server.
+     ========================================================================== -->
+<script src="cw-config.js"></script>
+<script src="cw-data-community.js"></script>
+<script src="cw-data-shop.js"></script>
+<script src="cw-supabase.js"></script>
+<script src="cw-core.js"></script>
+<script src="cw-images.js"></script>
+<script src="cw-components.js"></script>
+<script src="cw-hydrate.js"></script>
+<script src="cw-orders.js"></script>
+<script src="cw-pages-community.js"></script>
+<script src="cw-pages-shop.js"></script>
+<script src="cw-pages-account.js"></script>
+
+<!-- Admin panel: sloj podataka -> ekrani -> ponašanje.
+     Mora pre cw-app.js, jer tamo se registruju rute panela. -->
+<script src="cw-admin-data.js"></script>
+<script src="cw-admin-media.js"></script>
+<script src="cw-admin-pages.js"></script>
+<script src="cw-admin-orders.js"></script>
+<script src="cw-admin-supabase.js"></script>
+<script src="cw-admin.js"></script>
+
+<script src="cw-app.js"></script>
+
+<script>
+  /* Boot ekran prekriva ceo ekran. Skidamo ga na 'load', ali NE oslanjamo se
+     samo na njega: ako Google Fonts kasni ili je blokiran, 'load' ume da
+     stigne sa velikim zakašnjenjem i korisnik gleda pulsirajući grb.
+     Zato ga skida i DOMContentLoaded, i sigurnosni tajmer. */
+  (function () {
+    var done = false;
+    function hideBoot() {
+      if (done) return;
+      done = true;
+      var boot = document.getElementById('boot');
+      if (!boot) return;
+      boot.classList.add('is-done');
+      setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 320);
+    }
+    window.addEventListener('load', hideBoot);
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(hideBoot, 100); });
+    setTimeout(hideBoot, 3000);           /* poslednja linija odbrane */
+  })();
+</script>
+
+</body>
+</html>

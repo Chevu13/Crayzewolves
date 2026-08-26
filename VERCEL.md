@@ -39,25 +39,37 @@ Zato objašnjenja stoje u ovom fajlu, a `vercel.json` ostaje čist.
 
 ## Režim „sajt u izradi"
 
-Prvi red u `rewrites` šalje koren domena na `uskoro.html`:
+**Početna stranica JESTE pokazna stranica.** `index.html` je fajl sa banerom
+i dugmetom za Discord — nije preusmerenje, nije pravilo, nego sam fajl na
+korenu.
 
-```json
-{ "source": "/", "destination": "/uskoro.html" }
+| Adresa | Šta servira |
+|---|---|
+| `/` | `index.html` — pokazna stranica |
+| `/app` | `app.html` — pun sajt |
+| `/app#/admin` | admin panel |
+| bilo šta drugo | `index.html` — pokazna stranica |
+
+### Zašto fajl, a ne pravilo
+
+Prvo je ovde stajalo pravilo `{ "source": "/", "destination": "/uskoro.html" }`.
+**Nije radilo, i nije moglo da radi.** Na Vercelu se `rewrites` primenjuju tek
+ako na toj adresi NE postoji fajl — a na `/` je stajao `index.html`, pa se
+pravilo nikad nije izvršilo. Provereno na živom sajtu: koren je vraćao pun
+sajt, ne pokaznu stranicu.
+
+Zato je sada obrnuto: fajl na korenu je pokazna stranica, a sajt je pomeren u
+`app.html`. Nema pravila koje može da zakaže, i radi isto na Vercelu, na
+Netlify-u, na običnom serveru i pri otvaranju foldera duplim klikom.
+
+### Kad se sajt pušta uživo
+
+```bash
+git rm index.html
+git mv app.html index.html
 ```
 
-Dok stoji tu:
-
-- posetilac na korenu domena vidi informativnu stranicu
-- pun sajt radi na **`/app`**
-- admin panel na **`/app#/admin`**
-
-**Kad se sajt pušta uživo:** obriši **samo taj prvi red**, commit, push.
-Vercel sam preuzme. Drugi red ostaje — `/app` i dalje vodi na isti sajt, pa
-stari linkovi rade.
-
-Zašto `rewrite` a ne `redirect`: rewrite ne menja adresu u pregledaču i ne
-ostavlja 301 koji pregledači keširaju mesecima. Kad sajt krene, koren radi
-odmah, bez čišćenja keša.
+Pa u `vercel.json` obriši oba pravila iz `rewrites` — više ne trebaju.
 
 ## Keširanje
 
