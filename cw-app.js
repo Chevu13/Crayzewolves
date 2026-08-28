@@ -831,19 +831,69 @@
         ev.preventDefault();
         var dv = validate(form, {
           firstName: { required: true },
-          lastName:  { required: true },
-          email:     { required: true, email: true }
+          lastName:  { required: true }
         });
         if (!dv.ok) {
-          formStatus(form, 'error', 'Please correct the highlighted fields.');
+          formStatus(form, 'error', 'Ispravi označena polja.');
           break;
         }
+
+        /* Lozinka je opciona — samo ako je "Nova lozinka" popunjena. */
+        var pwNew = (form.elements.new || {}).value || '';
+        var pwConfirm = (form.elements.confirm || {}).value || '';
+        var pwCurrent = (form.elements.current || {}).value || '';
+        var changingPassword = Boolean(pwNew || pwConfirm || pwCurrent);
+        if (changingPassword) {
+          if (!pwCurrent) { formStatus(form, 'error', 'Unesi trenutnu lozinku.'); break; }
+          if (pwNew.length < 6) { formStatus(form, 'error', 'Nova lozinka mora imati najmanje šest znakova.'); break; }
+          if (pwNew !== pwConfirm) { formStatus(form, 'error', 'Nova lozinka i potvrda se ne poklapaju.'); break; }
+        }
+
+        var patch = {
+          first_name: dv.values.firstName,
+          last_name: dv.values.lastName,
+          phone: (form.elements.phone || {}).value || null,
+          address_line: (form.elements.address || {}).value || null,
+          city: (form.elements.city || {}).value || null,
+          postcode: (form.elements.postcode || {}).value || null,
+          country: (form.elements.country || {}).value || 'RS',
+          marketing_ok: Boolean(form.elements.marketing && form.elements.marketing.checked)
+        };
+
+        var user = CW.store.user();
         submitting(form, true);
-        setTimeout(function () {
-          submitting(form, false);
-          formStatus(form, 'success', 'Your details have been saved.');
-          CW.toast({ type: 'success', title: 'Details saved' });
-        }, 650);
+
+        /* user_metadata (ime/prezime) se drži u koraku sa customers — inače
+           bi zaglavlje i dalje pokazivalo staro ime dok se token sam ne
+           osveži posle sat vremena. */
+        var authPatch = { data: { first_name: patch.first_name, last_name: patch.last_name } };
+        var chain = changingPassword
+          ? CW.sb.auth.signIn(user.email, pwCurrent).catch(function () {
+              throw new Error('Trenutna lozinka nije tačna.');
+            }).then(function () {
+              authPatch.password = pwNew;
+              return CW.sb.auth.updateAuthUser(authPatch);
+            })
+          : CW.sb.auth.updateAuthUser(authPatch);
+
+        chain
+          .then(function () { return CW.sb.from('customers').eq('id', user.id).update(patch); })
+          .then(function () {
+            submitting(form, false);
+            form.elements.current.value = '';
+            form.elements.new.value = '';
+            form.elements.confirm.value = '';
+            formStatus(form, 'success', changingPassword
+              ? 'Podaci su sačuvani i lozinka je promenjena.'
+              : 'Podaci su sačuvani.');
+            CW.toast({ type: 'success', title: 'Sačuvano' });
+            CW.ui.refreshHeader();
+          })
+          .catch(function (e) {
+            submitting(form, false);
+            formStatus(form, 'error', e.message || 'Čuvanje nije uspelo.');
+            CW.toast({ type: 'error', title: 'Greška', text: e.message || 'Pokušaj ponovo.' });
+          });
         break;
       }
 

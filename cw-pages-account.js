@@ -243,15 +243,30 @@ CW.pages.account = function () {
 
   CW.onMount(function () {
     var host = document.getElementById('acc-recent-orders');
-    if (!host) return;
-    CW.api.orders.all().then(function (rows) {
-      var recent = rows.slice(0, 2);
-      host.innerHTML = recent.length
-        ? '<div class="stack stack-2">' + recent.map(CW.pages._orderRow).join('') + '</div>'
-        : '<p class="t-sm">Još nema porudžbina.</p>';
-    }).catch(function () {
-      host.innerHTML = '<p class="t-sm">Ne mogu da učitam porudžbine.</p>';
-    });
+    if (host) {
+      CW.api.orders.all().then(function (rows) {
+        var recent = rows.slice(0, 2);
+        host.innerHTML = recent.length
+          ? '<div class="stack stack-2">' + recent.map(CW.pages._orderRow).join('') + '</div>'
+          : '<p class="t-sm">Još nema porudžbina.</p>';
+      }).catch(function () {
+        host.innerHTML = '<p class="t-sm">Ne mogu da učitam porudžbine.</p>';
+      });
+    }
+
+    CW.sb.auth.customer().then(function (c) {
+      if (!c) return;
+      var nameLine = document.getElementById('acc-name-line');
+      if (nameLine && (c.first_name || c.last_name)) {
+        nameLine.textContent = ((c.first_name || '') + ' ' + (c.last_name || '')).trim();
+      }
+      var addrBox = document.getElementById('acc-addr-box');
+      if (addrBox && c.address_line) {
+        addrBox.innerHTML =
+          '<div>' + CW.esc(c.address_line) + '</div>' +
+          '<div>' + CW.esc((c.postcode || '') + ' ' + (c.city || '')) + '</div>';
+      }
+    }).catch(function () { /* kartice ostaju na onome što JWT zna */ });
   });
 
   var body =
@@ -270,10 +285,10 @@ CW.pages.account = function () {
       '<div class="grid grid--2">' +
         '<div class="card"><div class="card__body">' +
           '<div class="row row--between">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Podrazumevana adresa</div>' +
-            '<a class="t-xs link-underline" href="#/nalog/adrese">Izmeni</a>' +
+            '<div class="t-eyebrow t-eyebrow--gold">Adresa za dostavu</div>' +
+            '<a class="t-xs link-underline" href="#/nalog/podaci">Izmeni</a>' +
           '</div>' +
-          '<p class="t-sm mt-2">Još nema sačuvane adrese.</p>' +
+          '<p class="t-sm mt-2" id="acc-addr-box">Još nema sačuvane adrese.</p>' +
         '</div></div>' +
 
         '<div class="card"><div class="card__body">' +
@@ -282,7 +297,7 @@ CW.pages.account = function () {
             '<a class="t-xs link-underline" href="#/nalog/podaci">Izmeni</a>' +
           '</div>' +
           '<div class="spec-list mt-2">' +
-            '<div class="spec-list__row"><span class="spec-list__k">Ime</span><span class="spec-list__v">' + CW.esc(user.firstName + ' ' + user.lastName) + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Ime</span><span class="spec-list__v" id="acc-name-line">' + CW.esc((user.firstName + ' ' + user.lastName).trim() || '—') + '</span></div>' +
             '<div class="spec-list__row"><span class="spec-list__k">Imejl</span><span class="spec-list__v">' + CW.esc(user.email) + '</span></div>' +
           '</div>' +
         '</div></div>' +
@@ -349,56 +364,99 @@ CW.pages._orderRow = function (o) {
 CW.pages.accountDetails = function () {
   var user = CW.store.user();
   if (!user) return CW.pages._requireAuth('/account/details');
-  var demo = CW.data.demoAccount;
+
+  /* Ime/prezime sa JWT-a (ako ih ima) su samo početna vrednost — pravi
+     izvor je red u customers, koji stiže tek posle prijave (async). */
+  CW.onMount(function () {
+    var form = document.querySelector('[data-form="account-details"]');
+    if (!form) return;
+    CW.sb.auth.customer().then(function (c) {
+      if (!c) return;
+      if (form.elements.firstName) form.elements.firstName.value = c.first_name || '';
+      if (form.elements.lastName) form.elements.lastName.value = c.last_name || '';
+      if (form.elements.phone) form.elements.phone.value = c.phone || '';
+      if (form.elements.address) form.elements.address.value = c.address_line || '';
+      if (form.elements.city) form.elements.city.value = c.city || '';
+      if (form.elements.postcode) form.elements.postcode.value = c.postcode || '';
+      if (form.elements.country) form.elements.country.value = c.country || 'RS';
+      if (form.elements.marketing) form.elements.marketing.checked = Boolean(c.marketing_ok);
+    }).catch(function () { /* forma ostaje sa onim što je već upisano */ });
+  });
 
   var body =
-    '<form class="card" data-act="details-form" novalidate>' +
+    '<form class="card" data-act="details-form" data-form="account-details" novalidate>' +
       '<div class="card__body" style="padding:var(--space-4);gap:var(--space-3)">' +
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">Your details</legend>' +
+          '<legend class="fieldset__legend">Tvoji podaci</legend>' +
           '<div class="field-row">' +
             '<div class="field">' +
-              '<label class="field__label" for="ad-first">First name <span class="field__req">*</span></label>' +
+              '<label class="field__label" for="ad-first">Ime <span class="field__req">*</span></label>' +
               '<input class="input" id="ad-first" name="firstName" type="text" required value="' + CW.esc(user.firstName) + '">' +
               '<div class="field__error hidden" data-error-for="ad-first"></div>' +
             '</div>' +
             '<div class="field">' +
-              '<label class="field__label" for="ad-last">Last name <span class="field__req">*</span></label>' +
+              '<label class="field__label" for="ad-last">Prezime <span class="field__req">*</span></label>' +
               '<input class="input" id="ad-last" name="lastName" type="text" required value="' + CW.esc(user.lastName) + '">' +
               '<div class="field__error hidden" data-error-for="ad-last"></div>' +
             '</div>' +
           '</div>' +
           '<div class="field">' +
-            '<label class="field__label" for="ad-email">Imejl adresa <span class="field__req">*</span></label>' +
-            '<input class="input" id="ad-email" name="email" type="email" required value="' + CW.esc(user.email) + '">' +
-            '<div class="field__error hidden" data-error-for="ad-email"></div>' +
+            '<label class="field__label" for="ad-email">Imejl adresa</label>' +
+            '<input class="input" id="ad-email" name="email" type="email" value="' + CW.esc(user.email) + '" disabled>' +
+            '<div class="field__hint">Za promenu imejla obrati se podršci.</div>' +
           '</div>' +
           '<div class="field">' +
-            '<label class="field__label" for="ad-phone">Phone</label>' +
-            '<input class="input" id="ad-phone" name="phone" type="tel" value="' + CW.esc(demo.phone) + '">' +
-          '</div>' +
-          '<div class="field">' +
-            '<label class="field__label" for="ad-discord">Discord handle</label>' +
-            '<input class="input" id="ad-discord" name="discord" type="text" value="' + CW.esc(demo.discordHandle) + '">' +
-            '<div class="field__hint">Linking your handle lets us match community rewards to your account.</div>' +
+            '<label class="field__label" for="ad-phone">Telefon</label>' +
+            '<input class="input" id="ad-phone" name="phone" type="tel" autocomplete="tel">' +
           '</div>' +
         '</fieldset>' +
 
         '<hr class="divider-line">' +
 
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">Change password</legend>' +
+          '<legend class="fieldset__legend">Adresa za dostavu</legend>' +
+          '<p class="t-xs mb-2">Ovo se koristi da se kasa sama popuni pri sledećoj porudžbini.</p>' +
           '<div class="field">' +
-            '<label class="field__label" for="ad-current">Current password</label>' +
+            '<label class="field__label" for="ad-addr">Adresa</label>' +
+            '<input class="input" id="ad-addr" name="address" type="text" autocomplete="address-line1">' +
+          '</div>' +
+          '<div class="field-row--3 field-row">' +
+            '<div class="field">' +
+              '<label class="field__label" for="ad-city">Grad</label>' +
+              '<input class="input" id="ad-city" name="city" type="text" autocomplete="address-level2">' +
+            '</div>' +
+            '<div class="field">' +
+              '<label class="field__label" for="ad-post">Poštanski broj</label>' +
+              '<input class="input" id="ad-post" name="postcode" type="text" autocomplete="postal-code">' +
+            '</div>' +
+            '<div class="field">' +
+              '<label class="field__label" for="ad-country">Država</label>' +
+              '<select class="select" id="ad-country" name="country" autocomplete="country">' +
+                [['RS', 'Srbija'], ['HR', 'Hrvatska'], ['BA', 'Bosna i Hercegovina'], ['ME', 'Crna Gora'],
+                 ['MK', 'Severna Makedonija'], ['SI', 'Slovenija']].map(function (c) {
+                  return '<option value="' + c[0] + '">' + CW.esc(c[1]) + '</option>';
+                }).join('') +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+        '</fieldset>' +
+
+        '<hr class="divider-line">' +
+
+        '<fieldset class="fieldset">' +
+          '<legend class="fieldset__legend">Promena lozinke</legend>' +
+          '<p class="t-xs mb-2">Ostavi prazno ako ne menjaš lozinku.</p>' +
+          '<div class="field">' +
+            '<label class="field__label" for="ad-current">Trenutna lozinka</label>' +
             '<input class="input" id="ad-current" name="current" type="password" autocomplete="current-password">' +
           '</div>' +
           '<div class="field-row">' +
             '<div class="field">' +
-              '<label class="field__label" for="ad-new">New password</label>' +
+              '<label class="field__label" for="ad-new">Nova lozinka</label>' +
               '<input class="input" id="ad-new" name="new" type="password" autocomplete="new-password">' +
             '</div>' +
             '<div class="field">' +
-              '<label class="field__label" for="ad-confirm">Confirm new password</label>' +
+              '<label class="field__label" for="ad-confirm">Potvrdi novu lozinku</label>' +
               '<input class="input" id="ad-confirm" name="confirm" type="password" autocomplete="new-password">' +
             '</div>' +
           '</div>' +
@@ -407,36 +465,21 @@ CW.pages.accountDetails = function () {
         '<hr class="divider-line">' +
 
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">Email preferences</legend>' +
+          '<legend class="fieldset__legend">Mejl obaveštenja</legend>' +
           '<label class="check">' +
-            '<input type="checkbox" name="marketing" checked>' +
+            '<input type="checkbox" name="marketing">' +
             '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-            '<span class="check__label">Weekly newsletter — drops, results and open nights</span></label>' +
-          '<label class="check">' +
-            '<input type="checkbox" name="drops" checked>' +
-            '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-            '<span class="check__label">Limited drop alerts — sent the moment a drop goes live</span></label>' +
-          '<label class="check">' +
-            '<input type="checkbox" name="restock">' +
-            '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-            '<span class="check__label">Restock notifications for wishlist items</span></label>' +
+            '<span class="check__label">Obaveštavaj me o novim proizvodima i dešavanjima</span></label>' +
         '</fieldset>' +
 
         '<div class="row form-actions" style="gap:10px">' +
-          '<button class="btn btn--primary btn--lg" type="submit">Save changes</button>' +
-          '<button class="btn btn--ghost" type="reset">Cancel</button>' +
+          '<button class="btn btn--primary btn--lg" type="submit">Sačuvaj izmene</button>' +
         '</div>' +
         '<div data-form-status role="status" aria-live="polite"></div>' +
       '</div>' +
-    '</form>' +
+    '</form>';
 
-    '<div class="card mt-4"><div class="card__body">' +
-      '<div class="t-eyebrow" style="color:var(--color-error)">Danger zone</div>' +
-      '<p class="t-sm mt-2">Deleting your account removes your saved addresses and wishlist. Order records are retained for the period required by tax law.</p>' +
-      '<button class="btn btn--danger mt-2" type="button" data-act="delete-account">Delete my account</button>' +
-    '</div></div>';
-
-  return CW.pages._accountShell('/account/details', 'Personal information', body);
+  return CW.pages._accountShell('/nalog/podaci', 'Lični podaci', body);
 };
 
 /* ==========================================================================
@@ -482,7 +525,7 @@ CW.pages.accountAddresses = function () {
           })) +
     '</div>';
 
-  return CW.pages._accountShell('/account/addresses', 'Saved addresses', body);
+  return CW.pages._accountShell('/nalog/adrese', 'Sačuvane adrese', body);
 };
 
 /* ==========================================================================
@@ -515,7 +558,7 @@ CW.pages.accountOrders = function () {
 
   var body = '<div id="acc-ord-list" class="stack stack-2">' + skelRow + skelRow + '</div>';
 
-  return CW.pages._accountShell('/account/orders', 'Porudžbine', body);
+  return CW.pages._accountShell('/nalog/porudzbine', 'Porudžbine', body);
 };
 
 /* ==========================================================================
@@ -636,7 +679,7 @@ CW.pages.accountOrder = function (ctx) {
     '<div class="skeleton skeleton--line-short mt-2"></div>' +
   '</div></div></div>';
 
-  return CW.pages._accountShell('/account/orders', 'Porudžbina', body);
+  return CW.pages._accountShell('/nalog/porudzbine', 'Porudžbina', body);
 };
 
 /* ==========================================================================
@@ -671,7 +714,7 @@ CW.pages.wishlist = function () {
       '<section class="section container container--wide">' + body + '</section>';
   }
 
-  return CW.pages._accountShell('/account/wishlist', 'Lista želja', body);
+  return CW.pages._accountShell('/nalog/lista-zelja', 'Lista želja', body);
 };
 
 /* ==========================================================================

@@ -132,6 +132,35 @@ window.CW = window.CW || {};
       });
     },
 
+    /* Menja lozinku i/ili user_metadata (ime, prezime — isto što
+       handle_new_user() čita pri registraciji). Odgovor je ceo korisnik,
+       bez novog tokena, pa ručno upisujemo u keširanu sesiju da
+       CW.store.user() odmah vidi novo ime — inače bi zaglavlje i dalje
+       pokazivalo staro dok se token sam ne osveži.
+
+       Supabase ne traži staru lozinku da bi upisao novu — ko god ima važeći
+       token može da je promeni. Zato pozivalac (details-form u cw-app.js)
+       prvo proveri staru lozinku kroz signIn(), pa tek onda zove ovo. */
+    updateAuthUser: function (patch) {
+      var s = sb.session();
+      if (!s) return Promise.reject(new Error('Nisi prijavljen.'));
+      return fetch(CFG.url + '/auth/v1/user', {
+        method: 'PUT',
+        headers: { apikey: CFG.anonKey, Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch)
+      }).then(function (r) {
+        return r.json().then(function (d) {
+          if (!r.ok) {
+            var msg = d.error_description || d.msg || d.message || '';
+            if (/password/i.test(msg) && /least|short|weak/i.test(msg)) msg = 'Lozinka mora imati najmanje šest znakova.';
+            throw new Error(msg || 'Izmena naloga nije uspela.');
+          }
+          writeSession(Object.assign({}, sb.session(), { user: d }));
+          return d;
+        });
+      });
+    },
+
     signOut: function () {
       var s = sb.session();
       writeSession(null);

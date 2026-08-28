@@ -711,7 +711,7 @@ CW.pages.cart = function (ctx) {
         }) +
       '</section>' +
       '<section class="section container container--wide">' +
-        CW.c.sectionHead({ eyebrow: 'Start here', title: 'Best sellers' }) +
+        CW.c.sectionHead({ eyebrow: 'Počni ovde', title: 'Najprodavanije' }) +
         '<div class="product-grid product-grid--4">' + recs.map(CW.c.productCard).join('') + '</div>' +
       '</section></div>';
   }
@@ -732,8 +732,8 @@ CW.pages.cart = function (ctx) {
         '</div></div>' +
 
         '<div class="row row--between mt-3 row--wrap" style="gap:12px">' +
-          '<a class="btn btn--quiet" href="#/shop">' + CW.icon('arrowL', 15) + 'Continue shopping</a>' +
-          '<span class="t-sm">Prices include VAT. Shipping calculated at checkout.</span>' +
+          '<a class="btn btn--quiet" href="#/shop">' + CW.icon('arrowL', 15) + 'Nastavi kupovinu</a>' +
+          '<span class="t-sm">Cene su sa PDV-om. Dostava se računa na kasi.</span>' +
         '</div>' +
       '</div>' +
 
@@ -750,17 +750,17 @@ CW.pages.cart = function (ctx) {
         '</form>' +
 
         (coupon ? '<div class="alert alert--success mb-3">' + CW.icon('check', 16) +
-          '<span><b>' + CW.esc(coupon.code) + '</b> applied — ' + CW.esc(coupon.label) + '</span></div>' : '') +
+          '<span><b>' + CW.esc(coupon.code) + '</b> primenjen — ' + CW.esc(coupon.label) + '</span></div>' : '') +
 
         '<div class="field mb-3">' +
-          '<label class="field__label" for="ship-est">Shipping estimate</label>' +
+          '<label class="field__label" for="ship-est">Procena dostave</label>' +
           '<select class="select" id="ship-est" data-act="shipping-estimate">' +
             CW.data.shippingMethods.map(function (m) {
               return '<option value="' + m.id + '"' + (shipId === m.id ? ' selected' : '') + '>' +
-                CW.esc(m.name) + ' — ' + (m.price === 0 ? 'Free' : CW.money(m.price)) + '</option>';
+                CW.esc(m.name) + ' — ' + (m.price === 0 ? 'Besplatno' : CW.money(m.price)) + '</option>';
             }).join('') +
           '</select>' +
-          '<div class="field__hint">Final cost is confirmed at checkout once we have your address.</div>' +
+          '<div class="field__hint">Tačan iznos se potvrđuje na kasi kad uneseš adresu.</div>' +
         '</div>' +
 
         '<div class="spec-list">' +
@@ -772,20 +772,20 @@ CW.pages.cart = function (ctx) {
 
         (t.freeShippingGap > 0
           ? '<div class="alert alert--info mt-3">' + CW.icon('truck', 16) +
-            '<span>Add ' + CW.money(t.freeShippingGap) + ' more for free shipping.</span></div>'
-          : '<div class="alert alert--success mt-3">' + CW.icon('check', 16) + '<span>Free shipping unlocked.</span></div>') +
+            '<span>Dodaj još ' + CW.money(t.freeShippingGap) + ' za besplatnu dostavu.</span></div>'
+          : '<div class="alert alert--success mt-3">' + CW.icon('check', 16) + '<span>Ostvario/la si besplatnu dostavu.</span></div>') +
 
-        '<a class="btn btn--primary btn--full btn--lg mt-3" href="#/checkout">Proceed to checkout</a>' +
+        '<a class="btn btn--primary btn--full btn--lg mt-3" href="#/checkout">Nastavi na plaćanje</a>' +
 
         '<div class="row mt-3" style="gap:8px;justify-content:center">' +
-          CW.icon('lock', 15) + '<span class="t-xs">Secure checkout — card details handled by our payment processor</span>' +
+          CW.icon('lock', 15) + '<span class="t-xs">Bezbedna kasa — podatke o kartici obrađuje procesor plaćanja</span>' +
         '</div>' +
       '</aside>' +
     '</div>' +
   '</section>' +
 
   '<section class="section container container--wide">' +
-    CW.c.sectionHead({ eyebrow: 'Complete the kit', title: 'Recommended for you' }) +
+    CW.c.sectionHead({ eyebrow: 'Upotpuni komplet', title: 'Preporučeno za tebe' }) +
     '<div class="product-grid product-grid--4">' + recs.map(CW.c.productCard).join('') + '</div>' +
   '</section>' +
   '</div>';
@@ -809,10 +809,24 @@ CW.pages.checkout = function (ctx) {
   var t = CW.store.totals(shipId);
   var coupon = CW.store.coupon();
   var user = CW.store.user();
-  /* Sačuvane adrese još nisu povezane na pravi nalog (BAZA.md) — kasa kreće
-     prazna za svakog, prijavljenog ili ne, umesto da prikaže izmišljenu
-     adresu koja ne pripada kupcu. */
   var addr = null;
+
+  /* Popunjava polja telefona/adrese pravim profilom kupca, ako ga ima —
+     ne piše preko onoga što je kupac već sam upisao (npr. posle "nazad"). */
+  if (user) {
+    CW.onMount(function () {
+      CW.sb.auth.customer().then(function (c) {
+        if (!c) return;
+        var f = document.querySelector('[data-act="checkout-form"]');
+        if (!f) return;
+        if (f.elements.phone && !f.elements.phone.value) f.elements.phone.value = c.phone || '';
+        if (f.elements.line1 && !f.elements.line1.value) f.elements.line1.value = c.address_line || '';
+        if (f.elements.city && !f.elements.city.value) f.elements.city.value = c.city || '';
+        if (f.elements.postcode && !f.elements.postcode.value) f.elements.postcode.value = c.postcode || '';
+        if (f.elements.country && c.country) f.elements.country.value = c.country;
+      }).catch(function () { /* kasa ostaje prazna, kupac je popunjava ručno */ });
+    });
+  }
 
   return '' +
   '<div class="shop-page">' +
@@ -820,12 +834,12 @@ CW.pages.checkout = function (ctx) {
   '<div class="checkout-header">' +
     '<div class="container container--wide checkout-header__inner">' +
       '<a class="logo" href="#/">' + CW.logoMark(34) + '<span class="logo__word">CRAZY<em>WOLVES</em></span></a>' +
-      '<div class="stepper" aria-label="Checkout progress">' +
-        '<div class="stepper__step is-done"><span class="stepper__num">' + CW.icon('check', 14) + '</span><span class="stepper__label">Cart</span></div>' +
+      '<div class="stepper" aria-label="Tok kase">' +
+        '<div class="stepper__step is-done"><span class="stepper__num">' + CW.icon('check', 14) + '</span><span class="stepper__label">Korpa</span></div>' +
         '<span class="stepper__bar"></span>' +
-        '<div class="stepper__step is-active"><span class="stepper__num">2</span><span class="stepper__label">Details</span></div>' +
+        '<div class="stepper__step is-active"><span class="stepper__num">2</span><span class="stepper__label">Detalji</span></div>' +
         '<span class="stepper__bar"></span>' +
-        '<div class="stepper__step"><span class="stepper__num">3</span><span class="stepper__label">Confirm</span></div>' +
+        '<div class="stepper__step"><span class="stepper__num">3</span><span class="stepper__label">Potvrda</span></div>' +
       '</div>' +
       '<a class="btn btn--ghost btn--sm" href="#/korpa">' + CW.icon('arrowL', 15) + 'Nazad u korpu</a>' +
     '</div>' +
@@ -841,7 +855,7 @@ CW.pages.checkout = function (ctx) {
           '<legend class="fieldset__legend">1 — Podaci za kontakt</legend>' +
           (user ? '' :
             '<div class="alert alert--info">' + CW.icon('user', 18) +
-            '<span>Već imaš nalog? <a class="link-underline" href="#/account/login">Prijavi se</a> to fill this in automatically.</span></div>') +
+            '<span>Već imaš nalog? <a class="link-underline" href="#/account/login">Prijavi se</a> da se polja sama popune.</span></div>') +
           '<div class="field">' +
             '<label class="field__label" for="co-email">Imejl adresa <span class="field__req">*</span></label>' +
             '<input class="input" id="co-email" name="email" type="email" autocomplete="email" required value="' + (user ? CW.esc(user.email) : '') + '">' +
@@ -859,41 +873,42 @@ CW.pages.checkout = function (ctx) {
           '<legend class="fieldset__legend">2 — Adresa za dostavu</legend>' +
           '<div class="field-row">' +
             '<div class="field">' +
-              '<label class="field__label" for="co-first">First name <span class="field__req">*</span></label>' +
+              '<label class="field__label" for="co-first">Ime <span class="field__req">*</span></label>' +
               '<input class="input" id="co-first" name="firstName" type="text" autocomplete="given-name" required value="' + (user ? CW.esc(user.firstName) : '') + '">' +
               '<div class="field__error hidden" data-error-for="co-first"></div>' +
             '</div>' +
             '<div class="field">' +
-              '<label class="field__label" for="co-last">Last name <span class="field__req">*</span></label>' +
+              '<label class="field__label" for="co-last">Prezime <span class="field__req">*</span></label>' +
               '<input class="input" id="co-last" name="lastName" type="text" autocomplete="family-name" required value="' + (user ? CW.esc(user.lastName) : '') + '">' +
               '<div class="field__error hidden" data-error-for="co-last"></div>' +
             '</div>' +
           '</div>' +
           '<div class="field">' +
-            '<label class="field__label" for="co-addr">Address <span class="field__req">*</span></label>' +
+            '<label class="field__label" for="co-addr">Adresa <span class="field__req">*</span></label>' +
             '<input class="input" id="co-addr" name="line1" type="text" autocomplete="address-line1" required value="' + (addr ? CW.esc(addr.line1) : '') + '">' +
             '<div class="field__error hidden" data-error-for="co-addr"></div>' +
           '</div>' +
           '<div class="field">' +
-            '<label class="field__label" for="co-addr2">Apartment, floor, etc. <span class="t-muted">(optional)</span></label>' +
+            '<label class="field__label" for="co-addr2">Sprat, stan, itd. <span class="t-muted">(opciono)</span></label>' +
             '<input class="input" id="co-addr2" name="line2" type="text" autocomplete="address-line2" value="' + (addr ? CW.esc(addr.line2) : '') + '">' +
           '</div>' +
           '<div class="field-row--3 field-row">' +
             '<div class="field">' +
-              '<label class="field__label" for="co-city">City <span class="field__req">*</span></label>' +
+              '<label class="field__label" for="co-city">Grad <span class="field__req">*</span></label>' +
               '<input class="input" id="co-city" name="city" type="text" autocomplete="address-level2" required value="' + (addr ? CW.esc(addr.city) : '') + '">' +
               '<div class="field__error hidden" data-error-for="co-city"></div>' +
             '</div>' +
             '<div class="field">' +
-              '<label class="field__label" for="co-post">Postcode <span class="field__req">*</span></label>' +
+              '<label class="field__label" for="co-post">Poštanski broj <span class="field__req">*</span></label>' +
               '<input class="input" id="co-post" name="postcode" type="text" autocomplete="postal-code" required value="' + (addr ? CW.esc(addr.postcode) : '') + '">' +
               '<div class="field__error hidden" data-error-for="co-post"></div>' +
             '</div>' +
             '<div class="field">' +
-              '<label class="field__label" for="co-country">Country <span class="field__req">*</span></label>' +
-              '<select class="select" id="co-country" name="country" autocomplete="country-name" required>' +
-                ['Serbia', 'Croatia', 'Bosnia & Herzegovina', 'Montenegro', 'North Macedonia', 'Slovenia', 'Other (EU)'].map(function (c) {
-                  return '<option' + (addr && addr.country === c ? ' selected' : '') + '>' + c + '</option>';
+              '<label class="field__label" for="co-country">Država <span class="field__req">*</span></label>' +
+              '<select class="select" id="co-country" name="country" autocomplete="country" required>' +
+                [['RS', 'Srbija'], ['HR', 'Hrvatska'], ['BA', 'Bosna i Hercegovina'], ['ME', 'Crna Gora'],
+                 ['MK', 'Severna Makedonija'], ['SI', 'Slovenija']].map(function (c) {
+                  return '<option value="' + c[0] + '">' + CW.esc(c[1]) + '</option>';
                 }).join('') +
               '</select>' +
             '</div>' +
@@ -902,7 +917,7 @@ CW.pages.checkout = function (ctx) {
 
         /* ---------- DELIVERY ---------- */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">3 — Delivery method</legend>' +
+          '<legend class="fieldset__legend">3 — Način dostave</legend>' +
           '<div class="stack stack-1">' +
             CW.data.shippingMethods.map(function (m) {
               var free = t.subtotal - t.discount >= CW.shopConfig.freeShippingThreshold && m.id !== 'pickup';
@@ -913,7 +928,7 @@ CW.pages.checkout = function (ctx) {
                   '<span class="radio-card__title">' + CW.esc(m.name) + '</span>' +
                   '<span class="radio-card__desc">' + CW.esc(m.eta) + ' — ' + CW.esc(m.desc) + '</span>' +
                 '</span>' +
-                '<span class="radio-card__price">' + (m.price === 0 || free ? 'Free' : CW.money(m.price)) + '</span>' +
+                '<span class="radio-card__price">' + (m.price === 0 || free ? 'Besplatno' : CW.money(m.price)) + '</span>' +
               '</label>';
             }).join('') +
           '</div>' +
@@ -921,9 +936,9 @@ CW.pages.checkout = function (ctx) {
 
         /* ---------- PAYMENT ---------- */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">4 — Payment</legend>' +
+          '<legend class="fieldset__legend">4 — Plaćanje</legend>' +
           '<div class="alert alert--info">' + CW.icon('lock', 18) +
-            '<span>This is a front-end demonstration. No payment is processed and no card details are stored or transmitted.</span></div>' +
+            '<span>Ovo je pokazna verzija sajta. Nijedno plaćanje se ne obrađuje i nijedan podatak o kartici se ne čuva niti prenosi.</span></div>' +
 
           '<div class="stack stack-1">' +
             CW.data.paymentMethods.map(function (m, i) {
@@ -947,17 +962,17 @@ CW.pages.checkout = function (ctx) {
           '<div class="card" data-card-fields>' +
             '<div class="card__body">' +
               '<div class="field">' +
-                '<label class="field__label" for="cc-num">Card number <span class="field__req">*</span></label>' +
+                '<label class="field__label" for="cc-num">Broj kartice <span class="field__req">*</span></label>' +
                 '<input class="input" id="cc-num" name="cardNumber" type="text" inputmode="numeric" placeholder="4242 4242 4242 4242" autocomplete="cc-number">' +
                 '<div class="field__error hidden" data-error-for="cc-num"></div>' +
               '</div>' +
               '<div class="field-row mt-2">' +
                 '<div class="field">' +
-                  '<label class="field__label" for="cc-exp">Expiry <span class="field__req">*</span></label>' +
-                  '<input class="input" id="cc-exp" name="cardExpiry" type="text" placeholder="MM / YY" autocomplete="cc-exp">' +
+                  '<label class="field__label" for="cc-exp">Ističe <span class="field__req">*</span></label>' +
+                  '<input class="input" id="cc-exp" name="cardExpiry" type="text" placeholder="MM / GG" autocomplete="cc-exp">' +
                 '</div>' +
                 '<div class="field">' +
-                  '<label class="field__label" for="cc-cvc">Security code <span class="field__req">*</span></label>' +
+                  '<label class="field__label" for="cc-cvc">Sigurnosni kod <span class="field__req">*</span></label>' +
                   '<input class="input" id="cc-cvc" name="cardCvc" type="text" inputmode="numeric" placeholder="123" autocomplete="cc-csc">' +
                 '</div>' +
               '</div>' +
@@ -967,18 +982,18 @@ CW.pages.checkout = function (ctx) {
           '<label class="check">' +
             '<input type="checkbox" name="sameBilling" checked data-act="toggle-billing">' +
             '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-            '<span class="check__label">Billing address is the same as my shipping address</span>' +
+            '<span class="check__label">Adresa za naplatu je ista kao adresa za dostavu</span>' +
           '</label>' +
 
           '<div class="hidden" data-billing-fields>' +
             '<div class="field">' +
-              '<label class="field__label" for="bill-addr">Billing address</label>' +
+              '<label class="field__label" for="bill-addr">Adresa za naplatu</label>' +
               '<input class="input" id="bill-addr" name="billingLine1" type="text">' +
             '</div>' +
             '<div class="field-row mt-2">' +
-              '<div class="field"><label class="field__label" for="bill-city">City</label>' +
+              '<div class="field"><label class="field__label" for="bill-city">Grad</label>' +
                 '<input class="input" id="bill-city" name="billingCity" type="text"></div>' +
-              '<div class="field"><label class="field__label" for="bill-post">Postcode</label>' +
+              '<div class="field"><label class="field__label" for="bill-post">Poštanski broj</label>' +
                 '<input class="input" id="bill-post" name="billingPostcode" type="text"></div>' +
             '</div>' +
           '</div>' +
@@ -986,23 +1001,23 @@ CW.pages.checkout = function (ctx) {
 
         /* ---------- NOTES + TERMS ---------- */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">5 — Finish</legend>' +
+          '<legend class="fieldset__legend">5 — Poslednji korak</legend>' +
           '<div class="field">' +
-            '<label class="field__label" for="co-notes">Order notes <span class="t-muted">(optional)</span></label>' +
-            '<textarea class="textarea" id="co-notes" name="notes" style="min-height:88px" placeholder="Delivery instructions, a buzzer code, anything the courier should know."></textarea>' +
+            '<label class="field__label" for="co-notes">Napomena uz porudžbinu <span class="t-muted">(opciono)</span></label>' +
+            '<textarea class="textarea" id="co-notes" name="notes" style="min-height:88px" placeholder="Uputstvo za dostavu, šifra interfona, sve što kurir treba da zna."></textarea>' +
           '</div>' +
 
           '<label class="check">' +
             '<input type="checkbox" name="terms" required>' +
             '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-            '<span class="check__label">I have read and accept the <a class="link-underline" href="#/terms">Terms &amp; Conditions</a>, the <a class="link-underline" href="#/returns">Returns Policy</a> and the <a class="link-underline" href="#/privacy">Privacy Policy</a>. <span class="field__req">*</span></span>' +
+            '<span class="check__label">Pročitao/la sam i prihvatam <a class="link-underline" href="#/uslovi">Uslove korišćenja</a>, <a class="link-underline" href="#/povracaj">Politiku povraćaja</a> i <a class="link-underline" href="#/privatnost">Politiku privatnosti</a>. <span class="field__req">*</span></span>' +
           '</label>' +
           '<div class="field__error hidden" data-error-for="terms"></div>' +
 
           '<label class="check">' +
             '<input type="checkbox" name="marketing">' +
             '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-            '<span class="check__label">Email me about drops and results. One email a week, unsubscribe any time.</span>' +
+            '<span class="check__label">Obaveštavaj me o novim proizvodima i dešavanjima. Jednom nedeljno, odjava u svakom trenutku.</span>' +
           '</label>' +
 
           '<button class="btn btn--primary btn--lg btn--full mt-2" type="submit" data-place-order>' +
@@ -1044,18 +1059,18 @@ CW.pages.checkout = function (ctx) {
 
         '<div class="spec-list">' +
           '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
-          (t.discount ? '<div class="spec-list__row"><span class="spec-list__k">Discount' + (coupon ? ' (' + CW.esc(coupon.code) + ')' : '') + '</span>' +
+          (t.discount ? '<div class="spec-list__row"><span class="spec-list__k">Popust' + (coupon ? ' (' + CW.esc(coupon.code) + ')' : '') + '</span>' +
             '<span class="spec-list__v t-gold">−' + CW.money(t.discount) + '</span></div>' : '') +
-          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Free' : CW.money(t.shipping)) + '</span></div>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Besplatno' : CW.money(t.shipping)) + '</span></div>' +
           '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Ukupno</span><span class="spec-list__v">' + CW.money(t.total) + '</span></div>' +
         '</div>' +
 
         '<div class="t-xs mt-2">Cene su sa PDV-om.</div>' +
 
         '<div class="stack stack-1 mt-3">' +
-          '<div class="row" style="gap:8px">' + CW.icon('lock', 15) + '<span class="t-xs">Secure checkout</span></div>' +
-          '<div class="row" style="gap:8px">' + CW.icon('refresh', 15) + '<span class="t-xs">14-day returns, limited drops included</span></div>' +
-          '<div class="row" style="gap:8px">' + CW.icon('truck', 15) + '<span class="t-xs">Tracked delivery on every order</span></div>' +
+          '<div class="row" style="gap:8px">' + CW.icon('lock', 15) + '<span class="t-xs">Bezbedna kasa</span></div>' +
+          '<div class="row" style="gap:8px">' + CW.icon('refresh', 15) + '<span class="t-xs">14 dana za povraćaj, važi i za limitirane drop-ove</span></div>' +
+          '<div class="row" style="gap:8px">' + CW.icon('truck', 15) + '<span class="t-xs">Praćenje pošiljke na svakoj porudžbini</span></div>' +
         '</div>' +
       '</aside>' +
     '</div>' +
@@ -1071,8 +1086,8 @@ CW.pages.confirmation = function () {
   if (!order) {
     return '<section class="section container container--wide">' +
       CW.c.empty({
-        icon: 'package', title: 'No recent order',
-        text: 'There is no order to show. If you have just ordered, check your email for the confirmation.',
+        icon: 'package', title: 'Nema nedavne porudžbine',
+        text: 'Ovde nema šta da se prikaže. Ako si upravo poručio/la, proveri mejl za potvrdu.',
         actions: '<a class="btn btn--primary" href="#/shop">Nazad u shop</a>'
       }) + '</section>';
   }
@@ -1085,14 +1100,14 @@ CW.pages.confirmation = function () {
   '<section class="container container--wide">' +
     '<div class="confirm-hero">' +
       '<div class="confirm-seal">' + CW.icon('check', 42) + '</div>' +
-      '<div class="t-eyebrow t-eyebrow--gold">Order confirmed</div>' +
+      '<div class="t-eyebrow t-eyebrow--gold">Porudžbina potvrđena</div>' +
       '<h1 class="t-h1 mt-2">Dobro došao u čopor.</h1>' +
-      '<p class="t-lead mx-auto mt-3" style="max-width:52ch">Your order is in. A confirmation is on its way to ' +
-        '<strong class="t-offwhite">' + CW.esc(d.email || 'your email address') + '</strong>, and tracking follows the moment it ships.</p>' +
+      '<p class="t-lead mx-auto mt-3" style="max-width:52ch">Porudžbina je primljena. Potvrda stiže na ' +
+        '<strong class="t-offwhite">' + CW.esc(d.email || 'tvoju imejl adresu') + '</strong>, a broj za praćenje čim pošiljka krene.</p>' +
       '<div class="row mt-4" style="justify-content:center;gap:10px;flex-wrap:wrap">' +
-        '<span class="badge badge--gold">Order ' + CW.esc(order.id) + '</span>' +
+        '<span class="badge badge--gold">Porudžbina ' + CW.esc(order.id) + '</span>' +
         '<span class="badge badge--neutral">' + CW.money(order.totals.total) + '</span>' +
-        '<span class="badge badge--neutral">Est. delivery ' + CW.fmtDate(eta.toISOString(), 'short') + '</span>' +
+        '<span class="badge badge--neutral">Očekivana dostava ' + CW.fmtDate(eta.toISOString(), 'short') + '</span>' +
       '</div>' +
     '</div>' +
   '</section>' +
@@ -1100,7 +1115,7 @@ CW.pages.confirmation = function () {
   '<section class="section--tight container container--wide">' +
     '<div class="cart-layout">' +
       '<div class="card"><div class="card__body" style="padding:var(--space-4)">' +
-        '<h2 class="t-h3 mb-3">What you ordered</h2>' +
+        '<h2 class="t-h3 mb-3">Šta si poručio/la</h2>' +
         '<div style="border-top:var(--border)">' +
           order.items.map(function (l) {
             var p = CW.product(l.productId);
@@ -1119,8 +1134,8 @@ CW.pages.confirmation = function () {
           '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(order.totals.subtotal) + '</span></div>' +
           (order.totals.discount ? '<div class="spec-list__row"><span class="spec-list__k">Popust</span>' +
             '<span class="spec-list__v t-gold">−' + CW.money(order.totals.discount) + '</span></div>' : '') +
-          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (order.totals.shipping === 0 ? 'Free' : CW.money(order.totals.shipping)) + '</span></div>' +
-          '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Total paid</span><span class="spec-list__v">' + CW.money(order.totals.total) + '</span></div>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (order.totals.shipping === 0 ? 'Besplatno' : CW.money(order.totals.shipping)) + '</span></div>' +
+          '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Plaćeno ukupno</span><span class="spec-list__v">' + CW.money(order.totals.total) + '</span></div>' +
         '</div>' +
       '</div></div>' +
 
@@ -1128,54 +1143,54 @@ CW.pages.confirmation = function () {
         '<div class="card"><div class="card__body">' +
           '<div class="t-eyebrow t-eyebrow--gold">Dostava</div>' +
           '<div class="spec-list mt-2">' +
-            '<div class="spec-list__row"><span class="spec-list__k">Name</span><span class="spec-list__v">' + CW.esc((d.firstName || '') + ' ' + (d.lastName || '')) + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Address</span><span class="spec-list__v">' + CW.esc(d.line1 || '—') + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">City</span><span class="spec-list__v">' + CW.esc((d.postcode || '') + ' ' + (d.city || '')) + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Country</span><span class="spec-list__v">' + CW.esc(d.country || '—') + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Method</span><span class="spec-list__v">' + CW.esc(d.shippingName || 'Standard Delivery') + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Payment</span><span class="spec-list__v">' + CW.esc(d.paymentName || 'Card') + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Ime</span><span class="spec-list__v">' + CW.esc((d.firstName || '') + ' ' + (d.lastName || '')) + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Adresa</span><span class="spec-list__v">' + CW.esc(d.line1 || '—') + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Grad</span><span class="spec-list__v">' + CW.esc((d.postcode || '') + ' ' + (d.city || '')) + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Država</span><span class="spec-list__v">' + CW.esc(d.country || '—') + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Način dostave</span><span class="spec-list__v">' + CW.esc(d.shippingName || 'Standardna dostava') + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Plaćanje</span><span class="spec-list__v">' + CW.esc(d.paymentName || 'Kartica') + '</span></div>' +
           '</div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card__body">' +
-          '<div class="t-eyebrow t-eyebrow--gold">Need to change something?</div>' +
-          '<p class="t-sm mt-2">If your order has not shipped we can still amend it. Email the shop with your order number as soon as possible.</p>' +
-          '<a class="btn btn--quiet btn--full mt-2" href="#/contact?topic=merch">Contact the shop</a>' +
+          '<div class="t-eyebrow t-eyebrow--gold">Treba nešto da se izmeni?</div>' +
+          '<p class="t-sm mt-2">Dok porudžbina nije poslata, još može da se izmeni. Javi se sa brojem porudžbine što pre.</p>' +
+          '<a class="btn btn--quiet btn--full mt-2" href="#/contact?topic=merch">Kontaktiraj prodavnicu</a>' +
         '</div></div>' +
       '</aside>' +
     '</div>' +
   '</section>' +
 
   '<section class="section container container--wide">' +
-    CW.c.sectionHead({ eyebrow: 'What happens now', title: 'Next steps' }) +
+    CW.c.sectionHead({ eyebrow: 'Šta sledi', title: 'Sledeći koraci' }) +
     '<div class="next-steps">' +
       '<div class="next-step">' +
         '<div class="benefit__icon">' + CW.icon('mail', 20) + '</div>' +
-        '<h3 class="t-h4">1. Check your email</h3>' +
-        '<p class="t-sm">A confirmation with your full order details is on its way. Check spam if it has not landed in ten minutes.</p>' +
+        '<h3 class="t-h4">1. Proveri mejl</h3>' +
+        '<p class="t-sm">Potvrda sa svim detaljima porudžbine je na putu. Proveri i spam ako ne stigne za desetak minuta.</p>' +
       '</div>' +
       '<div class="next-step">' +
         '<div class="benefit__icon">' + CW.icon('package', 20) + '</div>' +
-        '<h3 class="t-h4">2. We pack it</h3>' +
-        '<p class="t-sm">Orders are picked and packed Monday to Friday. Yours goes out within one working day.</p>' +
+        '<h3 class="t-h4">2. Pakujemo</h3>' +
+        '<p class="t-sm">Porudžbine se pakuju radnim danima. Tvoja kreće u roku od jednog radnog dana.</p>' +
       '</div>' +
       '<div class="next-step">' +
         '<div class="benefit__icon">' + CW.icon('truck', 20) + '</div>' +
-        '<h3 class="t-h4">3. Track it</h3>' +
-        '<p class="t-sm">A tracking number arrives the moment the parcel leaves the warehouse. It also shows in your account.</p>' +
+        '<h3 class="t-h4">3. Praćenje</h3>' +
+        '<p class="t-sm">Broj za praćenje stiže čim pošiljka krene iz magacina. Pojavljuje se i u tvom nalogu.</p>' +
       '</div>' +
     '</div>' +
 
     '<div class="row mt-4" style="gap:12px;flex-wrap:wrap">' +
-      '<a class="btn btn--primary" href="#/shop">Continue shopping</a>' +
-      '<a class="btn btn--secondary" href="#/account/orders">View order history</a>' +
+      '<a class="btn btn--primary" href="#/shop">Nastavi kupovinu</a>' +
+      '<a class="btn btn--secondary" href="#/nalog/porudzbine">Istorija porudžbina</a>' +
     '</div>' +
   '</section>' +
 
   '<section class="section--tight container container--wide">' + CW.c.ctaBand({
-    eyebrow: 'While you wait',
-    title: 'Come meet the people who wear the same thing',
-    text: 'Post a fit check in the Den. Somebody will absolutely tell you which size they took.'
+    eyebrow: 'Dok čekaš',
+    title: 'Upoznaj druge koji nose isto',
+    text: 'Podeli fotku u Den kanalu na Discordu. Neko će sigurno reći koju je veličinu uzeo.'
   }) + '</section>' +
   '</div>';
 };
