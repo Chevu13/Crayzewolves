@@ -819,6 +819,13 @@ CW.pages.checkout = function (ctx) {
         if (!c) return;
         var f = document.querySelector('[data-act="checkout-form"]');
         if (!f) return;
+        /* Ime/prezime su već popunjeni sa JWT-a (user.firstName/lastName)
+           kad ih ima, ali taj podatak zna samo ono što je bilo tačno pri
+           prijavi — ako je kupac ime upisao/izmenio kasnije kroz "Lični
+           podaci", baza je tačnija. Ne piše preko onoga što je kupac već
+           sam upisao u ovoj poseti kase. */
+        if (f.elements.firstName && !f.elements.firstName.value) f.elements.firstName.value = c.first_name || '';
+        if (f.elements.lastName && !f.elements.lastName.value) f.elements.lastName.value = c.last_name || '';
         if (f.elements.phone && !f.elements.phone.value) f.elements.phone.value = c.phone || '';
         if (f.elements.line1 && !f.elements.line1.value) f.elements.line1.value = c.address_line || '';
         if (f.elements.city && !f.elements.city.value) f.elements.city.value = c.city || '';

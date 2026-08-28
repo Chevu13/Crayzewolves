@@ -109,7 +109,18 @@ window.CW = window.CW || {};
        sesije i traži potvrdu mejlom — pozivalac to prepoznaje po tome što
        resolved objekat nema `access_token`. */
     signUp: function (email, password, firstName, lastName) {
-      return fetch(CFG.url + '/auth/v1/signup', {
+      /* Bez ovoga link u mejlu potvrde vodi na Supabase-ov podrazumevani
+         Site URL — ako je taj podešen na koren domena, tokeni završe na
+         pokaznoj stranici (index.html), koja ništa ne radi sa njima, i
+         izgleda kao da link ne vodi nigde. Ovako uvek vodi tačno tu gde je
+         sajt trenutno pokrenut (radi i pre i posle skidanja "u izradi"
+         režima, jer se sam prilagođava trenutnoj putanji).
+
+         VAŽNO: ova adresa mora biti i u Supabase → Authentication →
+         URL Configuration → Redirect URLs, inače je Supabase ignoriše i
+         vraća se na podrazumevani Site URL. */
+      var redirectTo = window.location.origin + window.location.pathname;
+      return fetch(CFG.url + '/auth/v1/signup?redirect_to=' + encodeURIComponent(redirectTo), {
         method: 'POST',
         headers: { apikey: CFG.anonKey, 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -159,6 +170,35 @@ window.CW = window.CW || {};
           return d;
         });
       });
+    },
+
+    /* Link iz mejla potvrde (i budući reset lozinke) ne vraća JSON — Supabase
+       preusmerava pregledač na Site URL sa tokenima u #hash-u
+       (#access_token=...&refresh_token=...&type=signup...). cw-app.js boot()
+       to hvata PRE nego što ruter pokuša da taj hash pročita kao putanju
+       (inače ispada „link nigde ne vodi" — ruter ne prepoznaje rutu i
+       tokeni samo sede neiskorišćeni u adresi). Ovde se ti već raščlanjeni
+       parametri pretvaraju u pravu sesiju: /auth/v1/user vrati korisnika za
+       taj token (odgovor iz hash-a ne nosi ceo user objekat, samo tokene). */
+    establishFromCallback: function (params) {
+      if (!params || !params.access_token) return Promise.resolve(false);
+      return fetch(CFG.url + '/auth/v1/user', {
+        headers: { apikey: CFG.anonKey, Authorization: 'Bearer ' + params.access_token }
+      }).then(function (r) {
+        if (!r.ok) return false;
+        return r.json().then(function (u) {
+          var expiresIn = Number(params.expires_in) || 3600;
+          writeSession({
+            access_token: params.access_token,
+            refresh_token: params.refresh_token,
+            expires_in: expiresIn,
+            expires_at: Math.floor(Date.now() / 1000) + expiresIn,
+            token_type: params.token_type || 'bearer',
+            user: u
+          });
+          return { type: params.type || '' };
+        });
+      }).catch(function () { return false; });
     },
 
     signOut: function () {

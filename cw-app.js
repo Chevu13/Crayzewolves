@@ -1003,7 +1003,28 @@
   /* ==========================================================================
      BOOT
      ========================================================================== */
+  /* Link iz mejla potvrde nalog stiže sa #access_token=...&type=signup u
+     adresi. Mora da se uhvati i ukloni PRE nego što ruter pokuša da ga
+     pročita kao putanju — inače ne prepoznaje nijednu rutu, a tokeni samo
+     ostaju neiskorišćeni u adresi. To izgleda kao da link "nigde ne vodi". */
+  function consumeAuthHash() {
+    var hash = window.location.hash || '';
+    if (hash.indexOf('access_token=') === -1) return null;
+    var raw = hash.charAt(0) === '#' ? hash.slice(1) : hash;
+    var params = {};
+    raw.split('&').forEach(function (pair) {
+      var kv = pair.split('=');
+      if (kv[0]) params[decodeURIComponent(kv[0])] = decodeURIComponent((kv[1] || '').replace(/\+/g, ' '));
+    });
+    try {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search + '#/');
+    } catch (e) { window.location.hash = '#/'; }
+    return params;
+  }
+
   function boot() {
+    var authParams = consumeAuthHash();
+
     /* Mount into a dedicated root rather than replacing <body>, so the
        pre-boot shell and <noscript> block are left intact. */
     var root = document.createElement('div');
@@ -1027,6 +1048,19 @@
     document.getElementById('cookie-root').innerHTML = CW.c.cookieBanner();
 
     CW.ui.bind();
+
+    if (authParams && CW.sb && CW.sb.enabled) {
+      CW.sb.auth.establishFromCallback(authParams).then(function (res) {
+        if (!res) return;
+        CW.ui.refreshHeader();
+        CW.toast({
+          type: 'success',
+          title: res.type === 'signup' ? 'Nalog potvrđen' : 'Prijavljen si',
+          text: res.type === 'signup' ? 'Dobro došao u čopor.' : ''
+        });
+        CW.router.go('/nalog');
+      });
+    }
 
     /* wirePage is invoked by the router at the end of every render — see
        CW.wirePage assignment below — so no hashchange listener is needed. */
