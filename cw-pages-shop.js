@@ -228,8 +228,14 @@ CW.pages.catalog = function (ctx) {
   var allSizes = [];
   var allColors = [];
   base.forEach(function (p) {
+    /* Filter po veličini ima smisla samo za odeću — ostali proizvodi nemaju
+       pravu veličinu, samo podrazumevanu varijantu (vidi cw-hydrate.js). */
+    if (p.categoryId === 'apparel') {
+      p.variants.forEach(function (v) {
+        if (allSizes.indexOf(v.size) === -1) allSizes.push(v.size);
+      });
+    }
     p.variants.forEach(function (v) {
-      if (allSizes.indexOf(v.size) === -1) allSizes.push(v.size);
       if (allColors.indexOf(v.colorId) === -1) allColors.push(v.colorId);
     });
   });
@@ -436,7 +442,12 @@ CW.pages.product = function (ctx) {
     if (sizes.indexOf(v.size) === -1) sizes.push(v.size);
     if (colors.indexOf(v.colorId) === -1) colors.push(v.colorId);
   });
-  var singleSize = sizes.length === 1 && sizes[0] === 'One Size';
+  /* Veličina se bira samo kod odeće. Ostali proizvodi (šolje, dodaci,
+     tastature...) dobijaju jednu podrazumevanu varijantu bez biranja —
+     ranije se ovo oslanjalo na varijantu doslovno nazvanu "One Size", pa
+     je svaki proizvod unet kroz panel (podrazumevana varijanta bez `size`
+     polja, vidi cw-hydrate.js) ipak dobijao birač sa jednim praznim dugmetom. */
+  var showSizePicker = p.categoryId === 'apparel';
 
   var related = CW.data.products.filter(function (x) {
     return x.id !== p.id && (x.categoryId === p.categoryId || x.collectionId === p.collectionId);
@@ -489,7 +500,7 @@ CW.pages.product = function (ctx) {
       '</div>' : '<div data-variant-group="color" data-single-color="' + colors[0] + '"></div>') +
 
       /* ---- size ---- */
-      (singleSize ? '<div data-variant-group="size" data-single-size="One Size"></div>' :
+      (!showSizePicker ? '<div data-variant-group="size" data-single-size="' + CW.esc(sizes[0] || 'Standard') + '"></div>' :
       '<div class="variant-group" data-variant-group="size">' +
         '<div class="variant-head">' +
           '<span class="field__label">Size: <span class="t-offwhite" data-size-label>Izaberi veličinu</span></span>' +
@@ -916,14 +927,19 @@ CW.pages.checkout = function (ctx) {
 
           '<div class="stack stack-1">' +
             CW.data.paymentMethods.map(function (m, i) {
-              return '<label class="radio-card' + (i === 0 ? ' is-selected' : '') + '">' +
-                '<input type="radio" name="payment" value="' + m.id + '"' + (i === 0 ? ' checked' : '') + ' data-act="pick-payment">' +
+              /* Kartica je najavljena ali još ne radi — onemogućena, ne samo
+                 opisana kao "u pripremi". Disabled input i ne prima klik, pa
+                 se ne može ni izabrati ni slučajno poslati porudžbina na nju. */
+              var off = m.id === 'kartica';
+              return '<label class="radio-card' + (i === 0 ? ' is-selected' : '') + (off ? ' is-disabled' : '') + '">' +
+                '<input type="radio" name="payment" value="' + m.id + '"' + (i === 0 ? ' checked' : '') +
+                  (off ? ' disabled aria-disabled="true"' : '') + ' data-act="pick-payment">' +
                 '<span class="radio-card__mark"></span>' +
                 '<span class="radio-card__body">' +
                   '<span class="radio-card__title">' + CW.esc(m.name) + '</span>' +
                   '<span class="radio-card__desc">' + CW.esc(m.desc) + '</span>' +
                 '</span>' +
-                (m.id === 'card' ? '<span class="row" style="gap:4px">' + CW.icon('card', 20) + '</span>' : '') +
+                (m.id === 'kartica' ? '<span class="row" style="gap:4px">' + CW.icon('card', 20) + '</span>' : '') +
               '</label>';
             }).join('') +
           '</div>' +

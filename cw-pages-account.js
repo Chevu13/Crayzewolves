@@ -75,6 +75,15 @@ CW.pages._requireAuth = function (returnTo) {
 CW.pages.login = function (ctx) {
   var next = ctx.query.next || '/account';
 
+  /* Već prijavljen kupac ne treba da vidi formu za prijavu — samo ga
+     prebaci na nalog umesto da mu traži mejl i lozinku ponovo. */
+  if (CW.store.user()) {
+    CW.onMount(function () { CW.router.go(next); });
+    return '<section class="section container container--wide">' +
+      '<div class="auth-card text-center"><p class="t-sm">Već si prijavljen — prebacujem te…</p></div>' +
+    '</section>';
+  }
+
   return '' +
   '<section class="section container container--wide">' +
     '<div class="auth-card">' +
@@ -122,6 +131,13 @@ CW.pages.login = function (ctx) {
    REGISTER
    ========================================================================== */
 CW.pages.register = function () {
+  if (CW.store.user()) {
+    CW.onMount(function () { CW.router.go('/account'); });
+    return '<section class="section container container--wide">' +
+      '<div class="auth-card text-center"><p class="t-sm">Već si prijavljen — prebacujem te…</p></div>' +
+    '</section>';
+  }
+
   return '' +
   '<section class="section container container--wide">' +
     '<div class="auth-card">' +

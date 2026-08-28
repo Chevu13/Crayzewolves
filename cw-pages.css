@@ -660,6 +660,7 @@
   .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trust-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .next-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stat-grid[data-cols] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
   .news-feature { grid-template-columns: minmax(0, 1fr); }
   .news-feature .card__media { min-height: 0; aspect-ratio: 16 / 9; }
@@ -736,7 +737,7 @@
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trust-strip { grid-template-columns: minmax(0, 1fr); }
   .audience-grid { grid-template-columns: minmax(0, 1fr); }
-  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-grid[data-cols] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   /* --- Schedule: the date block becomes a header row, not a column --- */
   .schedule-card {

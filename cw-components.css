@@ -660,6 +660,8 @@ a.news-card:hover .news-card__title { color: var(--color-gold); }
    10. STAT BLOCKS
    ========================================================================== */
 .stat-grid { display: grid; gap: 1px; background: var(--color-border); border: var(--border); border-radius: var(--radius-card); overflow: hidden; }
+.stat-grid[data-cols="6"] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.stat-grid[data-cols="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .stat-cell {
   background: var(--color-surface);
   padding: var(--space-4) var(--space-3);
@@ -841,6 +843,8 @@ a.news-card:hover .news-card__title { color: var(--color-gold); }
 }
 .radio-card:hover { border-color: var(--border-hover); }
 .radio-card.is-selected { border-color: var(--color-gold); background: var(--wash-gold); }
+.radio-card.is-disabled { cursor: not-allowed; opacity: .55; }
+.radio-card.is-disabled:hover { border-color: var(--border); }
 .radio-card input { position: absolute; opacity: 0; }
 .radio-card__mark {
   width: 18px; height: 18px; flex: none; border-radius: 50%;

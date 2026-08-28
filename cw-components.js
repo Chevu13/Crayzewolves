@@ -118,12 +118,12 @@ CW.c.header = function () {
              Inicijali su jedini pokazatelj na ekranu da si uopšte prijavljen
              i pod kojim nalogom — ikonica izgleda isto u oba slučaja. */
           (user
-            ? '<a class="btn-icon avatar-btn header__desktop-only" href="#/nalog" ' +
+            ? '<a class="btn-icon avatar-btn" href="#/nalog" ' +
                 'aria-label="Nalog — ' + CW.esc(CW.initialsOf(user)) + ', ' + CW.esc(user.email || '') + '" ' +
                 'title="' + CW.esc(user.email || 'Tvoj nalog') + '">' +
                 '<span class="avatar-btn__initials" aria-hidden="true">' + CW.esc(CW.initialsOf(user)) + '</span>' +
               '</a>'
-            : '<a class="btn-icon header__desktop-only" href="#/nalog/prijava" aria-label="Prijava">' +
+            : '<a class="btn-icon" href="#/nalog/prijava" aria-label="Prijava">' +
                 CW.icon('user', 20) +
               '</a>') +
 
@@ -542,7 +542,10 @@ CW.c.pagination = function (page, totalPages) {
 };
 
 CW.c.statGrid = function (stats, cols) {
-  return '<div class="stat-grid" style="grid-template-columns:repeat(' + (cols || stats.length) + ',minmax(0,1fr))">' +
+  /* Broj kolona ide preko data-cols (CSS), ne preko inline stila — inline
+     grid-template-columns je jači od svakog @media pravila, pa bi ostalo
+     na 6 kolona i na telefonu koliko god CSS pokušavao da ga smanji. */
+  return '<div class="stat-grid" data-cols="' + (cols || stats.length) + '">' +
     stats.map(function (s) {
       return '<div class="stat-cell">' +
         '<div class="stat-cell__num">' + CW.esc(s.value) + '</div>' +
