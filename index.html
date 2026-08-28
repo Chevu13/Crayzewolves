@@ -24,8 +24,10 @@
 <link rel="icon" type="image/png" sizes="512x512" href="images/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="images/favicon-180.png">
 
-<!-- Baner je jedina slika i jedino što se čeka, pa kreće da se skida pre CSS-a. -->
-<link rel="preload" as="image" href="images/banner-construction-sr.webp" fetchpriority="high">
+<!-- Baner je jedina slika i jedino što se čeka, pa kreće da se skida pre CSS-a.
+     Dve odvojene slike (PC/mobilni) — preload prati isti prelom kao <picture> ispod. -->
+<link rel="preload" as="image" href="images/banner-construction-sr-mobile.webp" media="(max-width: 640px)" fetchpriority="high">
+<link rel="preload" as="image" href="images/banner-construction-sr.webp" media="(min-width: 641px)" fetchpriority="high">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -144,12 +146,22 @@
   }
 
   /* ---------- baner ---------- */
+  /* Dve odvojene slike, ne jedna sečena: <picture> ispod bira pravu za
+     širinu ekrana, pa se svaka prikazuje u svom prirodnom odnosu. */
   .banner {
     border: 1px solid var(--line);
     border-radius: 4px;
     overflow: hidden;
     background: #14120E;
     box-shadow: 0 14px 30px rgba(45, 34, 12, .10);
+  }
+  /* aspect-ratio je eksplicitan po prelomu: <picture> menja koja se slika
+     učitava, ali width/height atributi na <img> važe za oba izvora, pa bez
+     ovoga rezervisan prostor ostaje u odnosu desktop slike i sadržaj skoči
+     kad se učita uspravna mobilna. */
+  .banner img { display: block; width: 100%; height: auto; aspect-ratio: 1536 / 1024; }
+  @media (max-width: 640px) {
+    .banner img { aspect-ratio: 941 / 1672; }
   }
 
   /* ---------- poziv na Discord ---------- */
@@ -248,10 +260,13 @@
   </div>
 
   <div class="banner">
-    <img src="images/banner-construction-sr.webp"
-         width="1983" height="793"
-         fetchpriority="high" decoding="async"
-         alt="Sajt je trenutno u izradi — radimo na nečemu velikom. Hvala na strpljenju.">
+    <picture>
+      <source media="(max-width: 640px)" srcset="images/banner-construction-sr-mobile.webp">
+      <img src="images/banner-construction-sr.webp"
+           width="1536" height="1024"
+           fetchpriority="high" decoding="async"
+           alt="Website je trenutno u izradi — hvala na strpljenju.">
+    </picture>
   </div>
 
   <section class="cta">

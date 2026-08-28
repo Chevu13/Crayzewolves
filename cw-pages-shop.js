@@ -798,8 +798,10 @@ CW.pages.checkout = function (ctx) {
   var t = CW.store.totals(shipId);
   var coupon = CW.store.coupon();
   var user = CW.store.user();
-  var demo = CW.data.demoAccount;
-  var addr = user ? demo.addresses[0] : null;
+  /* Sačuvane adrese još nisu povezane na pravi nalog (BAZA.md) — kasa kreće
+     prazna za svakog, prijavljenog ili ne, umesto da prikaže izmišljenu
+     adresu koja ne pripada kupcu. */
+  var addr = null;
 
   return '' +
   '<div class="shop-page">' +

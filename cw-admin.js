@@ -157,6 +157,7 @@ window.CW = window.CW || {};
       categoryId: f.elements.categoryId.value,
       status: f.elements.status.value,
       image: f.elements.image.value || null,
+      imageMobile: f.elements.imageMobile.value || null,
       isFeatured: f.elements.isFeatured.checked,
       tags: f.elements.tags.value.split(',').map(function (t) { return t.trim(); }).filter(Boolean)
     };

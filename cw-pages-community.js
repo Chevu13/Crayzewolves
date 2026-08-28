@@ -593,7 +593,7 @@ CW.pages.article = function (ctx) {
 
     '<div class="container container--wide mt-4">' +
       '<div class="article-hero">' +
-        (n.image ? CW.img(n.image, { fit: 'contain', cls: 'article-hero__img', eager: true, ph: n.title })
+        (n.image ? CW.imgPost(n, { fit: 'contain', cls: 'article-hero__img', eager: true, ph: n.title })
                  : '<div class="ph" style="height:100%;aspect-ratio:auto" data-ph="SLIKA ČLANKA"></div>') +
       '</div>' +
     '</div>' +

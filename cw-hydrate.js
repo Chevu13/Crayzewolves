@@ -132,6 +132,7 @@ window.CW = window.CW || {};
             featured: Boolean(p.is_featured),
             trending: false,
             image: resolveImage(p.image, p.image_alt, 1200, 800),
+            imageMobile: resolveImage(p.image_mobile, p.image_mobile_alt, 1080, 1920),
             tags: p.tags || [],
             body: toBlocks(p.content),
             relatedIds: []

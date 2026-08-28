@@ -46,6 +46,7 @@ window.CW = window.CW || {};
       else window.localStorage.removeItem(SESSION_KEY);
     } catch (e) { /* privatni prozor — sesija tada traje do zatvaranja kartice */ }
     sb._session = s;
+    sb._customerCache = null; /* profil pripada prošloj sesiji, ne važi više */
   }
 
   sb.session = function () { return sb._session || readSession(); };
@@ -101,6 +102,36 @@ window.CW = window.CW || {};
       });
     },
 
+    /* Registracija. `handle_new_user()` u bazi (supabase-postavka.sql) čita
+       baš ova dva polja iz raw_user_meta_data i njima puni customers.
+       Supabase vraća sesiju odmah AKO je "Confirm email" isključeno u
+       Authentication → Providers → Email; inače vraća korisnika bez
+       sesije i traži potvrdu mejlom — pozivalac to prepoznaje po tome što
+       resolved objekat nema `access_token`. */
+    signUp: function (email, password, firstName, lastName) {
+      return fetch(CFG.url + '/auth/v1/signup', {
+        method: 'POST',
+        headers: { apikey: CFG.anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          data: { first_name: firstName, last_name: lastName }
+        })
+      }).then(function (r) {
+        return r.json().then(function (d) {
+          if (!r.ok) {
+            var msg = d.error_description || d.msg || d.message || '';
+            if (/already registered|user already exists/i.test(msg)) msg = 'Nalog sa ovim imejlom već postoji.';
+            else if (/password/i.test(msg) && /least|short|weak/i.test(msg)) msg = 'Lozinka mora imati najmanje šest znakova.';
+            else if (!msg) msg = 'Registracija nije uspela.';
+            throw new Error(msg);
+          }
+          if (d.access_token) writeSession(d);
+          return d;
+        });
+      });
+    },
+
     signOut: function () {
       var s = sb.session();
       writeSession(null);
@@ -114,6 +145,19 @@ window.CW = window.CW || {};
     user: function () {
       var s = sb.session();
       return s && s.user ? s.user : null;
+    },
+
+    /* Ime/prezime/adresa nisu na JWT-u, samo u public.customers. Jedan
+       zahtev po sesiji — keš se prazni u writeSession() pri svakoj promeni
+       sesije (prijava, odjava, druga prijava). */
+    customer: function () {
+      var u = sb.auth.user();
+      if (!u) return Promise.resolve(null);
+      if (sb._customerCache) return sb._customerCache;
+      sb._customerCache = sb.from('customers').select('*').eq('id', u.id).limit(1).get()
+        .then(function (rows) { return (rows && rows[0]) || null; })
+        .catch(function () { return null; });
+      return sb._customerCache;
     }
   };
 

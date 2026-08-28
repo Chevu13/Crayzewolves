@@ -764,13 +764,16 @@
           break;
         }
         submitting(form, true);
-        setTimeout(function () {
+        CW.sb.auth.signIn(lv.values.email, lv.values.password).then(function () {
           submitting(form, false);
-          CW.store.signIn(lv.values.email);
           CW.ui.refreshHeader();
-          CW.toast({ type: 'success', title: 'Dobro došao nazad', text: 'Signed in as ' + lv.values.email });
+          CW.toast({ type: 'success', title: 'Dobro došao nazad', text: 'Prijavljen kao ' + lv.values.email });
           CW.router.go(form.getAttribute('data-next') || '/account');
-        }, 700);
+        }).catch(function (e) {
+          submitting(form, false);
+          formStatus(form, 'error', e.message);
+          CW.toast({ type: 'error', title: 'Prijava nije uspela', text: e.message });
+        });
         break;
       }
 
@@ -790,13 +793,24 @@
           break;
         }
         submitting(form, true);
-        setTimeout(function () {
-          submitting(form, false);
-          CW.store.register(rv.values.firstName, rv.values.lastName, rv.values.email);
-          CW.ui.refreshHeader();
-          CW.toast({ type: 'success', title: 'Welcome to the pack', text: 'Your account is ready.' });
-          CW.router.go('/account');
-        }, 800);
+        CW.sb.auth.signUp(rv.values.email, rv.values.password, rv.values.firstName, rv.values.lastName)
+          .then(function (d) {
+            submitting(form, false);
+            if (d.access_token) {
+              CW.ui.refreshHeader();
+              CW.toast({ type: 'success', title: 'Dobro došao u čopor', text: 'Nalog je spreman.' });
+              CW.router.go('/account');
+            } else {
+              /* Supabase traži potvrdu mejlom (Authentication → Providers →
+                 Email → "Confirm email") — nalog postoji, prijava još ne radi. */
+              CW.toast({ type: 'success', title: 'Skoro gotovo', text: 'Proveri mejl i potvrdi nalog pre prijave.' });
+              CW.router.go('/account/login');
+            }
+          }).catch(function (e) {
+            submitting(form, false);
+            formStatus(form, 'error', e.message);
+            CW.toast({ type: 'error', title: 'Registracija nije uspela', text: e.message });
+          });
         break;
       }
 

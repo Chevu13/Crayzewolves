@@ -645,7 +645,7 @@ CW.c.newsCard = function (n) {
   var cat = CW.find('newsCategories', n.categoryId) || { name: '' };
   var date = CW.resolveDate(n.dayOffset, '10:00');
   var media = n.image
-    ? CW.img(n.image, { ratio: '3 / 2', ph: n.title })
+    ? CW.imgPost(n, { ratio: '3 / 2', ph: n.title })
     : '<div class="ph ph--16x9" data-ph="' + CW.esc(n.title) + '"></div>';
 
   return '' +
@@ -668,7 +668,7 @@ CW.c.newsFeature = function (n) {
   var cat = CW.find('newsCategories', n.categoryId) || { name: '' };
   var date = CW.resolveDate(n.dayOffset, '10:00');
   var media = n.image
-    ? CW.img(n.image, { ratio: 'auto', cls: 'is-fill', ph: n.title, eager: true })
+    ? CW.imgPost(n, { ratio: 'auto', cls: 'is-fill', ph: n.title, eager: true })
     : '<div class="ph" style="height:100%;min-height:340px" data-ph="' + CW.esc(n.title) + '"></div>';
 
   return '' +
@@ -922,11 +922,12 @@ CW.ui.bind = function () {
 
       case 'sign-out':
         ev.preventDefault();
-        CW.store.signOut();
-        CW.ui.closeAllOverlays();
-        CW.toast({ type: 'info', title: 'Odjavljen si', text: 'Vidimo se na Discordu.' });
-        CW.ui.refreshHeader();
-        CW.router.go('/');
+        CW.sb.auth.signOut().then(function () {
+          CW.ui.closeAllOverlays();
+          CW.toast({ type: 'info', title: 'Odjavljen si', text: 'Vidimo se na Discordu.' });
+          CW.ui.refreshHeader();
+          CW.router.go('/');
+        });
         break;
 
       case 'accordion': {

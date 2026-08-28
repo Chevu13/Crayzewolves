@@ -315,7 +315,6 @@ CW.store = (function () {
     cart: [],            /* { productId, variantId, qty } */
     wishlist: [],        /* productId[] */
     recentlyViewed: [],  /* productId[] */
-    user: null,          /* { firstName, lastName, email } */
     coupon: null,        /* { code, type, value } */
     lastOrder: null,
     cookiesAccepted: false
@@ -456,23 +455,25 @@ CW.store = (function () {
       return state.recentlyViewed.filter(function (id) { return CW.product(id); });
     },
 
-    /* ---------- SESSION ---------- */
-    user: function () { return state.user; },
-    signIn: function (email) {
-      var demo = CW.data.demoAccount;
-      state.user = {
-        firstName: demo.firstName, lastName: demo.lastName,
-        email: email || demo.email, memberSince: demo.memberSince
+    /* ---------- SESSION ----------
+       Pravi nalog živi u Supabase Auth (CW.sb), ne ovde — prijava,
+       registracija i odjava idu direktno na CW.sb.auth iz cw-app.js i
+       cw-components.js. Ovo ostaje samo kao ČITANJE, u istom obliku kao
+       ranije ({firstName,lastName,email}|null), da se ekrani koji ga već
+       koriste (zaglavlje, nalog, čuvari ruta) ne moraju menjati.
+       Ime/prezime dolaze iz user_metadata upisanog pri registraciji
+       (cw-supabase.js signUp) — vraća ih Supabase uz svaku sesiju. */
+    user: function () {
+      var u = CW.sb && CW.sb.enabled && CW.sb.auth.user();
+      if (!u) return null;
+      var meta = u.user_metadata || {};
+      return {
+        id: u.id,
+        email: u.email,
+        firstName: meta.first_name || '',
+        lastName: meta.last_name || ''
       };
-      emit();
-      return state.user;
     },
-    register: function (firstName, lastName, email) {
-      state.user = { firstName: firstName, lastName: lastName, email: email, memberSince: new Date().toISOString() };
-      emit();
-      return state.user;
-    },
-    signOut: function () { state.user = null; emit(); },
 
     /* ---------- ORDER ---------- */
     placeOrder: function (details) {

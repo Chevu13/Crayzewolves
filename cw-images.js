@@ -342,6 +342,19 @@ CW.img = function (key, opts) {
     'onerror="' + onerr + '">';
 };
 
+/** Naslovna slika objave — dodaje mobilni izvor kad ga objava ima.
+ *  post.image je i dalje fallback (desktop, i za pregledače bez <picture>
+ *  podrške), post.imageMobile je opciono; kad ga nema, ponaša se isto kao
+ *  CW.img(post.image, opts). */
+CW.imgPost = function (post, opts) {
+  var img = CW.img(post && post.image, opts);
+  if (!post || !post.imageMobile) return img;
+  var mobileSrc = CW.imgSrc(post.imageMobile);
+  if (!mobileSrc) return img;
+  return '<picture><source media="(max-width: 640px)" srcset="' +
+    CW.esc(mobileSrc) + '">' + img + '</picture>';
+};
+
 /** Putanja za CSS background-image. */
 CW.imgSrc = function (key) {
   var meta = CW.IMAGES[key];

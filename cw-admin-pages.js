@@ -301,7 +301,7 @@ CW.admin = CW.admin || {};
     CW.onMount(function () {
       if (isNew) {
         fillForm({
-          title: '', excerpt: '', content: '', image: '',
+          title: '', excerpt: '', content: '', image: '', imageMobile: '',
           categoryId: '', tags: [], status: 'DRAFT', isFeatured: false
         });
         return;
@@ -324,6 +324,7 @@ CW.admin = CW.admin || {};
       f.elements.tags.value = (p.tags || []).join(', ');
       f.elements.isFeatured.checked = Boolean(p.isFeatured);
       CW.adm.setImage('adm-post-image', p.image || '');
+      CW.adm.setImage('adm-post-image-mobile', p.imageMobile || '');
       updatePreview();
       var del = document.getElementById('adm-post-delete');
       if (del) del.classList.toggle('hidden', isNew);
@@ -406,7 +407,7 @@ CW.admin = CW.admin || {};
           '</div>' +
 
           '<div class="adm-panel mt-3">' +
-            '<span class="field__label">Naslovna slika</span>' +
+            '<span class="field__label">Naslovna slika — PC</span>' +
             CW.adm.imagePicker({
               id: 'adm-post-image',
               name: 'image',
@@ -414,6 +415,18 @@ CW.admin = CW.admin || {};
               ratio: '3 / 2',
               recW: 1200, recH: 800, ratioLabel: 'odnos 3:2',
               note: 'Ako nemaš svoju sliku, uzmi jedan od šablona iz biblioteke.'
+            }) +
+          '</div>' +
+
+          '<div class="adm-panel mt-3">' +
+            '<span class="field__label">Naslovna slika — mobilni</span>' +
+            CW.adm.imagePicker({
+              id: 'adm-post-image-mobile',
+              name: 'imageMobile',
+              groups: ['blog', 'brend', 'discord'],
+              ratio: '9 / 16',
+              recW: 1080, recH: 1920, ratioLabel: 'odnos 9:16',
+              note: 'Nije obavezno — ako je ostaviš praznu, na mobilnom se prikazuje PC slika.'
             }) +
           '</div>' +
 

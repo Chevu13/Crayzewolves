@@ -12,13 +12,12 @@ CW.pages = CW.pages || {};
 CW.pages._accountShell = function (activePath, title, body) {
   var user = CW.store.user();
   var wishCount = CW.store.wishlist().length;
-  var orderCount = CW.data.demoAccount.orders.length;
 
   var links = [
     { path: '/nalog',             label: 'Pregled',        icon: 'home' },
     { path: '/nalog/podaci',      label: 'Lični podaci',   icon: 'user' },
     { path: '/nalog/adrese',      label: 'Sačuvane adrese',icon: 'pin' },
-    { path: '/nalog/porudzbine',  label: 'Porudžbine',     icon: 'package', count: orderCount },
+    { path: '/nalog/porudzbine',  label: 'Porudžbine',     icon: 'package' },
     { path: '/nalog/lista-zelja', label: 'Lista želja',    icon: 'heart',   count: wishCount }
   ];
 
@@ -111,10 +110,7 @@ CW.pages.login = function (ctx) {
         '<div data-form-status role="status" aria-live="polite"></div>' +
       '</form>' +
 
-      '<div class="alert alert--info mt-3">' + CW.icon('info', 16) +
-        '<span>Demo verzija — prijavljuje te svaka ispravna imejl adresa i lozinka od šest ili više znakova.</span></div>' +
-
-      '<div class="divider"><span class="divider__mark"></span></div>' +
+      '<div class="divider mt-3"><span class="divider__mark"></span></div>' +
 
       '<p class="t-sm text-center">New here? <a class="link-underline" href="#/account/register">Napravi nalog</a></p>' +
       '<p class="t-xs text-center mt-2">Nalog nije obavezan za kupovinu, ali olakšava praćenje porudžbina.</p>' +
@@ -227,57 +223,51 @@ CW.pages.account = function () {
   var user = CW.store.user();
   if (!user) return CW.pages._requireAuth('/account');
 
-  var demo = CW.data.demoAccount;
-  var recent = demo.orders.slice(0, 2);
   var wish = CW.store.wishlist().map(CW.product).filter(Boolean);
-  var addr = demo.addresses.filter(function (a) { return a.isDefault; })[0];
+
+  CW.onMount(function () {
+    var host = document.getElementById('acc-recent-orders');
+    if (!host) return;
+    CW.api.orders.all().then(function (rows) {
+      var recent = rows.slice(0, 2);
+      host.innerHTML = recent.length
+        ? '<div class="stack stack-2">' + recent.map(CW.pages._orderRow).join('') + '</div>'
+        : '<p class="t-sm">Još nema porudžbina.</p>';
+    }).catch(function () {
+      host.innerHTML = '<p class="t-sm">Ne mogu da učitam porudžbine.</p>';
+    });
+  });
 
   var body =
     '<div class="stack stack-4">' +
 
-      '<div class="alert alert--gold">' + CW.icon('discord', 18) +
-        '<span>Your Discord handle is linked as <b>' + CW.esc(demo.discordHandle) + '</b>. ' +
-        'Member since ' + CW.fmtDate(demo.memberSince, 'short') + '.</span></div>' +
-
-      '<div class="grid grid--3">' +
-        '<div class="stat-cell card"><div class="stat-cell__num">' + demo.orders.length + '</div><div class="stat-cell__lbl">Orders placed</div></div>' +
-        '<div class="stat-cell card"><div class="stat-cell__num">' + wish.length + '</div><div class="stat-cell__lbl">Wishlist items</div></div>' +
-        '<div class="stat-cell card"><div class="stat-cell__num">' + demo.addresses.length + '</div><div class="stat-cell__lbl">Saved addresses</div></div>' +
-      '</div>' +
-
       '<div>' +
         '<div class="row row--between mb-3">' +
-          '<h2 class="t-h3">Recent orders</h2>' +
-          '<a class="link-arrow" href="#/account/orders">All orders ' + CW.icon('arrowR', 15) + '</a>' +
+          '<h2 class="t-h3">Nedavne porudžbine</h2>' +
+          '<a class="link-arrow" href="#/nalog/porudzbine">Sve porudžbine ' + CW.icon('arrowR', 15) + '</a>' +
         '</div>' +
-        '<div class="stack stack-2">' + recent.map(CW.pages._orderRow).join('') + '</div>' +
+        '<div id="acc-recent-orders" class="stack stack-2">' +
+          '<div class="card"><div class="card__body"><div class="skeleton skeleton--line" style="width:40%"></div></div></div>' +
+        '</div>' +
       '</div>' +
 
       '<div class="grid grid--2">' +
         '<div class="card"><div class="card__body">' +
           '<div class="row row--between">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Default address</div>' +
-            '<a class="t-xs link-underline" href="#/account/addresses">Edit</a>' +
+            '<div class="t-eyebrow t-eyebrow--gold">Podrazumevana adresa</div>' +
+            '<a class="t-xs link-underline" href="#/nalog/adrese">Izmeni</a>' +
           '</div>' +
-          (addr ?
-            '<div class="t-sm mt-2">' +
-              '<div class="t-offwhite">' + CW.esc(addr.name) + '</div>' +
-              '<div>' + CW.esc(addr.line1) + '</div>' +
-              (addr.line2 ? '<div>' + CW.esc(addr.line2) + '</div>' : '') +
-              '<div>' + CW.esc(addr.postcode + ' ' + addr.city) + '</div>' +
-              '<div>' + CW.esc(addr.country) + '</div>' +
-            '</div>' : '<p class="t-sm mt-2">No address saved yet.</p>') +
+          '<p class="t-sm mt-2">Još nema sačuvane adrese.</p>' +
         '</div></div>' +
 
         '<div class="card"><div class="card__body">' +
           '<div class="row row--between">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Personal information</div>' +
-            '<a class="t-xs link-underline" href="#/account/details">Edit</a>' +
+            '<div class="t-eyebrow t-eyebrow--gold">Lični podaci</div>' +
+            '<a class="t-xs link-underline" href="#/nalog/podaci">Izmeni</a>' +
           '</div>' +
           '<div class="spec-list mt-2">' +
-            '<div class="spec-list__row"><span class="spec-list__k">Name</span><span class="spec-list__v">' + CW.esc(user.firstName + ' ' + user.lastName) + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Email</span><span class="spec-list__v">' + CW.esc(user.email) + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Phone</span><span class="spec-list__v">' + CW.esc(demo.phone) + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Ime</span><span class="spec-list__v">' + CW.esc(user.firstName + ' ' + user.lastName) + '</span></div>' +
+            '<div class="spec-list__row"><span class="spec-list__k">Imejl</span><span class="spec-list__v">' + CW.esc(user.email) + '</span></div>' +
           '</div>' +
         '</div></div>' +
       '</div>' +
@@ -285,8 +275,8 @@ CW.pages.account = function () {
       (wish.length ?
       '<div>' +
         '<div class="row row--between mb-3">' +
-          '<h2 class="t-h3">From your wishlist</h2>' +
-          '<a class="link-arrow" href="#/account/wishlist">View all ' + CW.icon('arrowR', 15) + '</a>' +
+          '<h2 class="t-h3">Sa liste želja</h2>' +
+          '<a class="link-arrow" href="#/nalog/lista-zelja">Vidi sve ' + CW.icon('arrowR', 15) + '</a>' +
         '</div>' +
         '<div class="product-grid">' + wish.slice(0, 3).map(CW.c.productCard).join('') + '</div>' +
       '</div>' : '') +
@@ -295,25 +285,41 @@ CW.pages.account = function () {
   return CW.pages._accountShell('/nalog', 'Moj nalog', body);
 };
 
-CW.pages._orderRow = function (o) {
-  var statusMap = {
-    delivered:  { cls: 'order-status--delivered',  label: 'Delivered',  icon: 'check' },
-    transit:    { cls: 'order-status--transit',    label: 'In transit', icon: 'truck' },
-    processing: { cls: 'order-status--processing', label: 'Processing', icon: 'clock' },
-    cancelled:  { cls: 'order-status--cancelled',  label: 'Cancelled',  icon: 'x' }
-  };
-  var s = statusMap[o.status] || statusMap.processing;
+/* Iznos je u parama/centima; formatira se po valuti PORUDŽBINE, ne po
+   valuti sajta — jedan kupac može imati porudžbinu u RSD i drugu u EUR. */
+CW.pages._orderMoney = function (minor, currency) {
+  var v = ((minor || 0) / 100).toFixed(2).split('.');
+  var whole = v[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return currency === 'EUR' ? '€' + whole + ',' + v[1] : whole + ',' + v[1] + ' RSD';
+};
 
-  return '<a class="card card--link" href="#/account/orders/' + o.id + '">' +
+/* Realni statusi (pending_payment/confirmed/processing/shipped/delivered/
+   cancelled/refunded) mapiraju se na četiri postojeća CSS tona — nema
+   posebne boje za svaki, pa se najbliži ton ponovo koristi. */
+CW.pages._orderTone = {
+  pending_payment: 'order-status--processing',
+  confirmed:       'order-status--processing',
+  processing:      'order-status--processing',
+  shipped:         'order-status--transit',
+  delivered:        'order-status--delivered',
+  cancelled:        'order-status--cancelled',
+  refunded:         'order-status--cancelled'
+};
+
+CW.pages._orderRow = function (o) {
+  var label = (CW.api.orderStatuses && CW.api.orderStatuses[o.status]) || o.status;
+  var cls = CW.pages._orderTone[o.status] || 'order-status--processing';
+
+  return '<a class="card card--link" href="#/nalog/porudzbine/' + encodeURIComponent(o.id) + '">' +
     '<div class="card__body" style="gap:var(--space-2)">' +
       '<div class="row row--between row--wrap" style="gap:12px">' +
         '<div>' +
-          '<div class="t-h4">' + CW.esc(o.id) + '</div>' +
-          '<div class="t-xs mt-1">Placed ' + CW.fmtDate(o.date, 'short') + ' · ' + o.items.length + ' item' + (o.items.length === 1 ? '' : 's') + '</div>' +
+          '<div class="t-h4">' + CW.esc(o.order_number) + '</div>' +
+          '<div class="t-xs mt-1">' + CW.fmtDate(o.created_at, 'short') + '</div>' +
         '</div>' +
         '<div class="row" style="gap:16px">' +
-          '<span class="order-status ' + s.cls + '">' + CW.icon(s.icon, 14) + CW.esc(s.label) + '</span>' +
-          '<span class="t-price" style="font-size:1.25rem">' + CW.money(o.total) + '</span>' +
+          '<span class="order-status ' + cls + '">' + CW.esc(label) + '</span>' +
+          '<span class="t-price" style="font-size:1.25rem">' + CW.pages._orderMoney(o.total, o.currency) + '</span>' +
           CW.icon('chevronR', 18) +
         '</div>' +
       '</div>' +
@@ -469,30 +475,31 @@ CW.pages.accountAddresses = function () {
 CW.pages.accountOrders = function () {
   var user = CW.store.user();
   if (!user) return CW.pages._requireAuth('/account/orders');
-  var orders = CW.data.demoAccount.orders.slice();
 
-  var live = CW.store.lastOrder();
-  if (live) {
-    orders.unshift({
-      id: live.id, date: live.date, status: 'processing',
-      total: live.totals.total, shipping: live.totals.shipping, discount: live.totals.discount,
-      method: (live.details || {}).shippingName || 'Standard Delivery',
-      tracking: null, addressId: null,
-      items: live.items.map(function (l) {
-        return { productId: l.productId, variantId: l.variantId, qty: l.qty, price: CW.product(l.productId).price };
-      })
+  CW.onMount(function () {
+    var host = document.getElementById('acc-ord-list');
+    if (!host) return;
+    CW.api.orders.all().then(function (rows) {
+      host.innerHTML = rows.length
+        ? '<div class="stack stack-2">' + rows.map(CW.pages._orderRow).join('') + '</div>'
+        : CW.c.empty({
+            icon: 'package', title: 'Još nema porudžbina',
+            text: 'Kad naručiš, porudžbina će se pojaviti ovde, sa statusom i praćenjem.',
+            actions: '<a class="btn btn--primary" href="#/shop">Otvori shop</a>'
+          });
+    }).catch(function (e) {
+      host.innerHTML = CW.c.empty({ icon: 'alert', title: 'Ne mogu da učitam porudžbine', text: e.message });
     });
-  }
+  });
 
-  var body = orders.length
-    ? '<div class="stack stack-2">' + orders.map(CW.pages._orderRow).join('') + '</div>'
-    : CW.c.empty({
-        icon: 'package', title: 'No orders yet',
-        text: 'When you place an order it will appear here, with tracking.',
-        actions: '<a class="btn btn--primary" href="#/shop">Otvori shop</a>'
-      });
+  var skelRow = '<div class="card"><div class="card__body">' +
+    '<div class="skeleton skeleton--line" style="width:40%"></div>' +
+    '<div class="skeleton skeleton--line-short mt-2"></div>' +
+  '</div></div>';
 
-  return CW.pages._accountShell('/account/orders', 'Order history', body);
+  var body = '<div id="acc-ord-list" class="stack stack-2">' + skelRow + skelRow + '</div>';
+
+  return CW.pages._accountShell('/account/orders', 'Porudžbine', body);
 };
 
 /* ==========================================================================
@@ -501,121 +508,119 @@ CW.pages.accountOrders = function () {
 CW.pages.accountOrder = function (ctx) {
   var user = CW.store.user();
   if (!user) return CW.pages._requireAuth('/account/orders');
+  var id = ctx.params.id;
 
-  var orders = CW.data.demoAccount.orders.slice();
-  var live = CW.store.lastOrder();
-  if (live) {
-    orders.unshift({
-      id: live.id, date: live.date, status: 'processing', total: live.totals.total,
-      shipping: live.totals.shipping, discount: live.totals.discount,
-      method: (live.details || {}).shippingName || 'Standard Delivery', tracking: null, addressId: null,
-      items: live.items.map(function (l) {
-        return { productId: l.productId, variantId: l.variantId, qty: l.qty, price: CW.product(l.productId).price };
-      })
+  CW.onMount(function () {
+    var host = document.getElementById('acc-ord-body');
+    if (!host) return;
+
+    CW.api.orders.get(id).then(function (o) {
+      paint(o);
+      return CW.api.orders.events(id);
+    }).then(function (events) {
+      var h = document.getElementById('acc-ord-events');
+      if (!h) return;
+      h.innerHTML = events && events.length
+        ? events.map(function (e) {
+            var lbl = (CW.api.orderStatuses && CW.api.orderStatuses[e.to_status]) || e.to_status;
+            return '<div class="row row--between" style="padding:4px 0">' +
+              '<span class="t-sm">' + CW.esc(lbl) + '</span>' +
+              '<span class="t-xs t-muted">' + CW.fmtDate(e.created_at, 'short') + '</span></div>';
+          }).join('')
+        : '<p class="t-sm">Nema promena statusa.</p>';
+    }).catch(function (e) {
+      host.innerHTML = CW.c.empty({
+        icon: 'package', title: 'Porudžbina nije pronađena',
+        text: e.message || 'Proveri da li je adresa tačna.',
+        actions: '<a class="btn btn--primary" href="#/nalog/porudzbine">Nazad na porudžbine</a>'
+      });
     });
-  }
 
-  var o = orders.filter(function (x) { return x.id === ctx.params.id; })[0];
-  if (!o) return CW.pages._accountShell('/account/orders', 'Order not found',
-    CW.c.empty({ icon: 'package', title: 'Order not found', text: 'We could not find that order number on your account.',
-      actions: '<a class="btn btn--primary" href="#/nalog/porudzbine">Nazad na porudžbine</a>' }));
+    function paint(o) {
+      var money = CW.pages._orderMoney;
+      var cls = CW.pages._orderTone[o.status] || 'order-status--processing';
+      var label = (CW.api.orderStatuses && CW.api.orderStatuses[o.status]) || o.status;
 
-  var addr = CW.data.demoAccount.addresses.filter(function (a) { return a.id === o.addressId; })[0] || CW.data.demoAccount.addresses[0];
-  var subtotal = o.items.reduce(function (n, i) { return n + i.price * i.qty; }, 0);
+      var items = (o.items || []).map(function (i) {
+        return '<div class="line-item">' +
+          '<div class="stack stack-1">' +
+            '<div class="line-item__title">' + CW.esc(i.name) +
+              (i.variant ? ' <span class="t-muted">· ' + CW.esc(i.variant) + '</span>' : '') + '</div>' +
+            '<div class="line-item__variant">Količina ' + i.quantity + '</div>' +
+          '</div>' +
+          '<div class="line-item__right"><div class="t-price" style="font-size:1.125rem">' + money(i.line_total, o.currency) + '</div></div>' +
+        '</div>';
+      }).join('');
 
-  var steps = [
-    { key: 'processing', label: 'Order placed', icon: 'check' },
-    { key: 'packed',     label: 'Packed',       icon: 'package' },
-    { key: 'transit',    label: 'In transit',   icon: 'truck' },
-    { key: 'delivered',  label: 'Delivered',    icon: 'home' }
-  ];
-  var reached = { processing: 1, packed: 2, transit: 3, delivered: 4 }[o.status] || 1;
+      host.innerHTML =
+        '<div class="stack stack-4">' +
+          '<a class="link-arrow" href="#/nalog/porudzbine">' + CW.icon('arrowL', 15) + ' Nazad na porudžbine</a>' +
 
-  var body =
-    '<div class="stack stack-4">' +
-      '<a class="link-arrow" href="#/nalog/porudzbine">' + CW.icon('arrowL', 15) + ' Nazad na porudžbine</a>' +
-
-      '<div class="card"><div class="card__body" style="padding:var(--space-4)">' +
-        '<div class="row row--between row--wrap" style="gap:12px">' +
-          '<div><h2 class="t-h2">' + CW.esc(o.id) + '</h2>' +
-          '<div class="t-sm mt-1">Placed ' + CW.fmtDate(o.date, 'long') + '</div></div>' +
-          '<div class="text-center"><div class="t-price" style="font-size:1.75rem">' + CW.money(o.total) + '</div>' +
-          '<div class="t-label mt-1">Total paid</div></div>' +
-        '</div>' +
-
-        '<hr class="divider-line">' +
-
-        '<div class="stepper" style="flex-wrap:wrap;gap:var(--space-2)">' +
-          steps.map(function (s, i) {
-            var state = i + 1 < reached ? 'is-done' : i + 1 === reached ? 'is-active' : '';
-            return '<div class="stepper__step ' + state + '">' +
-              '<span class="stepper__num">' + (i + 1 < reached ? CW.icon('check', 13) : (i + 1)) + '</span>' +
-              '<span class="stepper__label">' + CW.esc(s.label) + '</span></div>' +
-              (i < steps.length - 1 ? '<span class="stepper__bar"></span>' : '');
-          }).join('') +
-        '</div>' +
-
-        (o.tracking
-          ? '<div class="alert alert--gold mt-3">' + CW.icon('truck', 18) +
-            '<span>Tracking number <b>' + CW.esc(o.tracking) + '</b> — ' + CW.esc(o.method) + '. ' +
-            '<a class="link-underline" href="#">Track this parcel</a></span></div>'
-          : '<div class="alert alert--info mt-3">' + CW.icon('clock', 18) +
-            '<span>Not dispatched yet. A tracking number will appear here and arrive by email once it ships.</span></div>') +
-      '</div></div>' +
-
-      '<div class="cart-layout">' +
-        '<div class="card"><div style="padding:0 var(--space-3)">' +
-          o.items.map(function (i) {
-            var p = CW.product(i.productId);
-            if (!p) return '';
-            return '<div class="line-item">' +
-              '<a class="line-item__media" href="#/product/' + p.slug + '"></a>' +
-              '<div class="stack stack-1">' +
-                '<a class="line-item__title" href="#/product/' + p.slug + '">' + CW.esc(p.name) + '</a>' +
-                '<div class="line-item__variant">' + [CW.variantLabel(p, i.variantId), 'Količina ' + i.qty].filter(Boolean).map(CW.esc).join(' · ') + '</div>' +
-                '<div class="line-item__actions">' +
-                  '<a class="line-item__action" href="#/product/' + p.slug + '">Buy again</a>' +
-                  '<a class="line-item__action" href="#/returns">Return this item</a>' +
-                '</div>' +
+          '<div class="card"><div class="card__body" style="padding:var(--space-4)">' +
+            '<div class="row row--between row--wrap" style="gap:12px">' +
+              '<div><h2 class="t-h2">' + CW.esc(o.order_number) + '</h2>' +
+              '<div class="t-sm mt-1">' + CW.fmtDate(o.created_at, 'long') + '</div></div>' +
+              '<div class="text-center">' +
+                '<span class="order-status ' + cls + '">' + CW.esc(label) + '</span>' +
+                '<div class="t-price mt-1" style="font-size:1.75rem">' + money(o.total, o.currency) + '</div>' +
               '</div>' +
-              '<div class="line-item__right"><div class="t-price" style="font-size:1.125rem">' + CW.money(i.price * i.qty) + '</div></div>' +
-            '</div>';
-          }).join('') +
-        '</div></div>' +
-
-        '<aside class="stack stack-3">' +
-          '<div class="card"><div class="card__body">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Payment summary</div>' +
-            '<div class="spec-list mt-2">' +
-              '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(subtotal) + '</span></div>' +
-              (o.discount ? '<div class="spec-list__row"><span class="spec-list__k">Discount</span><span class="spec-list__v t-gold">−' + CW.money(o.discount) + '</span></div>' : '') +
-              '<div class="spec-list__row"><span class="spec-list__k">Shipping</span><span class="spec-list__v">' + (o.shipping === 0 ? 'Free' : CW.money(o.shipping)) + '</span></div>' +
-              '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Total</span><span class="spec-list__v">' + CW.money(o.total) + '</span></div>' +
             '</div>' +
+
+            (o.tracking_number
+              ? '<div class="alert alert--gold mt-3">' + CW.icon('truck', 18) +
+                '<span>Broj pošiljke <b>' + CW.esc(o.tracking_number) + '</b></span></div>'
+              : (o.status === 'shipped' || o.status === 'delivered' ? '' :
+                 '<div class="alert alert--info mt-3">' + CW.icon('clock', 18) +
+                 '<span>Još nije poslata. Broj pošiljke će se pojaviti ovde čim krene.</span></div>')) +
+
+            '<hr class="divider-line">' +
+            '<div class="t-eyebrow t-eyebrow--gold">Istorija</div>' +
+            '<div class="mt-2" id="acc-ord-events"><p class="t-sm">Učitavanje…</p></div>' +
           '</div></div>' +
 
-          '<div class="card"><div class="card__body">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Delivery address</div>' +
-            '<div class="t-sm mt-2">' +
-              '<div class="t-offwhite">' + CW.esc(addr.name) + '</div>' +
-              '<div>' + CW.esc(addr.line1) + '</div>' +
-              (addr.line2 ? '<div>' + CW.esc(addr.line2) + '</div>' : '') +
-              '<div>' + CW.esc(addr.postcode + ' ' + addr.city) + '</div>' +
-              '<div>' + CW.esc(addr.country) + '</div>' +
-            '</div>' +
-          '</div></div>' +
+          '<div class="cart-layout">' +
+            '<div class="card"><div style="padding:0 var(--space-3)">' + items + '</div></div>' +
 
-          '<div class="card"><div class="card__body">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Need help?</div>' +
-            '<p class="t-sm mt-2">Quote order number ' + CW.esc(o.id) + ' and we can find it instantly.</p>' +
-            '<a class="btn btn--quiet btn--full mt-2" href="#/contact?topic=merch">Contact the shop</a>' +
-            '<a class="btn btn--ghost btn--full mt-1" href="#/returns">Start a return</a>' +
-          '</div></div>' +
-        '</aside>' +
-      '</div>' +
-    '</div>';
+            '<aside class="stack stack-3">' +
+              '<div class="card"><div class="card__body">' +
+                '<div class="t-eyebrow t-eyebrow--gold">Iznos</div>' +
+                '<div class="spec-list mt-2">' +
+                  '<div class="spec-list__row"><span class="spec-list__k">Međuzbir</span><span class="spec-list__v">' + money(o.subtotal, o.currency) + '</span></div>' +
+                  (o.discount ? '<div class="spec-list__row"><span class="spec-list__k">Popust</span><span class="spec-list__v t-gold">−' + money(o.discount, o.currency) + '</span></div>' : '') +
+                  '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (o.shipping_cost ? money(o.shipping_cost, o.currency) : 'Besplatno') + '</span></div>' +
+                  '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Ukupno</span><span class="spec-list__v">' + money(o.total, o.currency) + '</span></div>' +
+                '</div>' +
+              '</div></div>' +
 
-  return CW.pages._accountShell('/account/orders', 'Order ' + o.id, body);
+              '<div class="card"><div class="card__body">' +
+                '<div class="t-eyebrow t-eyebrow--gold">Dostava</div>' +
+                '<div class="t-sm mt-2">' +
+                  (o.address_line
+                    ? '<div class="t-offwhite">' + CW.esc(o.first_name + ' ' + o.last_name) + '</div>' +
+                      '<div>' + CW.esc(o.address_line) + '</div>' +
+                      '<div>' + CW.esc((o.postcode || '') + ' ' + (o.city || '')) + '</div>' +
+                      '<div>' + CW.esc(o.country || '') + '</div>'
+                    : '<span class="t-muted">Digitalna isporuka — na imejl.</span>') +
+                '</div>' +
+              '</div></div>' +
+
+              '<div class="card"><div class="card__body">' +
+                '<div class="t-eyebrow t-eyebrow--gold">Treba ti pomoć?</div>' +
+                '<p class="t-sm mt-2">Navedi broj porudžbine ' + CW.esc(o.order_number) + ' i brzo je nalazimo.</p>' +
+                '<a class="btn btn--quiet btn--full mt-2" href="#/contact?topic=merch">Kontaktiraj prodavnicu</a>' +
+              '</div></div>' +
+            '</aside>' +
+          '</div>' +
+        '</div>';
+    }
+  });
+
+  var body = '<div id="acc-ord-body"><div class="card"><div class="card__body">' +
+    '<div class="skeleton skeleton--line" style="width:30%"></div>' +
+    '<div class="skeleton skeleton--line-short mt-2"></div>' +
+  '</div></div></div>';
+
+  return CW.pages._accountShell('/account/orders', 'Porudžbina', body);
 };
 
 /* ==========================================================================
