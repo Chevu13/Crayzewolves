@@ -31,7 +31,7 @@ CW.IMAGES = {
   },
   'banner-lockup': {
     local: 'images/banner-lockup.webp',
-    w: 1568, h: 644, crop: 'none', group: 'brend',
+    w: 1881, h: 836, crop: 'none', group: 'brend',
     alt: 'CRAZYWOLVES COMMUNITY — zvanični lockup'
   },
 
