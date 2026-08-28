@@ -16,6 +16,34 @@
 <meta property="og:image" content="images/og-banner.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
+<!-- Kanonička adresa. Statična vrednost je tačna DANAS (sajt je na /app dok
+     traje "sajt u izradi"); skripta je ispravlja na stvarnu putanju čim se
+     učita, pa nema ručne izmene na dan lansiranja kad ovaj fajl postane
+     koren domena (vidi VERCEL.md). -->
+<link rel="canonical" href="https://crazywolves.rs/app" id="canonical-link">
+<script>
+  (function () {
+    var l = document.getElementById('canonical-link');
+    if (l) l.href = window.location.origin + window.location.pathname;
+  })();
+</script>
+
+<!-- Strukturirani podaci — ko je CrazyWolves, za Google Knowledge Panel i
+     bogate rezultate. Samo pravi linkovi u sameAs (Discord) — Instagram/
+     TikTok/YouTube/Twitch u cw-data-community.js su još placeholderi ('#'),
+     dodati ih ovde tek kad dobiju prave adrese. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CrazyWolves",
+  "url": "https://crazywolves.rs/",
+  "logo": "https://crazywolves.rs/images/logo-mark.webp",
+  "email": "kontakt@crazywolves.rs",
+  "sameAs": ["https://discord.gg/crazywolves"]
+}
+</script>
+
 <!-- Ikonica: PRAVI grb. Ranije je ovde stajao crtani SVG upisan u sam link —
      gruba silueta koja je u kartici pregledaca stajala pored pravog logoa
      kao njegova bleda senka. -->

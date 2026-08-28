@@ -68,6 +68,82 @@ CW.esc = function (v) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 };
 
+/* Meta opis za pretragu — Google seče posle otprilike 155-160 znakova, pa
+   seče na razmaku umesto usred reči. Bez HTML taga, taj se sam upisuje kroz
+   setAttribute (nema CW.esc potrebe). */
+CW.metaDesc = function (text, max) {
+  var s = String(text || '').replace(/\s+/g, ' ').trim();
+  var limit = max || 155;
+  if (s.length <= limit) return s;
+  var cut = s.slice(0, limit + 1);
+  var lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut.slice(0, limit)).trim() + '…';
+};
+
+/* ==========================================================================
+   STRUKTURIRANI PODACI (JSON-LD)
+   Upisuje/menja <script type="application/ld+json"> po id-ju u <head>-u.
+   Jedan tag po vrsti podatka — ruter ga zamenjuje pri svakoj promeni
+   stranice, ne gomila ih. Otklanja tag kad podatak više ne važi (npr.
+   BreadcrumbList van stranice koja ima traku), da stara ruta ne ostavi
+   pogrešnu šemu na sledećoj.
+   ========================================================================== */
+CW.jsonLd = function (id, data) {
+  var existing = document.getElementById(id);
+  if (!data) {
+    if (existing) existing.remove();
+    return;
+  }
+  if (!existing) {
+    existing = document.createElement('script');
+    existing.type = 'application/ld+json';
+    existing.id = id;
+    document.head.appendChild(existing);
+  }
+  existing.textContent = JSON.stringify(data);
+};
+
+/* items: isti spisak koji CW.c.crumbs iscrtava — { label, path }[].
+   path je '#/...' relativna putanja; prazan path (poslednja stavka, tekuća
+   stranica) pada na trenutnu adresu pregledača. */
+CW.jsonLdBreadcrumbs = function (items) {
+  if (!items || items.length < 2) { CW.jsonLd('ld-breadcrumbs', null); return; }
+  var base = window.location.origin + window.location.pathname;
+  CW.jsonLd('ld-breadcrumbs', {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map(function (c, i) {
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        name: c.label,
+        item: c.path ? base + '#' + c.path : window.location.href
+      };
+    })
+  });
+};
+
+/* p: proizvod u obliku koji CW.pages.product već koristi (price je u
+   parama/centima, kao svuda na sajtu). */
+CW.jsonLdProduct = function (p, stock) {
+  if (!p) { CW.jsonLd('ld-product', null); return; }
+  CW.jsonLd('ld-product', {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.name,
+    description: p.shortDesc || p.description || undefined,
+    image: p.image ? CW.imgSrc(p.image) : undefined,
+    sku: p.id,
+    offers: {
+      '@type': 'Offer',
+      url: window.location.origin + window.location.pathname + '#/proizvod/' + p.slug,
+      priceCurrency: CW.shopConfig.currency,
+      price: (p.price / 100).toFixed(2),
+      availability: stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+    }
+  });
+};
+
 CW.qs  = function (sel, root) { return (root || document).querySelector(sel); };
 CW.qsa = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
 
@@ -627,6 +703,27 @@ CW.router = (function () {
     }, 260);
   }
 
+  /* Upamćeno pri prvom crtanju — vraća se rutama koje ne daju svoj opis, da
+     meta opis nikad ne ostane prazan ili sa opisom prošle stranice. */
+  var defaultDescription = null;
+
+  function syncMeta(hit, ctx) {
+    var descTag = document.querySelector('meta[name="description"]');
+    if (!descTag) return;
+    if (defaultDescription === null) defaultDescription = descTag.getAttribute('content') || '';
+
+    var desc = (hit && hit.route.description ? hit.route.description(ctx) : '') || defaultDescription;
+    descTag.setAttribute('content', desc);
+
+    /* Isti tekst ide i u Open Graph/Twitter opis — čita ih Google-ov
+       renderer (izvršava JS), ne i botovi za pregled linka (Discord,
+       WhatsApp...), koji fragment adrese ni ne vide jer ga pregledač nikad
+       ne šalje serveru. Statične vrednosti u <head>-u i dalje pokrivaju te
+       botove. */
+    var ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', desc);
+  }
+
   function render() {
     var loc = parse();
     var hit = match(loc);
@@ -635,6 +732,14 @@ CW.router = (function () {
 
     showProgress();
     CW.ui.closeAllOverlays();
+
+    /* Product/BreadcrumbList JSON-LD se dodaju SAMO na stranice koje ih
+       pozovu (vidi CW.jsonLdProduct, CW.c.crumbs) — ali stranica na koju se
+       prelazi možda ih ne poziva uopšte, pa bi stari tag ostao u <head>-u i
+       opisivao pogrešnu stranicu. Čisti se pre svakog crtanja; ko treba, ga
+       odmah ponovo upiše. */
+    CW.jsonLd('ld-product', null);
+    CW.jsonLd('ld-breadcrumbs', null);
 
     var view = hit ? hit.route.view : notFound;
     var ctx = { params: hit ? hit.params : {}, query: loc.query, path: loc.path };
@@ -645,6 +750,7 @@ CW.router = (function () {
     outlet.innerHTML = view(ctx);
     outlet.className = hit && hit.route.bodyClass ? hit.route.bodyClass : '';
     document.title = (hit && hit.route.title ? hit.route.title(ctx) : 'Page Not Found') + ' — CrazyWolves';
+    syncMeta(hit, ctx);
 
     CW.pendingMount.forEach(function (fn) { try { fn(); } catch (e) { console.error(e); } });
     CW.pendingMount = [];
@@ -661,7 +767,11 @@ CW.router = (function () {
 
   return {
     add: function (pattern, view, opts) {
-      routes.push({ pattern: pattern, view: view, title: (opts || {}).title, bodyClass: (opts || {}).bodyClass });
+      routes.push({
+        pattern: pattern, view: view,
+        title: (opts || {}).title, description: (opts || {}).description,
+        bodyClass: (opts || {}).bodyClass
+      });
       return this;
     },
     setNotFound: function (view) { notFound = view; return this; },

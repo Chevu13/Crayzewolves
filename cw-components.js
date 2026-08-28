@@ -498,6 +498,11 @@ CW.c.sectionHead = function (o) {
 };
 
 CW.c.crumbs = function (items) {
+  /* Isti spisak koji iscrtava traku odmah puni i BreadcrumbList — ovde je
+     JEDNO mesto koje 18 poziva u sajtu deli, pa se strukturirani podaci
+     dobijaju besplatno svuda gde traka već postoji. */
+  CW.onMount(function () { CW.jsonLdBreadcrumbs(items); });
+
   return '<nav class="crumbs" aria-label="Putanja">' +
     items.map(function (c, i) {
       var last = i === items.length - 1;

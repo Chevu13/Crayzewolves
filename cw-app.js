@@ -15,15 +15,27 @@
        događaja, partnera i „o nama" su sklonjene iz navigacije; njihov kod
        je ostao netaknut u cw-pages-community.js, pa se vraćaju dodavanjem
        jednog reda ovde kada zatrebaju. */
-    .add('',                    CW.pages.home,      { title: function () { return 'Zvanični shop'; } })
+    .add('',                    CW.pages.home,      {
+      title: function () { return 'Zvanični shop'; },
+      description: function () { return 'CrazyWolves — Discord zajednica, CS2 tim i zvanični shop. Šolje, oprema i gaming proizvodi, direktno od zajednice.'; }
+    })
     .add('vesti',               CW.pages.news,      { title: function () { return 'Blog'; } })
-    .add('vesti/:id',           CW.pages.article,   { title: function (c) { var n = CW.find('news', c.params.id); return n ? n.title : 'Objava'; } })
+    .add('vesti/:id',           CW.pages.article,   {
+      title: function (c) { var n = CW.find('news', c.params.id); return n ? n.title : 'Objava'; },
+      description: function (c) { var n = CW.find('news', c.params.id); return n && n.dek ? CW.metaDesc(n.dek) : ''; }
+    })
     .add('kontakt',             CW.pages.contact,   { title: function () { return 'Kontakt'; } })
 
     /* --- shop --- */
-    .add('shop',                CW.pages.shop,         { title: function () { return 'Zvanični shop'; } })
+    .add('shop',                CW.pages.shop,         {
+      title: function () { return 'Zvanični shop'; },
+      description: function () { return 'Zvanični CrazyWolves shop — šolje, oprema i gaming proizvodi sa grbom zajednice. Dostava po Srbiji i regionu.'; }
+    })
     .add('shop/:category',      CW.pages.catalog,      { title: function (c) { var k = CW.find('categories', c.params.category); return k ? k.name : 'Svi proizvodi'; } })
-    .add('proizvod/:slug',      CW.pages.product,      { title: function (c) { var p = CW.productBySlug(c.params.slug); return p ? p.name : 'Proizvod'; } })
+    .add('proizvod/:slug',      CW.pages.product,      {
+      title: function (c) { var p = CW.productBySlug(c.params.slug); return p ? p.name : 'Proizvod'; },
+      description: function (c) { var p = CW.productBySlug(c.params.slug); return p && p.shortDesc ? CW.metaDesc(p.shortDesc) : ''; }
+    })
     .add('korpa',               CW.pages.cart,         { title: function () { return 'Korpa'; } })
     .add('placanje',            CW.pages.checkout,     { title: function () { return 'Plaćanje'; } })
     .add('potvrda',             CW.pages.confirmation, { title: function () { return 'Porudžbina potvrđena'; } })

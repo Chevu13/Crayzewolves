@@ -428,6 +428,7 @@ CW.pages.product = function (ctx) {
   if (!p) return CW.pages.notFound();
 
   CW.store.recordView(p.id);
+  CW.onMount(function () { CW.jsonLdProduct(p, CW.stockOf(p)); });
 
   var cat = CW.find('categories', p.categoryId) || { name: '' };
   var col = CW.find('collections', p.collectionId);
@@ -857,22 +858,32 @@ CW.pages.checkout = function (ctx) {
 
       '<form class="stack stack-5" data-act="checkout-form" novalidate>' +
 
-        /* ---------- CONTACT ---------- */
+        /* ---------- CONTACT ----------
+           Prijavljen kupac ne treba da ponovo vidi ceo odeljak sa mejlom i
+           pozivom na prijavu — sistem već zna ko je. Mejl ide tiho iz
+           naloga (potvrda uvek ide na pravu adresu naloga); telefon ostaje
+           vidljiv jer je vezan za OVU dostavu, ne za identitet — kupac
+           možda želi drugačiji broj za kurira nego onaj iz profila. */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">1 — Podaci za kontakt</legend>' +
-          (user ? '' :
-            '<div class="alert alert--info">' + CW.icon('user', 18) +
-            '<span>Već imaš nalog? <a class="link-underline" href="#/account/login">Prijavi se</a> da se polja sama popune.</span></div>') +
-          '<div class="field">' +
-            '<label class="field__label" for="co-email">Imejl adresa <span class="field__req">*</span></label>' +
-            '<input class="input" id="co-email" name="email" type="email" autocomplete="email" required value="' + (user ? CW.esc(user.email) : '') + '">' +
-            '<div class="field__hint">Ovde stižu potvrda porudžbine i broj za praćenje.</div>' +
-            '<div class="field__error hidden" data-error-for="co-email"></div>' +
-          '</div>' +
-          '<div class="field">' +
-            '<label class="field__label" for="co-phone">Telefon <span class="t-muted">(za kurira)</span></label>' +
-            '<input class="input" id="co-phone" name="phone" type="tel" autocomplete="tel" value="' + (addr ? CW.esc(addr.phone) : '') + '">' +
-          '</div>' +
+          (user
+            ? '<input type="hidden" id="co-email" name="email" value="' + CW.esc(user.email) + '">' +
+              '<div class="field">' +
+                '<label class="field__label" for="co-phone">Telefon <span class="t-muted">(za kurira)</span></label>' +
+                '<input class="input" id="co-phone" name="phone" type="tel" autocomplete="tel" value="">' +
+              '</div>'
+            : '<legend class="fieldset__legend">1 — Podaci za kontakt</legend>' +
+              '<div class="alert alert--info">' + CW.icon('user', 18) +
+                '<span>Već imaš nalog? <a class="link-underline" href="#/account/login">Prijavi se</a> da se polja sama popune.</span></div>' +
+              '<div class="field">' +
+                '<label class="field__label" for="co-email">Imejl adresa <span class="field__req">*</span></label>' +
+                '<input class="input" id="co-email" name="email" type="email" autocomplete="email" required value="">' +
+                '<div class="field__hint">Ovde stižu potvrda porudžbine i broj za praćenje.</div>' +
+                '<div class="field__error hidden" data-error-for="co-email"></div>' +
+              '</div>' +
+              '<div class="field">' +
+                '<label class="field__label" for="co-phone">Telefon <span class="t-muted">(za kurira)</span></label>' +
+                '<input class="input" id="co-phone" name="phone" type="tel" autocomplete="tel" value="">' +
+              '</div>') +
         '</fieldset>' +
 
         /* ---------- SHIPPING ADDRESS ---------- */
@@ -944,8 +955,6 @@ CW.pages.checkout = function (ctx) {
         /* ---------- PAYMENT ---------- */
         '<fieldset class="fieldset">' +
           '<legend class="fieldset__legend">4 — Plaćanje</legend>' +
-          '<div class="alert alert--info">' + CW.icon('lock', 18) +
-            '<span>Ovo je pokazna verzija sajta. Nijedno plaćanje se ne obrađuje i nijedan podatak o kartici se ne čuva niti prenosi.</span></div>' +
 
           '<div class="stack stack-1">' +
             CW.data.paymentMethods.map(function (m, i) {

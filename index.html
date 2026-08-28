@@ -17,6 +17,22 @@
 <meta property="og:image" content="images/og-banner.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
+<!-- Strukturirani podaci — dok traje "sajt u izradi", ovo je JEDINA stranica
+     koju robots.txt pušta u indeks, pa Organization ide ovde, ne samo u
+     app.html. Samo pravi linkovi u sameAs (Discord) — ostale mreže su još
+     placeholderi u cw-data-community.js. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CrazyWolves",
+  "url": "https://crazywolves.rs/",
+  "logo": "https://crazywolves.rs/images/logo-mark.webp",
+  "email": "kontakt@crazywolves.rs",
+  "sameAs": ["https://discord.gg/crazywolves"]
+}
+</script>
+
 <!-- Ikonica: PRAVI grb. Ranije je ovde stajao crtani SVG upisan u sam link —
      gruba silueta koja je u kartici pregledaca stajala pored pravog logoa
      kao njegova bleda senka. -->
