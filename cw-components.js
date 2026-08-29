@@ -615,13 +615,16 @@ CW.c.productCard = function (p) {
         (soldout ? '<span class="badge badge--soldout">Rasprodato</span>' : '') +
         (low ? '<span class="badge badge--low">Poslednji komadi</span>' : '') +
       '</div>' +
-      (soon ? '' :
+      /* Srce se prikazuje I na proizvodu koji tek stize.
+         Ranije je bilo sakriveno za `coming_soon`, sto je naopako: proizvod
+         koji jos ne moze da se kupi je BAS onaj koji kupac hoce da sacuva
+         dok ne stigne. U korpu i dalje ne moze — to je `quick` dole. */
       '<div class="card__badges card__badges--right">' +
         '<button class="btn-icon btn-icon--sm' + (wished ? ' is-active' : '') + '" type="button" ' +
           'data-act="toggle-wishlist" data-pid="' + p.id + '" ' +
           'aria-label="' + (wished ? 'Ukloni sa liste želja' : 'Dodaj na listu želja') + '" aria-pressed="' + wished + '">' +
           CW.icon('heart', 18) + '</button>' +
-      '</div>') +
+      '</div>' +
       '<a href="#/proizvod/' + p.slug + '" aria-label="' + CW.esc(p.name) + '">' + media + '</a>' +
       (soon || soldout ? '' :
         '<div class="product-card__quick">' +

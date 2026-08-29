@@ -245,20 +245,59 @@ window.CW = window.CW || {};
   };
 
   /* ---- brojevi za početni ekran ---- */
+
+  /* ======================================================================
+     BROJEVI O PORUDZBINAMA — jedno mesto za oba sloja podataka
+     ----------------------------------------------------------------------
+     Panel ih racuna isto bez obzira na to da li cita iz baze ili lokalno,
+     pa je racun ovde a ne dvaput.
+
+     „Danas" je od ponoci po lokalnom vremenu, ne poslednja 24 sata —
+     vlasnik shopa gleda dan, ne prozor od 24h.
+
+     Promet se sabira SAMO u dinarima. Sabrati dinare i evre u jedan broj
+     znacilo bi izmisliti kurs i prikazati iznos koji ne postoji; evro
+     porudzbine se broje posebno.
+  ====================================================================== */
+  CW.adminOrderStats = function (orders) {
+    var list = orders || [];
+    var ponoc = new Date(); ponoc.setHours(0, 0, 0, 0);
+    var odKada = ponoc.getTime();
+
+    function kada(o) {
+      var d = new Date(o.created_at || o.createdAt || o.date || 0);
+      return isNaN(d) ? 0 : d.getTime();
+    }
+    /* Otkazana porudzbina nije promet. */
+    function seRacuna(o) {
+      return ['cancelled', 'refunded'].indexOf(o.status) === -1;
+    }
+    function iznos(o) {
+      return (o.currency || 'RSD') === 'RSD' ? (o.total || 0) : 0;
+    }
+
+    var danas = list.filter(function (o) { return kada(o) >= odKada; });
+
+    return {
+      ordersTotal:   list.length,
+      ordersToday:   danas.length,
+      revenueTotal:  list.filter(seRacuna).reduce(function (s, o) { return s + iznos(o); }, 0),
+      revenueToday:  danas.filter(seRacuna).reduce(function (s, o) { return s + iznos(o); }, 0),
+      ordersNew:     list.filter(function (o) { return o.status === 'new' || o.status === 'ORDERED'; }).length,
+      ordersEur:     list.filter(function (o) { return o.currency === 'EUR'; }).length
+    };
+  };
   api.stats = function () {
     return Promise.all([api.posts.all(), api.products.all(), api.orders.all()])
       .then(function (r) {
         var posts = r[0], products = r[1], orders = r[2];
-        return {
+        return Object.assign({
           postsTotal:     posts.length,
           postsDraft:     posts.filter(function (p) { return p.status === 'DRAFT'; }).length,
           postsPublished: posts.filter(function (p) { return p.status === 'PUBLISHED'; }).length,
           productsTotal:  products.length,
-          productsActive: products.filter(function (p) { return p.isActive !== false; }).length,
-          ordersTotal:    orders.length,
-          ordersNew:      orders.filter(function (o) { return o.status === 'ORDERED' || o.status === 'new'; }).length,
-          revenue:        orders.reduce(function (s, o) { return s + (o.total || 0); }, 0)
-        };
+          productsActive: products.filter(function (p) { return p.isActive !== false; }).length
+        }, CW.adminOrderStats(orders));
       });
   };
 

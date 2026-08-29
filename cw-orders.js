@@ -66,6 +66,10 @@ window.CW = window.CW || {};
         },
         items: items,
         paymentMethod: PAY[payload.paymentId] || 'cod',
+        /* ID, ne naziv. Cenu dostave odredjuje baza iz tabele
+           shipping_methods — ranije je slat samo naziv, pa je baza
+           naplacivala kurirsku dostavu i za licno preuzimanje. */
+        shippingMethodId: payload.shippingId || null,
         shippingMethod: payload.shippingName || null,
         currency: payload.currency || 'RSD',
         notes: payload.notes || null
@@ -118,6 +122,12 @@ window.CW = window.CW || {};
             throw new Error('Porudžbina nije prošla. Pokušaj ponovo.');
           }
 
+          /* Mejl potvrde ide ODVOJENO, i namerno se ne ceka.
+             Porudzbina je vec u bazi; ako Resend nije podesen ili ne
+             odgovori, kupac svejedno mora da vidi potvrdu. Zato .catch koji
+             cuti — pad mejla nije pad porudzbine. */
+          CW.orders.sendEmail(data.orderNumber);
+
           /* Iznosi koje sajt prikazuje na potvrdi su OVI — iz baze, ne oni
              koje je korpa sabrala u pregledaču. */
           return {
@@ -135,6 +145,39 @@ window.CW = window.CW || {};
           };
         });
       });
+    },
+
+    /**
+     * Trazi slanje mejla potvrde. Best-effort: nikad ne baca.
+     *
+     * Funkcija `send-order-email` salje najvise JEDAN mejl po porudzbini
+     * (proverava `email_sent_at`), pa ponovljeni poziv — osvezavanje
+     * stranice potvrde, dupli klik — ne pravi drugi mejl.
+     */
+    sendEmail: function (orderNumber) {
+      if (!orderNumber || !CW.sb || !CW.sb.enabled) return Promise.resolve(false);
+      return fetch(CW.sb.config.url + '/functions/v1/send-order-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: CW.sb.config.anonKey,
+          Authorization: 'Bearer ' + CW.sb.config.anonKey
+        },
+        body: JSON.stringify({ orderNumber: orderNumber })
+      })
+        .then(function (r) { return r.json().catch(function () { return null; }); })
+        .then(function (d) {
+          if (d && d.sent === false && d.reason) {
+            /* Ne prikazuje se kupcu — porudzbina je prosla. Stoji u konzoli
+               da se vidi zasto mejl nije otisao. */
+            console.warn('[CW] Mejl potvrde nije poslat:', d.reason);
+          }
+          return Boolean(d && d.sent);
+        })
+        .catch(function (e) {
+          console.warn('[CW] Mejl potvrde nije poslat:', e && e.message);
+          return false;
+        });
     }
   };
 })();

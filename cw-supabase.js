@@ -152,6 +152,38 @@ window.CW = window.CW || {};
        Supabase ne traži staru lozinku da bi upisao novu — ko god ima važeći
        token može da je promeni. Zato pozivalac (details-form u cw-app.js)
        prvo proveri staru lozinku kroz signIn(), pa tek onda zove ovo. */
+    /**
+     * Trazi mejl za promenu lozinke.
+     *
+     * `redirectTo` NAMERNO nema #hash: Supabase svoje tokene lepi kao
+     * fragment na kraj te adrese. Da smo ovde poslali adresu koja vec ima
+     * hash, dobili bismo dva fragmenta u jednom URL-u i ruter ne bi znao
+     * sta je putanja a sta token. Ovako stigne cist
+     * `.../app.html#access_token=...&type=recovery`, boot to uhvati i
+     * prebaci korisnika na stranicu za novu lozinku.
+     *
+     * Odgovor je UVEK uspesan, i kad adresa ne postoji — inace bi svako
+     * mogao da kroz ovu formu proverava koje adrese imaju nalog.
+     */
+    requestPasswordReset: function (email) {
+      var base = window.location.origin + window.location.pathname;
+      return fetch(CFG.url + '/auth/v1/recover', {
+        method: 'POST',
+        headers: { apikey: CFG.anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, redirect_to: base })
+      }).then(function (r) {
+        if (r.ok) return true;
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          var msg = d.error_description || d.msg || d.message || '';
+          /* Prečesto slanje je jedina greska koju kupcu vredi pokazati. */
+          if (/rate|too many|seconds/i.test(msg)) {
+            throw new Error('Previše pokušaja. Sačekaj minut pa probaj ponovo.');
+          }
+          throw new Error('Slanje nije uspelo. Pokušaj ponovo.');
+        });
+      });
+    },
+
     updateAuthUser: function (patch) {
       var s = sb.session();
       if (!s) return Promise.reject(new Error('Nisi prijavljen.'));

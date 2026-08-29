@@ -212,8 +212,8 @@ CW.pages.forgot = function () {
     '<div class="auth-card">' +
       '<div class="text-center">' +
         '<div class="empty__icon mx-auto">' + CW.icon('mail', 26) + '</div>' +
-        '<h1 class="t-h2 mt-3">Reset your password</h1>' +
-        '<p class="t-sm mt-2">Enter the email on your account and we will send a reset link. It expires in one hour.</p>' +
+        '<h1 class="t-h2 mt-3">Zaboravljena lozinka</h1>' +
+        '<p class="t-sm mt-2">Upiši adresu sa svog naloga i poslacemo link za promenu lozinke. Važi jedan sat.</p>' +
       '</div>' +
 
       '<form class="stack stack-3 mt-4" data-act="forgot-form" novalidate>' +
@@ -222,7 +222,7 @@ CW.pages.forgot = function () {
           '<input class="input" id="fp-email" name="email" type="email" autocomplete="email" required>' +
           '<div class="field__error hidden" data-error-for="fp-email"></div>' +
         '</div>' +
-        '<button class="btn btn--primary btn--lg btn--full" type="submit">Send reset link</button>' +
+        '<button class="btn btn--primary btn--lg btn--full" type="submit">Pošalji link</button>' +
         '<div data-form-status role="status" aria-live="polite"></div>' +
       '</form>' +
 
@@ -231,6 +231,63 @@ CW.pages.forgot = function () {
     '</div>' +
   '</section>';
 };
+
+/* ==========================================================================
+   NOVA LOZINKA
+   --------------------------------------------------------------------------
+   Otvara se klikom na link iz mejla. Token iz tog linka je do ovog trenutka
+   vec pretvoren u sesiju (cw-app.js boot -> establishFromCallback), pa ovde
+   nema nikakvog tokena u vidokrugu — obican upis nove lozinke na nalog koji
+   je vec prijavljen tim tokenom.
+
+   Stranica se namerno ne krije iza provere prijave: ako neko dodje ovde bez
+   vazeceg linka, treba da vidi zasto ne moze da nastavi, a ne prazan ekran.
+   ========================================================================== */
+CW.pages.newPassword = function () {
+  var ima = Boolean(CW.sb && CW.sb.enabled && CW.sb.session());
+  var user = ima ? CW.sb.auth.user() : null;
+
+  return '' +
+  '<section class="section container container--wide">' +
+    '<div class="auth-card">' +
+      '<div class="text-center">' +
+        '<div class="empty__icon mx-auto">' + CW.icon('lock', 26) + '</div>' +
+        '<h1 class="t-h2 mt-3">Nova lozinka</h1>' +
+        (ima
+          ? '<p class="t-sm mt-2">Upiši novu lozinku za nalog <b>' + CW.esc((user && user.email) || '') + '</b>.</p>'
+          : '') +
+      '</div>' +
+
+      (ima
+        ? '<form class="stack stack-3 mt-4" data-act="new-password-form" novalidate>' +
+            '<div class="field">' +
+              '<label class="field__label" for="np-pass">Nova lozinka <span class="field__req">*</span></label>' +
+              '<input class="input" id="np-pass" name="password" type="password" autocomplete="new-password" minlength="6" required>' +
+              '<div class="field__hint">Najmanje šest znakova.</div>' +
+              '<div class="field__error hidden" data-error-for="np-pass"></div>' +
+            '</div>' +
+            '<div class="field">' +
+              '<label class="field__label" for="np-pass2">Ponovi novu lozinku <span class="field__req">*</span></label>' +
+              '<input class="input" id="np-pass2" name="password2" type="password" autocomplete="new-password" minlength="6" required>' +
+              '<div class="field__error hidden" data-error-for="np-pass2"></div>' +
+            '</div>' +
+            '<button class="btn btn--primary btn--lg btn--full" type="submit">Sačuvaj lozinku</button>' +
+            '<div data-form-status role="status" aria-live="polite"></div>' +
+          '</form>'
+
+        : '<div class="alert alert--warning mt-4">' + CW.icon('alert', 18) +
+            '<div><b>Link je istekao ili je već iskorišćen.</b>' +
+            '<div class="mt-1">Linkovi za promenu lozinke važe jedan sat i mogu se upotrebiti jednom. ' +
+            'Zatraži nov ispod.</div></div>' +
+          '</div>' +
+          '<a class="btn btn--primary btn--full mt-3" href="#/nalog/zaboravljena">Zatraži nov link</a>') +
+
+      '<div class="divider"><span class="divider__mark"></span></div>' +
+      '<p class="t-sm text-center"><a class="link-underline" href="#/nalog/prijava">Nazad na prijavu</a></p>' +
+    '</div>' +
+  '</section>';
+};
+
 
 /* ==========================================================================
    ACCOUNT OVERVIEW

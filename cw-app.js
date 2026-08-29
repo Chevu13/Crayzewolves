@@ -45,6 +45,7 @@
     .add('nalog/prijava',         CW.pages.login,            { title: function () { return 'Prijava'; } })
     .add('nalog/registracija',    CW.pages.register,         { title: function () { return 'Registracija'; } })
     .add('nalog/zaboravljena',    CW.pages.forgot,           { title: function () { return 'Zaboravljena lozinka'; } })
+    .add('nalog/nova-lozinka',    CW.pages.newPassword,      { title: function () { return 'Nova lozinka'; } })
     .add('nalog/podaci',          CW.pages.accountDetails,   { title: function () { return 'Lični podaci'; } })
     .add('nalog/adrese',          CW.pages.accountAddresses, { title: function () { return 'Sačuvane adrese'; } })
     .add('nalog/porudzbine',      CW.pages.accountOrders,    { title: function () { return 'Moje porudžbine'; } })
@@ -830,12 +831,58 @@
         ev.preventDefault();
         var fv = validate(form, { email: { required: true, email: true } });
         if (!fv.ok) break;
+
+        if (!CW.sb || !CW.sb.enabled) {
+          formStatus(form, 'error', 'Baza nije povezana, pa mejl ne može da se pošalje.');
+          break;
+        }
+
         submitting(form, true);
-        setTimeout(function () {
+        CW.sb.auth.requestPasswordReset(fv.values.email).then(function () {
           submitting(form, false);
-          formStatus(form, 'success', 'If an account exists for that address, a reset link is on its way. It expires in one hour.');
-          CW.toast({ type: 'success', title: 'Reset link sent' });
-        }, 700);
+          /* Ista poruka i kad nalog ne postoji — inace bi se kroz ovu formu
+             moglo proveravati koje adrese imaju nalog kod nas. */
+          formStatus(form, 'success',
+            'Ako nalog sa tom adresom postoji, link za promenu lozinke je poslat. Važi jedan sat.');
+          CW.toast({ type: 'success', title: 'Mejl je poslat', text: 'Proveri i neželjenu poštu.' });
+        }).catch(function (err) {
+          submitting(form, false);
+          formStatus(form, 'error', err.message);
+        });
+        break;
+      }
+
+      /* Nova lozinka posle klika na link iz mejla. Token iz linka je vec
+         pretvoren u sesiju (boot -> establishFromCallback), pa je ovo obican
+         upis nove lozinke na taj nalog. */
+      case 'new-password-form': {
+        ev.preventDefault();
+        var nv = validate(form, {
+          password: { required: true, min: 6 },
+          password2: { required: true, min: 6 }
+        });
+        if (!nv.ok) break;
+
+        if (nv.values.password !== nv.values.password2) {
+          formStatus(form, 'error', 'Lozinke se ne poklapaju.');
+          break;
+        }
+        if (!CW.sb || !CW.sb.session()) {
+          formStatus(form, 'error',
+            'Link je istekao ili je već iskorišćen. Zatraži nov na stranici „Zaboravljena lozinka".');
+          break;
+        }
+
+        submitting(form, true);
+        CW.sb.auth.updateAuthUser({ password: nv.values.password }).then(function () {
+          submitting(form, false);
+          formStatus(form, 'success', 'Lozinka je promenjena.');
+          CW.toast({ type: 'success', title: 'Lozinka promenjena', text: 'Ubuduće se prijavljuj novom.' });
+          setTimeout(function () { CW.router.go('/nalog'); }, 900);
+        }).catch(function (err) {
+          submitting(form, false);
+          formStatus(form, 'error', err.message);
+        });
         break;
       }
 
@@ -957,6 +1004,7 @@
           city: cv.values.city,
           postcode: cv.values.postcode,
           country: (form.querySelector('[name=country]') || {}).value || 'RS',
+          shippingId: shipId,
           shippingName: shipMethod ? shipMethod.name : null,
           paymentId: payId,
           notes: (form.querySelector('[name=notes]') || {}).value
@@ -1065,6 +1113,17 @@
       CW.sb.auth.establishFromCallback(authParams).then(function (res) {
         if (!res) return;
         CW.ui.refreshHeader();
+
+        /* Link za promenu lozinke ne vodi na nalog nego pravo na formu za
+           novu lozinku. Token iz tog linka vazi kratko i sluzi tacno za to;
+           da smo korisnika ostavili na /nalog, morao bi sam da trazi gde se
+           lozinka menja i token bi mu istekao usput. */
+        if (res.type === 'recovery') {
+          CW.toast({ type: 'info', title: 'Postavi novu lozinku' });
+          CW.router.go('/nalog/nova-lozinka');
+          return;
+        }
+
         CW.toast({
           type: 'success',
           title: res.type === 'signup' ? 'Nalog potvrđen' : 'Prijavljen si',

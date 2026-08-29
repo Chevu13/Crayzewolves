@@ -107,11 +107,34 @@ window.CW = window.CW || {};
     var availability = CW.sb.from('product_availability').select('*').get()
       .catch(function () { return []; });
 
-    return Promise.all([posts, products, cats, availability]).then(function (r) {
+    /* Nacini dostave i njihove cene zive u bazi, jer ih baza i naplacuje.
+       Dok je cenovnik stajao samo u cw-data-shop.js, sajt je za licno
+       preuzimanje pokazivao 0 a baza naplacivala 390 — kupac je video jedno
+       na kasi, drugo na potvrdi. */
+    var shipping = CW.sb.from('shipping_methods').select('*')
+      .eq('is_active', true).order('sort_order').get()
+      .catch(function () { return []; });
+
+    return Promise.all([posts, products, cats, availability, shipping]).then(function (r) {
       var dbPosts = r[0] || [], dbProducts = r[1] || [], dbCats = r[2] || [];
 
       var slobodnoKodova = {};
       (r[3] || []).forEach(function (a) { slobodnoKodova[a.product_id] = a.available; });
+
+      var dbShipping = r[4] || [];
+      if (dbShipping.length) {
+        CW.data.shippingMethods = dbShipping.map(function (m) {
+          return {
+            id: m.id,
+            name: m.name,
+            eta: m.eta || '',
+            desc: m.description || '',
+            price: m.price,
+            priceEur: m.price_eur,
+            freeOverApplies: m.free_over_applies !== false
+          };
+        });
+      }
 
       if (dbCats.length) {
         CW.data.newsCategories = dbCats.map(function (c) {

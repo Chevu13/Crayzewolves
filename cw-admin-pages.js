@@ -154,15 +154,20 @@ CW.admin = CW.admin || {};
       CW.api.stats().then(function (s) {
         var host = document.getElementById('adm-stats');
         if (!host) return;
+        /* Gornja traka je SAMO o porudzbinama — to je ono sto se gleda svaki
+           dan. Objave i proizvodi imaju svoje ekrane i svoje brojeve; ovde
+           su samo oduzimali paznju od jedinog broja koji se menja. */
         host.innerHTML =
-          statCard('Objave', s.postsTotal, s.postsDraft + ' u nacrtu') +
-          statCard('Objavljeno', s.postsPublished, 'vidljivo na sajtu', 'ok') +
-          statCard('Proizvodi', s.productsTotal, s.productsActive + ' aktivnih') +
-          statCard('Porudžbine', s.ordersTotal,
-                   s.ordersTotal ? s.ordersNew + ' za obradu' : 'nema još nijedne',
+          statCard('Porudžbine ukupno', s.ordersTotal,
+                   s.ordersNew ? s.ordersNew + ' novih, čeka obradu' : 'nema novih za obradu',
                    s.ordersNew ? 'ok' : '') +
-          statCard('Promet', CW.money(s.revenue || 0),
-                   s.lowStock ? s.lowStock + ' proizvoda pri kraju' : 'sve na stanju');
+          statCard('Porudžbine danas', s.ordersToday,
+                   s.ordersToday ? 'od ponoći' : 'još nijedna danas',
+                   s.ordersToday ? 'ok' : '') +
+          statCard('Promet ukupno', CW.money(s.revenueTotal || 0),
+                   s.ordersEur ? s.ordersEur + ' u evrima nije sabrano' : 'bez otkazanih') +
+          statCard('Promet danas', CW.money(s.revenueToday || 0),
+                   s.revenueToday ? 'od ponoći' : 'još nema prometa danas');
       });
 
       CW.api.posts.all().then(function (rows) {

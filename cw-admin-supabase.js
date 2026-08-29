@@ -283,24 +283,20 @@ window.CW = window.CW || {};
   api.stats = function () {
     return Promise.all([api.posts.all(), api.products.all(), api.orders.all()]).then(function (r) {
       var posts = r[0], products = r[1], orders = r[2];
-      return {
+      /* Brojevi o porudzbinama dolaze iz CW.adminOrderStats — isti racun i
+         za lokalni sloj i za bazu. Ranije je `ordersNew` ovde brojao status
+         `pending_payment`, koji vise ne postoji: statusi su new / confirmed /
+         shipped / picked_up / cancelled. */
+      return Object.assign({
         postsTotal: posts.length,
         postsDraft: posts.filter(function (p) { return p.status === 'DRAFT'; }).length,
         postsPublished: posts.filter(function (p) { return p.status === 'PUBLISHED'; }).length,
         productsTotal: products.length,
         productsActive: products.filter(function (p) { return p.isActive; }).length,
-        ordersTotal: orders.length,
-        ordersNew: orders.filter(function (o) {
-          return o.status === 'confirmed' || o.status === 'pending_payment';
-        }).length,
-        /* Otkazane i vraćene se ne broje u promet. */
-        revenue: orders
-          .filter(function (o) { return ['cancelled', 'refunded'].indexOf(o.status) === -1; })
-          .reduce(function (sum, o) { return sum + (o.currency === 'RSD' ? o.total : 0); }, 0),
         lowStock: products.filter(function (p) {
           return p.stock > 0 && p.stock <= 5;
         }).length
-      };
+      }, CW.adminOrderStats(orders));
     });
   };
 
