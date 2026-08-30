@@ -150,12 +150,12 @@ CW.pages.register = function () {
       '<form class="stack stack-3 mt-4" data-act="register-form" novalidate>' +
         '<div class="field-row">' +
           '<div class="field">' +
-            '<label class="field__label" for="rg-first">First name <span class="field__req">*</span></label>' +
+            '<label class="field__label" for="rg-first">Ime <span class="field__req">*</span></label>' +
             '<input class="input" id="rg-first" name="firstName" type="text" autocomplete="given-name" required>' +
             '<div class="field__error hidden" data-error-for="rg-first"></div>' +
           '</div>' +
           '<div class="field">' +
-            '<label class="field__label" for="rg-last">Last name <span class="field__req">*</span></label>' +
+            '<label class="field__label" for="rg-last">Prezime <span class="field__req">*</span></label>' +
             '<input class="input" id="rg-last" name="lastName" type="text" autocomplete="family-name" required>' +
             '<div class="field__error hidden" data-error-for="rg-last"></div>' +
           '</div>' +
@@ -168,14 +168,14 @@ CW.pages.register = function () {
         '</div>' +
 
         '<div class="field">' +
-          '<label class="field__label" for="rg-pass">Password <span class="field__req">*</span></label>' +
+          '<label class="field__label" for="rg-pass">Lozinka <span class="field__req">*</span></label>' +
           '<input class="input" id="rg-pass" name="password" type="password" autocomplete="new-password" required>' +
-          '<div class="field__hint">At least eight characters. Longer is better than complicated.</div>' +
+          '<div class="field__hint">Najmanje osam znakova. Duža je bolja nego komplikovana.</div>' +
           '<div class="field__error hidden" data-error-for="rg-pass"></div>' +
         '</div>' +
 
         '<div class="field">' +
-          '<label class="field__label" for="rg-confirm">Confirm password <span class="field__req">*</span></label>' +
+          '<label class="field__label" for="rg-confirm">Ponovi lozinku <span class="field__req">*</span></label>' +
           '<input class="input" id="rg-confirm" name="confirm" type="password" autocomplete="new-password" required>' +
           '<div class="field__error hidden" data-error-for="rg-confirm"></div>' +
         '</div>' +
@@ -183,7 +183,7 @@ CW.pages.register = function () {
         '<label class="check">' +
           '<input type="checkbox" name="terms" required>' +
           '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-          '<span class="check__label">I accept the <a class="link-underline" href="#/terms">Terms &amp; Conditions</a> and the <a class="link-underline" href="#/privacy">Privacy Policy</a>. <span class="field__req">*</span></span>' +
+          '<span class="check__label">Prihvatam <a class="link-underline" href="#/uslovi">uslove korišćenja</a> i <a class="link-underline" href="#/privatnost">politiku privatnosti</a>. <span class="field__req">*</span></span>' +
         '</label>' +
         '<div class="field__error hidden" data-error-for="terms"></div>' +
 

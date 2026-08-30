@@ -798,10 +798,10 @@
           email:     { required: true, email: true },
           password:  { required: true, min: 8 },
           confirm:   { required: true, match: 'password' },
-          terms:     { required: true, requiredMsg: 'You must accept the terms to create an account' }
+          terms:     { required: true, requiredMsg: 'Moraš prihvatiti uslove da bi napravio nalog.' }
         });
         if (!rv.ok) {
-          formStatus(form, 'error', 'Please correct the highlighted fields.');
+          formStatus(form, 'error', 'Ispravi označena polja.');
           if (rv.firstInvalid) rv.firstInvalid.focus();
           break;
         }
@@ -812,12 +812,12 @@
             if (d.access_token) {
               CW.ui.refreshHeader();
               CW.toast({ type: 'success', title: 'Dobro došao u čopor', text: 'Nalog je spreman.' });
-              CW.router.go('/account');
+              CW.router.go('/nalog');
             } else {
               /* Supabase traži potvrdu mejlom (Authentication → Providers →
                  Email → "Confirm email") — nalog postoji, prijava još ne radi. */
               CW.toast({ type: 'success', title: 'Skoro gotovo', text: 'Proveri mejl i potvrdi nalog pre prijave.' });
-              CW.router.go('/account/login');
+              CW.router.go('/nalog/prijava');
             }
           }).catch(function (e) {
             submitting(form, false);

@@ -137,6 +137,16 @@ window.CW = window.CW || {};
             else if (!msg) msg = 'Registracija nije uspela.';
             throw new Error(msg);
           }
+          /* Kad adresa VEC ima nalog, Supabase namerno vraca 200 sa
+             obfuskovanim korisnikom — da se kroz registraciju ne bi moglo
+             proveravati koje adrese postoje. Prepoznaje se po praznom
+             `identities`. Bez ove provere sajt kaze „proveri mejl", a mejl
+             nikad ne stigne jer ga Supabase i ne salje. */
+          if (d && Array.isArray(d.identities) && d.identities.length === 0) {
+            var e = new Error('Nalog sa ovim imejlom već postoji. Prijavi se, ili zatraži novu lozinku ako si je zaboravio.');
+            e.code = 'already_registered';
+            throw e;
+          }
           if (d.access_token) writeSession(d);
           return d;
         });
@@ -175,9 +185,17 @@ window.CW = window.CW || {};
         if (r.ok) return true;
         return r.json().catch(function () { return {}; }).then(function (d) {
           var msg = d.error_description || d.msg || d.message || '';
-          /* Prečesto slanje je jedina greska koju kupcu vredi pokazati. */
           if (/rate|too many|seconds/i.test(msg)) {
             throw new Error('Previše pokušaja. Sačekaj minut pa probaj ponovo.');
+          }
+          /* 500 znaci da je pao SAM servis za slanje (npr. SMTP odbija
+             lozinku). Ponavljanje tu ne pomaze — nema smisla slati kupca da
+             pokusava ponovo. */
+          if (r.status >= 500) {
+            var se = new Error('Slanje mejlova trenutno ne radi. Piši nam na Discordu i sredićemo odmah.');
+            se.code = 'mail_down';
+            console.error('[CW] Servis za slanje mejlova je odbio zahtev:', r.status, msg);
+            throw se;
           }
           throw new Error('Slanje nije uspelo. Pokušaj ponovo.');
         });
