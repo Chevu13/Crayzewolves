@@ -227,7 +227,7 @@ window.CW = window.CW || {};
         tagline: 'The hunt never ends.',
         discord: 'https://discord.gg/crazywolves',
         instagram: 'https://instagram.com/crazywolves.rs',
-        email: 'kontakt@crazywolves.rs',
+        email: 'info.crazywolves@gmail.com',
         shippingFlat: 390,
         freeShippingOver: 6000
       };

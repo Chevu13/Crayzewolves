@@ -1167,7 +1167,7 @@ insert into public.settings (key, value) values
   ('tagline',            'The hunt never ends.'),
   ('discord',            'https://discord.gg/crazywolves'),
   ('instagram',          'https://instagram.com/crazywolves.rs'),
-  ('email',              'kontakt@crazywolves.rs'),
+  ('email',              'info.crazywolves@gmail.com'),
   -- U parama: 39000 = 390 RSD, 400000 = 4.000 RSD
   ('shipping_flat',          '39000'),
   ('free_shipping_over',     '400000'),
@@ -1176,8 +1176,8 @@ insert into public.settings (key, value) values
   ('free_shipping_over_eur', '3500'),
   ('default_currency',       'RSD'),
   -- Kome stiže kopija svake porudžbine. UPIŠI SVOJ MEJL.
-  ('order_email_to',   'crazywolves.shop@gmail.com'),
-  ('order_email_from', 'CrazyWolves <onboarding@resend.dev>'),
+  ('order_email_to',   'info.crazywolves@gmail.com'),
+  ('order_email_from', 'CrazyWolves <info.crazywolves@gmail.com>'),
   ('shop_open',        'true'),
   ('wolfpack_open',    'true')
 on conflict (key) do nothing;
