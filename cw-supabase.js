@@ -321,6 +321,16 @@ window.CW = window.CW || {};
   }
 
   /* Mali upitnik nad PostgREST-om. Pokriva ono što panel koristi. */
+  /* Poziv funkcije u bazi. Ide kroz isti `request`, pa nasleđuje osvežavanje
+     tokena i prevod grešaka. */
+  sb.rpc = function (name, args) {
+    return request('/rest/v1/rpc/' + name, {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify(args || {})
+    });
+  };
+
   sb.from = function (table) {
     var q = [];
     var api = {

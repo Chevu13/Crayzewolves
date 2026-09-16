@@ -123,7 +123,17 @@ window.CW = window.CW || {};
     },
     login: function (email, password) {
       return CW.sb.auth.signIn(email, password).then(function (s) {
-        return { email: s.user.email, name: (s.user.email || '').split('@')[0] };
+        /* Prijava je samo pola posla. Panel je dosad puštao unutra svakog
+           prijavljenog — i kupca — pa bi se otvorio, a onda bi RLS odbio
+           svaki upis. Izgledalo je kao da panel ne radi.
+           Zato se ovde pita baza je li taj nalog stvarno admin. */
+        return CW.sb.rpc('is_admin').then(function (jeAdmin) {
+          if (!jeAdmin) {
+            CW.sb.auth.signOut();
+            throw new Error('Ovaj nalog nema prava administratora.');
+          }
+          return { email: s.user.email, name: (s.user.email || '').split('@')[0] };
+        });
       });
     },
     clear: function () { CW.sb.auth.signOut(); }
