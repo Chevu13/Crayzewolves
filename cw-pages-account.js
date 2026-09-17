@@ -381,17 +381,14 @@ CW.pages._orderMoney = function (minor, currency) {
   return currency === 'EUR' ? '€' + whole + ',' + v[1] : whole + ',' + v[1] + ' RSD';
 };
 
-/* Realni statusi (pending_payment/confirmed/processing/shipped/delivered/
-   cancelled/refunded) mapiraju se na četiri postojeća CSS tona — nema
-   posebne boje za svaki, pa se najbliži ton ponovo koristi. */
+/* Statusi iz baze (new/confirmed/shipped/picked_up/cancelled) mapiraju se
+   na četiri postojeća CSS tona. */
 CW.pages._orderTone = {
-  pending_payment: 'order-status--processing',
-  confirmed:       'order-status--processing',
-  processing:      'order-status--processing',
-  shipped:         'order-status--transit',
-  delivered:        'order-status--delivered',
-  cancelled:        'order-status--cancelled',
-  refunded:         'order-status--cancelled'
+  new:       'order-status--processing',
+  confirmed: 'order-status--processing',
+  shipped:   'order-status--transit',
+  picked_up: 'order-status--delivered',
+  cancelled: 'order-status--cancelled'
 };
 
 CW.pages._orderRow = function (o) {

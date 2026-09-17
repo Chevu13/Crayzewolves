@@ -151,7 +151,7 @@ window.CW = window.CW || {};
 
     return {
       title: title,
-      slug: CW.slug(title),
+      slug: (CW.admin._editing && CW.admin._editing.slug) || CW.slug(title),
       content: content,
       excerpt: f.elements.excerpt.value.trim() || autoExcerpt(content),
       categoryId: f.elements.categoryId.value,
@@ -227,7 +227,9 @@ window.CW = window.CW || {};
 
     var data = {
       name: name,
-      slug: CW.slug(name),
+      /* Postojeći proizvod zadržava adresu — promena naziva ne sme da slomi
+         linkove koji su već podeljeni. */
+      slug: (CW.admin._editing && CW.admin._editing.slug) || CW.slug(name),
       price: price,
       compareAt: compare,
       priceEur: priceEur,
@@ -236,6 +238,7 @@ window.CW = window.CW || {};
       description: f.elements.description.value.trim(),
       categoryId: f.elements.categoryId.value,
       stockStatus: f.elements.stockStatus.value,
+      stock: Math.max(0, parseInt(f.elements.stock.value, 10) || 0),
       image: f.elements.image.value || null,
       isActive: f.elements.stockStatus.value !== 'COMING_SOON'
     };
@@ -341,7 +344,7 @@ window.CW = window.CW || {};
       if (status === 'shipped' && o.status !== 'shipped') {
         patch.shipped_at = new Date().toISOString();
       }
-      if (status === 'delivered') patch.payment_status = 'paid';
+      if (status === 'picked_up') patch.payment_status = 'paid';
 
       t.disabled = true;
       CW.api.orders.update(o.id, patch).then(function () {

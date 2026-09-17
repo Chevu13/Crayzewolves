@@ -12,13 +12,11 @@ CW.admin = CW.admin || {};
   var A = CW.admin;
 
   var TONE = {
-    pending_payment: 'warn',
-    confirmed:       'ok',
-    processing:      'ok',
-    shipped:         'ok',
-    delivered:       'ok',
-    cancelled:       'bad',
-    refunded:        'bad'
+    new:       'warn',
+    confirmed: 'ok',
+    shipped:   'ok',
+    picked_up: 'ok',
+    cancelled: 'bad'
   };
 
   function label(status) {

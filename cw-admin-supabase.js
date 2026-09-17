@@ -108,6 +108,7 @@ window.CW = window.CW || {};
     if (p.description !== undefined)  out.description = p.description || null;
     if (p.image !== undefined)        out.image = p.image || null;
     if (p.stockStatus !== undefined)  out.stock_status = String(p.stockStatus).toLowerCase();
+    if (p.stock !== undefined)        out.stock = p.stock;
     if (p.isActive !== undefined)     out.is_active = Boolean(p.isActive);
     return out;
   }
@@ -249,13 +250,13 @@ window.CW = window.CW || {};
      PORUDŽBINE
      ==================================================================== */
   var ORDER_STATUS = {
-    pending_payment: 'Čeka uplatu',
-    confirmed:       'Potvrđena',
-    processing:      'U pripremi',
-    shipped:         'Poslata',
-    delivered:       'Isporučena',
-    cancelled:       'Otkazana',
-    refunded:        'Vraćen novac'
+    /* Mora se poklapati sa enumom order_status u bazi — nepoznat status
+       baza odbija, pa čuvanje u panelu pada. */
+    new:       'Nova',
+    confirmed: 'Potvrđena',
+    shipped:   'Poslata',
+    picked_up: 'Preuzeta',
+    cancelled: 'Otkazana'
   };
   var PAY_LABEL = { card: 'Kartica', cod: 'Pouzeće', bank: 'Uplata na račun' };
 

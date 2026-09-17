@@ -138,10 +138,6 @@ CW.admin = CW.admin || {};
             '<button class="btn btn--primary btn--lg full" type="submit">Prijavi se</button>' +
           '</form>' +
 
-          '<p class="adm-login__note">' +
-            'Demo panel — prolazi svaka ispravna imejl adresa i lozinka od šest ili više znakova. ' +
-            'Prava provera pripada backendu.' +
-          '</p>' +
         '</div>' +
       '</div>';
   };
@@ -380,7 +376,9 @@ CW.admin = CW.admin || {};
                 '<button class="adm-tab" type="button" data-editor-tab="preview">Pregled</button>' +
               '</div>' +
             '</div>' +
-            '<p class="t-xs mb-2">Markdown: ## naslov, **podebljano**, *kurziv*, - lista, &gt; citat, [tekst](adresa)</p>' +
+            /* Sajt od Markdowna prikazuje samo ova tri znaka — podebljano i linkovi
+               bi na sajtu izašli kao zvezdice i zagrade. */
+            '<p class="t-xs mb-2">Prazan red = novi pasus · ## podnaslov · - stavka liste · &gt; citat</p>' +
             '<textarea class="input adm-code" id="adm-content" name="content" rows="18" ' +
               'data-editor-pane="write" placeholder="Piši ovde…"></textarea>' +
             '<div class="adm-preview hidden" id="adm-post-preview" data-editor-pane="preview"></div>' +
@@ -518,6 +516,7 @@ CW.admin = CW.admin || {};
           f.elements.description.value = p.description || '';
           f.elements.categoryId.value = p.categoryId || '';
           f.elements.stockStatus.value = p.stockStatus || 'IN_STOCK';
+          f.elements.stock.value = p.stock || 0;
           CW.adm.setImage('adm-prod-image', p.image || '');
           var del = document.getElementById('adm-prod-delete');
           if (del) del.classList.remove('hidden');
@@ -592,6 +591,13 @@ CW.admin = CW.admin || {};
                 '<option value="OUT_OF_STOCK">Nema na stanju</option>' +
                 '<option value="COMING_SOON">U pripremi</option>' +
               '</select>' +
+            '</div>' +
+            /* Bez ovog polja proizvod „Na stanju" sa lagerom 0 na sajtu piše
+               „Rasprodato" — sajt kupovinu dozvoljava po broju komada. */
+            '<div class="field mt-3">' +
+              '<label class="field__label" for="adm-prod-qty">Komada na lageru</label>' +
+              '<input class="input" id="adm-prod-qty" name="stock" type="number" min="0" step="1">' +
+              '<p class="t-xs mt-1">Za digitalne proizvode se ne upisuje — broje se slobodni Steam kodovi.</p>' +
             '</div>' +
           '</div>' +
 
@@ -714,8 +720,8 @@ CW.admin = CW.admin || {};
 
       '<div class="adm-panel mt-4">' +
         '<h2 class="t-h3">Podaci</h2>' +
-        '<p class="t-sm mt-2">Izmene se čuvaju u ovom pregledaču. Izvezi ih da ih preneseš ' +
-          'na drugi računar ili predaš programeru za ubacivanje u bazu.</p>' +
+        '<p class="t-sm mt-2">Izvezi sve preuzima rezervnu kopiju objava, proizvoda i ' +
+          'podešavanja kao fajl. Sadržaj je u bazi — uvoz i vraćanje na početno radi programer.</p>' +
         '<div class="row row--wrap mt-3">' +
           '<button class="btn btn--secondary" type="button" data-act="adm-export">' +
             CW.icon('download', 15) + ' Izvezi sve</button>' +
