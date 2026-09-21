@@ -93,7 +93,12 @@ CW.pages.login = function (ctx) {
         '<p class="t-sm mt-2">Prijavi se za porudžbine, listu želja i sačuvane adrese.</p>' +
       '</div>' +
 
-      '<form class="stack stack-3 mt-4" data-act="login-form" data-next="' + CW.esc(next) + '" novalidate>' +
+      /* Google stoji IZNAD forme: ko ga ima, tim putem je brže, a ko nema
+         lozinku ovog sajta ni ne treba da je traži. */
+      '<div class="mt-4">' + CW.c.googleButton('Nastavi preko Google-a') + '</div>' +
+      '<p class="t-xs text-center mt-2">ili imejlom i lozinkom</p>' +
+
+      '<form class="stack stack-3 mt-3" data-act="login-form" data-next="' + CW.esc(next) + '" novalidate>' +
         '<div class="field">' +
           '<label class="field__label" for="li-email">Imejl adresa <span class="field__req">*</span></label>' +
           '<input class="input" id="li-email" name="email" type="email" autocomplete="email" required placeholder="ime@primer.com">' +
@@ -147,7 +152,10 @@ CW.pages.register = function () {
         '<p class="t-sm mt-2">Nalog čuva porudžbine, listu želja i adrese na jednom mestu.</p>' +
       '</div>' +
 
-      '<form class="stack stack-3 mt-4" data-act="register-form" novalidate>' +
+      '<div class="mt-4">' + CW.c.googleButton('Napravi nalog preko Google-a') + '</div>' +
+      '<p class="t-xs text-center mt-2">ili popuni podatke</p>' +
+
+      '<form class="stack stack-3 mt-3" data-act="register-form" novalidate>' +
         '<div class="field-row">' +
           '<div class="field">' +
             '<label class="field__label" for="rg-first">Ime <span class="field__req">*</span></label>' +
@@ -497,6 +505,13 @@ CW.pages.accountDetails = function () {
 
         '<hr class="divider-line">' +
 
+        (CW.sb && CW.sb.enabled && CW.sb.auth.providers().indexOf('email') === -1
+          ? '<fieldset class="fieldset">' +
+              '<legend class="fieldset__legend">Prijava</legend>' +
+              '<p class="t-sm">Na ovaj nalog se prijavljuješ preko Google-a, pa lozinka ne postoji. ' +
+                'Lozinku menjaš u svom Google nalogu.</p>' +
+            '</fieldset>'
+          :
         '<fieldset class="fieldset">' +
           '<legend class="fieldset__legend">Promena lozinke</legend>' +
           '<p class="t-xs mb-2">Ostavi prazno ako ne menjaš lozinku.</p>' +
@@ -514,7 +529,7 @@ CW.pages.accountDetails = function () {
               '<input class="input" id="ad-confirm" name="confirm" type="password" autocomplete="new-password">' +
             '</div>' +
           '</div>' +
-        '</fieldset>' +
+        '</fieldset>') +
 
         '<hr class="divider-line">' +
 

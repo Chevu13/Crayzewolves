@@ -251,6 +251,33 @@ window.CW = window.CW || {};
       }).catch(function () { return false; });
     },
 
+    /* Google ide preusmeravanjem, ne fetch-om: Google odbija da se njegov
+       ekran za prijavu otvori unutar tuđe stranice. Supabase nas posle vrati
+       na `redirect_to` sa tokenima u #hash-u — isti put kojim već stiže
+       potvrda naloga, pa boot() u cw-app.js to hvata bez ijedne nove grane.
+
+       `redirect_to` NEMA hash iz istog razloga kao kod reseta lozinke: dva
+       fragmenta u jednoj adresi ruter ne bi umeo da razdvoji. */
+    signInWithProvider: function (provider) {
+      var base = window.location.origin + window.location.pathname;
+      window.location.href = CFG.url + '/auth/v1/authorize' +
+        '?provider=' + encodeURIComponent(provider) +
+        '&redirect_to=' + encodeURIComponent(base);
+    },
+
+    /* Kojim načinima nalog može da se prijavi ('email', 'google'…).
+       Nalog napravljen preko Google-a nema lozinku, pa mu se forma za
+       promenu lozinke i ne prikazuje. */
+    providers: function () {
+      var se = sb.session();
+      var u = se && se.user;
+      if (!u) return [];
+      if (u.identities && u.identities.length) {
+        return u.identities.map(function (i) { return i.provider; });
+      }
+      return [(u.app_metadata && u.app_metadata.provider) || 'email'];
+    },
+
     signOut: function () {
       var s = sb.session();
       writeSession(null);
