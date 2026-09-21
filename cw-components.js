@@ -976,6 +976,24 @@ CW.ui.bind = function () {
         CW.sb.auth.signInWithProvider('google');
         break;
 
+      /* Kapija shopa na početnoj. Oba spiska su već iscrtana, pa se ovde
+         samo smenjuju — nema ponovnog crtanja stranice ni zahteva ka bazi. */
+      case 'shop-pick': {
+        ev.preventDefault();
+        var pick = trigger.getAttribute('data-shop');
+        CW.qsa('[data-act="shop-pick"]').forEach(function (b) {
+          var on = b.getAttribute('data-shop') === pick;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+        CW.qsa('[data-shop-pane]').forEach(function (pane) {
+          var on = pane.getAttribute('data-shop-pane') === pick;
+          pane.hidden = !on;
+          pane.classList.toggle('is-active', on);
+        });
+        break;
+      }
+
       case 'copy-link':
         ev.preventDefault();
         CW.toast({ type: 'success', title: 'Link kopiran' });
