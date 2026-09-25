@@ -986,6 +986,9 @@ CW.ui.bind = function () {
           b.classList.toggle('is-active', on);
           b.setAttribute('aria-pressed', String(on));
         });
+        CW.qsa('[data-shop-switch]').forEach(function (sw) {
+          sw.setAttribute('data-pick', pick);
+        });
         CW.qsa('[data-shop-pane]').forEach(function (pane) {
           var on = pane.getAttribute('data-shop-pane') === pick;
           pane.hidden = !on;

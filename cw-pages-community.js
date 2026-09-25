@@ -27,65 +27,39 @@ CW.pages._accordion = function (items) {
 };
 
 /* ==========================================================================
-   KAPIJA SHOPA NA POČETNOJ — fizičko ili digitalno
+   PREKIDAČ SHOPA NA POČETNOJ — merch ili digitalno
    --------------------------------------------------------------------------
-   Posetilac bira ulaz, ne filter. Oba spiska stoje u HTML-u od početka i samo
-   se smenjuju (cw-components.js, data-act="shop-pick"), pa je prebacivanje
-   trenutno — bez ponovnog crtanja stranice i bez odlaska na server.
+   Jedan prekidač, dve police na istom mestu. Oba spiska stoje u HTML-u od
+   početka i samo se smenjuju (cw-components.js, data-act="shop-pick"), pa je
+   prebacivanje trenutno — bez ponovnog crtanja stranice i bez odlaska na
+   server.
+
+   Na početnoj nema filtera ni kategorija: samo izbor police i tri proizvoda
+   koja se trenutno guraju. Ko hoće da bira po kategoriji, ide u shop.
    ========================================================================== */
 
-/* Slika koja nosi izdvojeni proizvod. Digitalna roba nema fotografiju
-   artikla — ključ je papirić — pa ide baner prodavnice. */
-var SHOP_BANNER = { merch: 'banner-solja', digital: 'banner-wolfpack-store' };
-var SHOP_TAG    = { merch: 'Zvanična kolekcija', digital: 'Wolfpack Store' };
-
-function shopDoor(kind, title, what, how, image, count, active) {
-  return '<button class="shop-door' + (active ? ' is-active' : '') + '" type="button" ' +
-      'data-act="shop-pick" data-shop="' + kind + '" aria-pressed="' + (active ? 'true' : 'false') + '">' +
-    '<span class="shop-door__media">' +
-      CW.img(image, { ratio: '16 / 9', fit: 'cover', ph: title }) +
-      '<span class="shop-door__scrim"></span>' +
-    '</span>' +
-    '<span class="shop-door__body">' +
-      '<span class="shop-door__title">' + CW.esc(title) + '</span>' +
-      '<span class="shop-door__what">' + CW.esc(what) + '</span>' +
-      '<span class="shop-door__how">' + CW.esc(how) + '</span>' +
-      '<span class="shop-door__foot">' +
-        '<span class="shop-door__count">' + count + ' ' +
-          CW.plural(count, 'artikal', 'artikla', 'artikala') + '</span>' +
-        '<span class="shop-door__mark">' + CW.icon('arrowR', 16) + '</span>' +
-      '</span>' +
-    '</span>' +
-  '</button>';
-}
-
-/* Izdvojeni proizvod preko cele širine; naziv, cena i dugme u traci ispod. */
-function shopFeature(p, kind) {
-  return '<div class="feature-drop">' +
-    '<a class="card__media feature-drop__media" href="#/proizvod/' + CW.esc(p.slug) + '" ' +
-      'aria-label="' + CW.esc(p.name) + '">' +
-      CW.img(SHOP_BANNER[kind], { ratio: '5 / 2', fit: 'cover', ph: p.name }) +
-      '<span class="badge badge--limited feature-drop__badge">' + CW.esc(SHOP_TAG[kind]) + '</span>' +
-    '</a>' +
-    '<div class="feature-drop__bar">' +
-      '<div class="feature-drop__text">' +
-        '<h3 class="t-h2">' + CW.esc(p.name) + '</h3>' +
-        '<p class="t-body mt-1">' + CW.esc(p.shortDesc || '') + '</p>' +
-      '</div>' +
-      '<div class="feature-drop__buy">' +
-        '<span class="t-price feature-drop__price">' + CW.money(p.price) + '</span>' +
-        '<a class="btn btn--primary btn--lg" href="#/proizvod/' + CW.esc(p.slug) + '">Pogledaj</a>' +
-      '</div>' +
-    '</div>' +
-  '</div>';
+function shopSwitch(merchCount, digitalCount) {
+  function side(kind, label, count, active) {
+    return '<button class="shop-switch__side' + (active ? ' is-active' : '') + '" type="button" ' +
+        'data-act="shop-pick" data-shop="' + kind + '" aria-pressed="' + (active ? 'true' : 'false') + '">' +
+      '<span class="shop-switch__label">' + CW.esc(label) + '</span>' +
+      '<span class="shop-switch__count">' + count + '</span>' +
+    '</button>';
+  }
+  /* Klizač je jedan element koji se pomera — ne dva koja se pale i gase —
+     da se vidi da su to dve strane istog prekidača. */
+  return '<div class="shop-switch" data-shop-switch role="group" aria-label="Vrsta proizvoda">' +
+      '<span class="shop-switch__thumb" aria-hidden="true"></span>' +
+      side('merch', 'Merch', merchCount, true) +
+      side('digital', 'Digitalno', digitalCount, false) +
+    '</div>';
 }
 
 function shopPane(kind, list, active) {
   var body = list.length
-    ? shopFeature(list[0], kind) +
-      (list.length > 1
-        ? '<div class="product-grid mt-5">' + list.slice(1, 4).map(CW.c.productCard).join('') + '</div>'
-        : '') +
+    ? '<div class="product-grid">' +
+        list.slice(0, 3).map(CW.c.productCard).join('') +
+      '</div>' +
       '<div class="text-center mt-4">' +
         '<a class="btn btn--secondary" href="#/shop/' + (kind === 'digital' ? 'digital' : 'all') + '">' +
           (kind === 'digital' ? 'Ceo Wolfpack Store ' : 'Sve iz shopa ') + CW.icon('arrowR', 15) + '</a>' +
@@ -172,28 +146,12 @@ CW.pages.home = function () {
       action: '<a class="btn btn--quiet" href="#/shop">Ceo shop ' + CW.icon('arrowR', 15) + '</a>'
     }) +
 
-    /* KAPIJA: fizičko ili digitalno.
-       Ne filter sa kvačicama nego dva ulaza — posetilac prvo kaže šta lovi,
-       pa tek onda gleda robu. Oba spiska se iscrtaju odmah i samo se
-       prebacuju; bez ponovnog crtanja stranice i bez čekanja na mrežu. */
-    '<div class="shop-gate" role="group" aria-label="Izaberi vrstu proizvoda">' +
-      shopDoor('merch', 'Fizički proizvodi', 'Šolje, odeća, dodaci', 'Stiže kurirom na adresu.',
-               'banner-solja', merch.length, true) +
-      shopDoor('digital', 'Digitalni proizvodi', 'Ključevi, gift kartice, pretplate', 'Stiže na mejl, odmah.',
-               'banner-wolfpack-store', digital.length, false) +
-    '</div>' +
+    /* Prekidač stoji na vrhu police, odmah ispod naslova sekcije. */
+    shopSwitch(merch.length, digital.length) +
 
     shopPane('merch', merch, true) +
     shopPane('digital', digital, false) +
 
-    '<div class="grid grid--4 mt-4">' +
-      CW.nav.shopMenu.slice(1).map(function (c) {
-        return '<a class="cat-tile" href="#' + c.path + '">' +
-          '<span class="cat-tile__name">' + CW.esc(c.label) + '</span>' +
-          CW.icon('arrowR', 16) +
-        '</a>';
-      }).join('') +
-    '</div>' +
   '</section>' +
 
   /* ---------- BROJEVI ----------
