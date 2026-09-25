@@ -94,14 +94,13 @@ CW.pages.shop = function () {
     '</div>' +
   '</section>' : '') +
 
-  rail('New arrivals', '01 — Just landed', newArrivals, '#/shop/all?sort=new') +
-  rail('Best sellers', '02 — Proven', bestSellers, '#/shop/all?sort=popular', 'The pieces people buy first, then buy again.') +
+  rail('Novo u shopu', '', newArrivals, '#/shop/all?sort=new') +
+  rail('Najprodavanije', '', bestSellers, '#/shop/all?sort=popular', 'Ono što se prvo kupi, pa se kupi ponovo.') +
 
   /* ---------- COLLECTIONS ---------- */
   '<section class="section section--surface">' +
     '<div class="container container--wide">' +
-      CW.c.sectionHead({ eyebrow: '03 — Collections', title: 'Four lines, four jobs',
-        desc: 'Svaka kolekcija ima svoj razlog.' }) +
+      CW.c.sectionHead({ title: 'Kolekcije', desc: 'Svaka kolekcija ima svoj razlog.' }) +
       '<div class="collection-tiles">' +
         CW.data.collections.filter(function (c) { return c.id !== 'limited'; }).map(function (c) {
           return '<a class="collection-tile" href="#/shop/all?collection=' + c.id + '">' +
@@ -118,7 +117,7 @@ CW.pages.shop = function () {
     '</div>' +
   '</section>' +
 
-  rail('Esports collection', '04 — Roster-ready', esports, '#/shop/all?collection=esports', 'What the players actually compete in — same fabric, same cut, same print.') +
+  rail('Esports kolekcija', '', esports, '#/shop/all?collection=esports', 'Ono u čemu igrači zaista igraju — isti materijal, isti kroj, ista štampa.') +
 
   /* ---------- PROMO ---------- */
   '<section class="section--tight container container--wide">' +
@@ -138,12 +137,12 @@ CW.pages.shop = function () {
     '</div>' +
   '</section>' +
 
-  rail('Community essentials', '05 — Everyday', essentials, '#/shop/all?collection=essential') +
-  rail('Lifestyle collection', '06 — Off duty', lifestyle, '#/shop/all?collection=lifestyle') +
+  rail('Za svaki dan', '', essentials, '#/shop/all?collection=essential') +
+  rail('Lifestyle kolekcija', '', lifestyle, '#/shop/all?collection=lifestyle') +
 
   (recents.length ?
   '<section class="section container container--wide">' +
-    CW.c.sectionHead({ eyebrow: 'Pick up where you left off', title: 'Recently viewed' }) +
+    CW.c.sectionHead({ title: 'Nedavno gledano' }) +
     '<div class="product-grid product-grid--4">' + recents.slice(0, 4).map(CW.c.productCard).join('') + '</div>' +
   '</section>' : '') +
 
@@ -252,12 +251,12 @@ CW.pages.catalog = function (ctx) {
     var col = CW.find('collections', c);
     tokens.push({ label: col ? col.name : c, key: 'collection', val: c });
   });
-  filters.size.forEach(function (s) { tokens.push({ label: 'Size ' + s, key: 'size', val: s }); });
+  filters.size.forEach(function (s) { tokens.push({ label: 'Veličina ' + s, key: 'size', val: s }); });
   filters.color.forEach(function (c) {
     tokens.push({ label: (CW.shopOptions.colors[c] || {}).name || c, key: 'color', val: c });
   });
-  filters.avail.forEach(function (a) { tokens.push({ label: a === 'in' ? 'In stock' : 'Na sniženju', key: 'avail', val: a }); });
-  if (filters.max !== null) tokens.push({ label: 'Under ' + CW.money(filters.max * 100), key: 'max', val: filters.max });
+  filters.avail.forEach(function (a) { tokens.push({ label: a === 'in' ? 'Samo dostupno' : 'Na sniženju', key: 'avail', val: a }); });
+  if (filters.max !== null) tokens.push({ label: 'do ' + CW.money(filters.max * 100), key: 'max', val: filters.max });
   if (filters.q) tokens.push({ label: '“' + filters.q + '”', key: 'q', val: filters.q });
 
   var filterPanel = CW.pages._filterPanel(filters, allSizes, allColors, maxPrice, base);
@@ -268,9 +267,9 @@ CW.pages.catalog = function (ctx) {
     if (!pageItems.length) {
       return CW.c.empty({
         icon: 'search',
-        title: 'No products match those filters',
+        title: 'Nijedan proizvod ne odgovara filterima',
         text: 'Nothing in this category fits every filter you have applied. Try removing one, or browse everything.',
-        actions: '<button class="btn btn--secondary" type="button" data-act="clear-filters">Clear all filters</button>' +
+        actions: '<button class="btn btn--secondary" type="button" data-act="clear-filters">Poništi filtere</button>' +
                  '<a class="btn btn--quiet" href="#/shop/all">Browse all products</a>'
       });
     }
@@ -299,30 +298,31 @@ CW.pages.catalog = function (ctx) {
       '<div>' +
         '<div class="toolbar">' +
           '<button class="btn btn--quiet filter-trigger" type="button" data-act="open-filters">' +
-            CW.icon('filter', 16) + 'Filters' + (tokens.length ? ' (' + tokens.length + ')' : '') +
+            CW.icon('filter', 16) + 'Filteri' + (tokens.length ? ' (' + tokens.length + ')' : '') +
           '</button>' +
-          '<span class="toolbar__count">' + list.length + ' product' + (list.length === 1 ? '' : 's') + '</span>' +
+          '<span class="toolbar__count">' + list.length + ' ' +
+            CW.plural(list.length, 'proizvod', 'proizvoda', 'proizvoda') + '</span>' +
           '<span class="spacer"></span>' +
           '<label class="visually-hidden" for="sort">Sortiranje</label>' +
           '<select class="select" id="sort" style="max-width:210px" data-act="sort">' +
-            '<option value="featured"' + (sort === 'featured' ? ' selected' : '') + '>Featured</option>' +
-            '<option value="new"' + (sort === 'new' ? ' selected' : '') + '>Newest first</option>' +
-            '<option value="popular"' + (sort === 'popular' ? ' selected' : '') + '>Best selling</option>' +
+            '<option value="featured"' + (sort === 'featured' ? ' selected' : '') + '>Izdvojeno</option>' +
+            '<option value="new"' + (sort === 'new' ? ' selected' : '') + '>Najnovije</option>' +
+            '<option value="popular"' + (sort === 'popular' ? ' selected' : '') + '>Najprodavanije</option>' +
             '<option value="price-asc"' + (sort === 'price-asc' ? ' selected' : '') + '>Cena: rastuće</option>' +
             '<option value="price-desc"' + (sort === 'price-desc' ? ' selected' : '') + '>Cena: opadajuće</option>' +
-            '<option value="name"' + (sort === 'name' ? ' selected' : '') + '>Name A–Z</option>' +
+            '<option value="name"' + (sort === 'name' ? ' selected' : '') + '>Naziv A–Š</option>' +
           '</select>' +
         '</div>' +
 
         (tokens.length ?
         '<div class="active-filters">' +
-          '<span class="t-label" style="margin-right:4px">Active</span>' +
+          '<span class="t-label" style="margin-right:4px">Uključeno</span>' +
           tokens.map(function (t) {
             return '<span class="token">' + CW.esc(t.label) +
               '<button class="token__x" type="button" data-act="remove-filter" data-key="' + t.key + '" data-val="' + CW.esc(t.val) + '" ' +
-              'aria-label="Remove filter ' + CW.esc(t.label) + '">' + CW.icon('x', 12) + '</button></span>';
+              'aria-label="Ukloni filter ' + CW.esc(t.label) + '">' + CW.icon('x', 12) + '</button></span>';
           }).join('') +
-          '<button class="btn btn--ghost btn--sm" type="button" data-act="clear-filters">Clear all</button>' +
+          '<button class="btn btn--ghost btn--sm" type="button" data-act="clear-filters">Poništi sve</button>' +
         '</div>' : '') +
 
         '<div class="mt-3" data-loading-key="catalog" aria-busy="' + (CW.loaded.catalog ? 'false' : 'true') + '">' +
@@ -350,7 +350,7 @@ CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base) {
     '</div>' +
 
     '<div class="filter-group">' +
-      '<div class="filter-group__title">Collection</div>' +
+      '<div class="filter-group__title">Kolekcija</div>' +
       CW.data.collections.map(function (c) {
         var n = countFor(function (p) { return p.collectionId === c.id; });
         if (!n) return '';
@@ -395,14 +395,14 @@ CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base) {
         '<label class="visually-hidden" for="price-max">Najviša cena</label>' +
         '<input type="range" id="price-max" name="max" min="5" max="' + maxPrice + '" step="5" value="' + (filters.max || maxPrice) + '">' +
         '<div class="row row--between">' +
-          '<span class="t-xs">' + CW.shopConfig.currencySymbol + '0</span>' +
-          '<span class="t-xs t-gold" data-price-out>Up to ' + CW.shopConfig.currencySymbol + (filters.max || maxPrice) + '</span>' +
+          '<span class="t-xs">' + CW.money(0) + '</span>' +
+          '<span class="t-xs t-gold" data-price-out>do ' + CW.money((filters.max || maxPrice) * 100) + '</span>' +
         '</div>' +
       '</div>' +
     '</div>' +
 
     '<div class="filter-group">' +
-      '<div class="filter-group__title">Availability</div>' +
+      '<div class="filter-group__title">Dostupnost</div>' +
       '<label class="check">' +
         '<input type="checkbox" name="avail" value="in"' + (filters.avail.indexOf('in') !== -1 ? ' checked' : '') + '>' +
         '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
@@ -414,8 +414,10 @@ CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base) {
     '</div>' +
 
     '<div class="stack stack-1" style="padding-top:var(--space-3)">' +
-      '<button class="btn btn--primary btn--full" type="submit">Primeni filtere</button>' +
-      '<button class="btn btn--ghost btn--full" type="button" data-act="clear-filters">Clear all</button>' +
+      /* Na širokom ekranu filteri rade u trenutku klika, pa dugme visi bez
+         posla — ostaje samo u fioci na telefonu (cw-app.js, open-filters). */
+      '<button class="btn btn--primary btn--full" type="submit" data-drawer-only>Primeni filtere</button>' +
+      '<button class="btn btn--ghost btn--full" type="button" data-act="clear-filters">Poništi sve</button>' +
     '</div>' +
   '</form>';
 };
@@ -494,7 +496,7 @@ CW.pages.product = function (ctx) {
             var avail = p.variants.some(function (v) { return v.colorId === c && v.stock > 0; });
             return '<button class="variant-color" type="button" data-act="pick-color" data-color="' + c + '" ' +
               'style="background:' + cObj.hex + '" aria-label="' + CW.esc(cObj.name) + '" aria-pressed="false"' +
-              (avail ? '' : ' disabled title="Sold out"') + '></button>';
+              (avail ? '' : ' disabled title="Rasprodato"') + '></button>';
           }).join('') +
         '</div>' +
         '<div class="field__error hidden" data-error="color">' + CW.icon('alert', 14) + ' Please choose a colour</div>' +
@@ -506,7 +508,7 @@ CW.pages.product = function (ctx) {
         '<div class="variant-head">' +
           '<span class="field__label">Size: <span class="t-offwhite" data-size-label>Izaberi veličinu</span></span>' +
           (guide ? '<button class="link-arrow" type="button" data-act="size-guide" data-guide="' + p.sizeGuide + '">' +
-            CW.icon('sliders', 14) + ' Size guide</button>' : '') +
+            CW.icon('sliders', 14) + ' Tabela veličina</button>' : '') +
         '</div>' +
         '<div class="variant-options" role="group" aria-label="Izaberi veličinu">' +
           sizes.map(function (s) {
@@ -535,7 +537,7 @@ CW.pages.product = function (ctx) {
         '</div>' +
         '<div class="pdp__actions pdp__actions--inline" style="flex:1">' +
           '<button class="btn btn--primary btn--lg" type="button" data-act="add-to-cart" data-pid="' + p.id + '"' + (soldout ? ' disabled' : '') + '>' +
-            (soldout ? 'Sold out' : CW.icon('cart', 17) + 'Dodaj u korpu') + '</button>' +
+            (soldout ? 'Rasprodato' : CW.icon('cart', 17) + 'Dodaj u korpu') + '</button>' +
           '<button class="btn btn--secondary btn--lg' + (wished ? ' is-active' : '') + '" type="button" style="flex:none;width:52px;padding:0" ' +
             'data-act="toggle-wishlist" data-pid="' + p.id + '" aria-label="' + (wished ? 'Ukloni iz liste želja' : 'Dodaj u listu želja') + '" aria-pressed="' + wished + '">' +
             CW.icon('heart', 18) + '</button>' +
@@ -543,7 +545,7 @@ CW.pages.product = function (ctx) {
       '</div>' +
 
       (soldout ? '<div class="alert alert--warning">' + CW.icon('bell', 18) +
-        '<span>This piece is sold out. Add it to your wishlist and we will email you if it returns.</span></div>' : '') +
+        '<span>Ovaj artikal je rasprodat. Dodaj ga na listu želja i javićemo ti mejlom kad se vrati.</span></div>' : '') +
 
       /* ---- delivery + returns ---- */
       '<div class="spec-list">' +
@@ -559,8 +561,8 @@ CW.pages.product = function (ctx) {
       '<div class="accordion">' +
         [
           { q: 'Detalji proizvoda', a: p.description },
-          { q: 'Materials', a: p.materials },
-          { q: 'Care instructions', a: p.care },
+          { q: 'Materijali', a: p.materials },
+          { q: 'Održavanje', a: p.care },
           { q: 'Dostava i povraćaj', a: 'Standardna dostava 3–5 radnih dana (' + CW.money(CW.shopConfig.defaultShipping) + '), ekspresna 1–2 radna dana. Besplatno preko ' + CW.money(CW.shopConfig.freeShippingThreshold) + '. Returns accepted within 14 days on unworn items with original tags, limited drops included.' }
         ].map(function (item, i) {
           return '<div class="accordion__item' + (i === 0 ? ' is-open' : '') + '">' +
@@ -633,14 +635,14 @@ CW.pages.product = function (ctx) {
 
     (related.length ?
     '<section class="section container container--wide">' +
-      CW.c.sectionHead({ eyebrow: 'Goes with this', title: 'Related products' }) +
+      CW.c.sectionHead({ title: 'Ide uz ovo' }) +
       '<div class="product-grid product-grid--4">' + related.map(CW.c.productCard).join('') + '</div>' +
     '</section>' : '') +
 
     (recents.length ?
     '<section class="section section--surface">' +
       '<div class="container container--wide">' +
-        CW.c.sectionHead({ eyebrow: 'You looked at', title: 'Recently viewed' }) +
+        CW.c.sectionHead({ title: 'Nedavno gledano' }) +
         '<div class="product-grid product-grid--4">' + recents.map(CW.c.productCard).join('') + '</div>' +
       '</div>' +
     '</section>' : '') +
@@ -652,7 +654,7 @@ CW.pages.product = function (ctx) {
         '<div class="t-xs" data-sticky-variant>Izaberi opciju</div>' +
       '</div>' +
       '<button class="btn btn--primary btn--lg" style="flex:1" type="button" data-act="add-to-cart" data-pid="' + p.id + '"' + (soldout ? ' disabled' : '') + '>' +
-        (soldout ? 'Sold out' : 'Dodaj u korpu') + '</button>' +
+        (soldout ? 'Rasprodato' : 'Dodaj u korpu') + '</button>' +
     '</div>' +
   '</div>';
 };
@@ -786,7 +788,7 @@ CW.pages.cart = function (ctx) {
   '</section>' +
 
   '<section class="section container container--wide">' +
-    CW.c.sectionHead({ eyebrow: 'Upotpuni komplet', title: 'Preporučeno za tebe' }) +
+    CW.c.sectionHead({ title: 'Preporučeno za tebe' }) +
     '<div class="product-grid product-grid--4">' + recs.map(CW.c.productCard).join('') + '</div>' +
   '</section>' +
   '</div>';

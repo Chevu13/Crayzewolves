@@ -1008,3 +1008,8 @@ a.feature-drop__media:hover img { transform: scale(1.02); }
   .home-partner { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
   .home-partner__media { max-width: 280px; margin-inline: auto; }
 }
+
+
+/* Bočni filteri se primenjuju u trenutku klika — dugme ostaje samo u fioci
+   na telefonu, gde bi svako crtanje zatvorilo fioku. */
+.catalog__filters [data-drawer-only] { display: none; }

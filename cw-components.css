@@ -2134,3 +2134,6 @@ input[type='range']::-moz-range-thumb {
   .shop-switch__thumb { transition: none; }
   .shop-pane.is-active { animation: none; }
 }
+
+/* U liniji sa naslovom sekcije — bez sopstvenog centriranja. */
+.section-head .shop-switch { margin: 0; width: min(360px, 100%); }

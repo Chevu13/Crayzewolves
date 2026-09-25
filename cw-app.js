@@ -223,7 +223,7 @@
       btn.disabled = !available;
       btn.classList.toggle('is-selected', pdp.size === size);
       btn.setAttribute('aria-pressed', String(pdp.size === size));
-      if (!available) btn.title = 'Sold out in this colour';
+      if (!available) btn.title = 'Rasprodato u ovoj boji';
     });
 
     CW.qsa('[data-act="pick-color"]').forEach(function (btn) {
@@ -349,8 +349,12 @@
       q[name] = vals.length ? vals.join(',') : null;
     });
 
+    /* Klizač staje na korak (step), pa se na kraju skale zaustavi malo ispod
+       maksimuma — bez ovog zazora bi „nedirnut" klizač upisivao cenu u
+       adresu i delovao kao aktivan filter. */
     var range = form.querySelector('[name=max]');
-    q.max = range && range.value !== range.max ? range.value : null;
+    var step = Number(range && range.step) || 1;
+    q.max = range && Number(range.value) < Number(range.max) - step ? range.value : null;
     q.page = null;
     return q;
   }
@@ -360,9 +364,75 @@
     return '#/' + (loc ? loc.path : 'shop/all');
   }
 
+  /* Gde je posetilac stajao i šta je držao kad je kliknuo filter. Bez ovoga
+     bi svaka kvačica vratila stranicu na vrh i izbacila kursor iz pretrage,
+     jer se spisak iscrtava iznova. */
+  var pendingFilter = null;
+
+  function applyFilters(form) {
+    var active = document.activeElement;
+    var inForm = active && form.contains(active);
+    pendingFilter = {
+      y: window.scrollY,
+      name: inForm ? active.getAttribute('name') : null,
+      /* Vrednost pamtimo samo kod kvačica — tamo ih ima više sa istim
+         imenom. Kod polja za pretragu je `value` staro stanje, pa bi posle
+         crtanja pokazivalo na element koji više ne postoji. */
+      value: inForm && active.type === 'checkbox' ? active.getAttribute('value') : null,
+      caret: inForm && active.selectionStart != null ? active.selectionStart : null
+    };
+    CW.router.setQuery(collectFilters(form));
+  }
+
+  function restoreAfterFilter() {
+    if (!pendingFilter) return;
+    var st = pendingFilter;
+    pendingFilter = null;
+    function put() {
+      window.scrollTo(0, st.y);
+      if (!st.name) return;
+      var sel = '[data-act="filter-form"] [name="' + st.name + '"]' +
+        (st.value ? '[value="' + st.value + '"]' : '');
+      var el = document.querySelector(sel);
+      if (!el || el === document.activeElement) return;
+      el.focus();
+      if (st.caret != null && el.setSelectionRange) {
+        try { el.setSelectionRange(st.caret, st.caret); } catch (e) { /* klizač nema kursor */ }
+      }
+    }
+
+    /* Spisak se crta dvaput: prvo kostur, pa pravi rezultati kad stignu.
+       Zato se vraćanje pokušava više puta — jedan pokušaj bi pregazilo
+       drugo crtanje. */
+    window.requestAnimationFrame(put);
+    window.setTimeout(put, 200);
+    window.setTimeout(put, 600);
+  }
+
   /** Live feedback inside a filter panel — works for the rail and the drawer. */
   function wireFilterControls(root) {
     if (!root) return;
+    restoreAfterFilter();
+
+    /* Bočni spisak filtera radi bez dugmeta: kvačica menja spisak odmah.
+       U fioci na telefonu ne — tamo bi prvo crtanje zatvorilo fioku, pa
+       posetilac ne bi stigao da izabere drugi filter. Fioka zadržava
+       „Primeni filtere". */
+    CW.qsa('[data-act="filter-form"]', root).forEach(function (form) {
+      if (form.dataset.live || form.closest('#overlay-root')) return;
+      form.dataset.live = '1';
+
+      form.addEventListener('change', function (ev) {
+        if (ev.target && ev.target.name === 'q') return;
+        applyFilters(form);
+      });
+
+      /* Pretraga ne sme da krene na svako slovo — čeka da se kucanje smiri. */
+      var text = form.querySelector('[name=q]');
+      if (text) {
+        text.addEventListener('input', CW.debounce(function () { applyFilters(form); }, 400));
+      }
+    });
 
     CW.qsa('[name=max]', root).forEach(function (range) {
       if (range.dataset.wired) return;
@@ -370,7 +440,7 @@
       range.addEventListener('input', function () {
         var wrap = range.closest('.range');
         var out = wrap ? wrap.querySelector('[data-price-out]') : null;
-        if (out) out.textContent = 'Up to ' + CW.shopConfig.currencySymbol + range.value;
+        if (out) out.textContent = 'do ' + CW.money(Number(range.value) * 100);
       });
     });
 
@@ -541,7 +611,7 @@
 
         var variant = pdpVariant();
         if (!variant || variant.stock === 0) {
-          CW.toast({ type: 'error', title: 'Sold out', text: 'That size and colour combination is not available.' });
+          CW.toast({ type: 'error', title: 'Rasprodato', text: 'Ta veličina u toj boji nije dostupna.' });
           break;
         }
 

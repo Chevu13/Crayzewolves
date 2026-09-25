@@ -140,14 +140,12 @@ CW.pages.home = function () {
      Prodaja je glavni posao sajta, pa ide odmah ispod heroja. Ranije je
      bila šesta sekcija, iza igara, usluga, CS2 tima i vesti. */
   '<section class="section container container--wide">' +
+    /* Prekidač ide u istu liniju sa naslovom — on JE izbor ove sekcije, a
+       ne još jedan red iznad police. */
     CW.c.sectionHead({
-      eyebrow: '01 — Zvanični shop',
-      title: 'Šta loviš danas?',
-      action: '<a class="btn btn--quiet" href="#/shop">Ceo shop ' + CW.icon('arrowR', 15) + '</a>'
+      title: 'Izdvajamo iz shopa',
+      action: shopSwitch(merch.length, digital.length)
     }) +
-
-    /* Prekidač stoji na vrhu police, odmah ispod naslova sekcije. */
-    shopSwitch(merch.length, digital.length) +
 
     shopPane('merch', merch, true) +
     shopPane('digital', digital, false) +
@@ -168,8 +166,7 @@ CW.pages.home = function () {
      ranije zauzimao ceo ekran i takmičio se sa proizvodom. */
   '<section class="section container container--wide">' +
     CW.c.sectionHead({
-      eyebrow: '02 — Blog',
-      title: 'Najnovije',
+      title: 'Blog',
       action: '<a class="btn btn--quiet" href="#/vesti">Sve objave ' + CW.icon('arrowR', 15) + '</a>'
     }) +
     '<div class="grid grid--2">' +
@@ -183,7 +180,7 @@ CW.pages.home = function () {
     var p = CW.data.partners[0];
     if (!p) return '';
     return '<section class="section container container--wide">' +
-      CW.c.sectionHead({ eyebrow: '03 — Saradnja', title: 'Zvanični partner' }) +
+      CW.c.sectionHead({ title: 'Saradnja' }) +
       /* Isti oblik kao izdvojeni proizvod: baner preko cele širine, podaci
          u traci ispod. Baner saradnje je 2.5:1 kao i ostali. */
       '<div class="feature-drop">' +
@@ -379,7 +376,7 @@ CW.pages.community = function () {
   '<section class="section section--surface">' +
     '<div class="container container--wide">' +
       CW.c.sectionHead({
-        eyebrow: '01 — Kako izgleda server',
+        eyebrow: 'Kako izgleda server',
         title: 'Šta te čeka unutra',
         desc: 'U #choose-roles biraš šta te zanima i vidiš samo te kanale.'
       }) +
@@ -402,7 +399,7 @@ CW.pages.community = function () {
 
   /* ---------- ŠTA DOBIJAŠ ---------- */
   '<section class="section container container--wide">' +
-    CW.c.sectionHead({ eyebrow: '02 — Članstvo', title: 'Šta članstvo stvarno znači' }) +
+    CW.c.sectionHead({ eyebrow: 'Članstvo', title: 'Šta članstvo stvarno znači' }) +
     '<div class="philosophy-grid">' +
       CW.data.communityBenefits.map(function (b) {
         return '<div class="benefit">' +
@@ -417,7 +414,7 @@ CW.pages.community = function () {
   '<section class="section container container--wide">' +
     '<div class="grid grid--2" style="gap:var(--space-6)">' +
       '<div>' +
-        '<div class="t-eyebrow">05 — Pravila</div>' +
+        '<div class="t-eyebrow">Pravila</div>' +
         '<h2 class="t-h2 mt-1">Osam pravila, i mislimo ozbiljno</h2>' +
         
         '<div class="alert alert--gold mt-4">' + CW.icon('shield', 18) +
@@ -439,7 +436,7 @@ CW.pages.community = function () {
   /* ---------- DRUŠTVENE MREŽE ---------- */
   '<section class="section section--surface">' +
     '<div class="container container--wide">' +
-      CW.c.sectionHead({ eyebrow: '04 — Prati nas', title: 'Sve mreže na jednom mestu' }) +
+      CW.c.sectionHead({ eyebrow: 'Prati nas', title: 'Sve mreže na jednom mestu' }) +
       '<div class="grid grid--2" style="gap:var(--space-5);align-items:center">' +
         '<div style="border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
           CW.img('promo-instagram', { ph: 'INSTAGRAM PROMO' }) +
@@ -841,7 +838,7 @@ CW.pages.about = function () {
   '<section class="section container container--wide">' +
     '<div class="grid grid--2" style="gap:var(--space-6)">' +
       '<div>' +
-        '<div class="t-eyebrow">01 — Priča</div>' +
+        '<div class="t-eyebrow">Priča</div>' +
         '<h2 class="t-h2 mt-1">Kako je počelo</h2>' +
         '<div class="prose mt-3">' + a.story.map(function (p) { return '<p>' + CW.esc(p) + '</p>'; }).join('') + '</div>' +
       '</div>' +
@@ -857,7 +854,7 @@ CW.pages.about = function () {
 
   '<section class="section section--surface">' +
     '<div class="container container--wide">' +
-      CW.c.sectionHead({ eyebrow: '02 — Vrednosti', title: 'Pet stvari koje se ne menjaju' }) +
+      CW.c.sectionHead({ eyebrow: 'Vrednosti', title: 'Pet stvari koje se ne menjaju' }) +
       '<div class="grid grid--5">' +
         a.values.map(function (v) {
           return '<div class="value-item"><div class="value-item__title">' + CW.esc(v.title) + '</div>' +
@@ -869,7 +866,7 @@ CW.pages.about = function () {
 
   '<section class="section container container--wide">' +
     CW.c.sectionHead({
-      eyebrow: '03 — Dugoročna vizija',
+      eyebrow: 'Dugoročna vizija',
       title: 'Kompletan gaming ekosistem',
       desc: 'Cilj nije još jedan Discord server, nego povezan sistem u kome svaki deo hrani ostale.'
     }) +
@@ -890,7 +887,7 @@ CW.pages.about = function () {
 
   '<section class="section section--surface">' +
     '<div class="container container--wide">' +
-      CW.c.sectionHead({ eyebrow: '04 — Brojevi', title: 'Gde smo sada' }) +
+      CW.c.sectionHead({ eyebrow: 'Brojevi', title: 'Gde smo sada' }) +
       CW.c.statGrid(CW.data.communityStats, 6) +
     '</div>' +
   '</section>' +
