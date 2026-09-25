@@ -130,7 +130,7 @@ CW.pages.home = function () {
           '<div class="t-label mt-1">besplatna dostava preko</div></div>' +
         '<div class="home-hero__stat"><div class="t-stat">14</div>' +
           '<div class="t-label mt-1">dana za povraćaj</div></div>' +
-        '<div class="home-hero__stat"><div class="t-stat">700+</div>' +
+        '<div class="home-hero__stat"><div class="t-stat">850+</div>' +
           '<div class="t-label mt-1">članova zajednice</div></div>' +
       '</div>' +
     '</div>' +
@@ -355,7 +355,7 @@ CW.pages.community = function () {
         '<div>' +
           '<div class="t-eyebrow">Čopor</div>' +
           '<h1 class="t-hero mt-2">Svaki čopor<br>je počeo od<br><span class="t-gold">jednog vuka.</span></h1>' +
-          '<p class="t-lead mt-3">Preko 700 članova. Bez prijave i bez uslova.</p>' +
+          '<p class="t-lead mt-3">Preko 850 članova. Bez prijave i bez uslova.</p>' +
           '<div class="row row--wrap mt-4" style="gap:12px">' +
             '<a class="btn btn--primary btn--lg" href="' + DISCORD() + '">' + CW.icon('discord', 18) + 'Uđi na Discord</a>' +
             '<a class="btn btn--secondary btn--lg" href="#/dogadjaji">Šta se dešava</a>' +

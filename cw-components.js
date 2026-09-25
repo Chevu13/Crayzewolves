@@ -231,7 +231,7 @@ CW.c.footer = function () {
           '<div class="footer__brand">' +
             '<a class="logo" href="#/">' + CW.c.logoLockup(40) + '</a>' +
             '<p class="footer__desc">CrazyWolves Gaming Hub — dom balkanskih gejmera. ' +
-              'Preko 700 članova, šest igara sa svojim kanalima, zvanični shop i usluge za zajednice. ' +
+              'Preko 850 članova, šest igara sa svojim kanalima, zvanični shop i usluge za zajednice. ' +
               'Vuk sam preživi — čopor pobeđuje.</p>' +
             '<div class="socials mt-3">' +
               CW.data.socials.map(function (s) {
@@ -813,7 +813,7 @@ CW.c.ctaBand = function (o) {
       '<div class="cta-band__text">' +
         '<div class="t-eyebrow t-eyebrow--gold">' + CW.esc(o.eyebrow || 'Uđi u čopor') + '</div>' +
         '<h2 class="t-h2 mt-1">' + CW.esc(o.title || 'Svaki čopor je počeo od jednog vuka') + '</h2>' +
-        '<p class="t-lead mt-2">' + CW.esc(o.text || 'Preko 700 članova. Bez prijave i bez uslova.') + '</p>' +
+        '<p class="t-lead mt-2">' + CW.esc(o.text || 'Preko 850 članova. Bez prijave i bez uslova.') + '</p>' +
       '</div>' +
       '<div class="cta-band__actions">' +
         '<a class="btn btn--primary btn--lg" href="' + CW.data.socials[0].url + '">' + CW.icon('discord', 18) + 'Uđi na Discord</a>' +

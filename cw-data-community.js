@@ -193,7 +193,7 @@ CW.data.partners = [
 
 CW.data.partnerBenefits = [
   { icon: 'users',  title: 'Aktivna zajednica, ne broj pratilaca',
-    text: 'Preko 700 članova na Discordu i 1.719 pratilaca na Instagramu. Ljudi koji se pojave u sredu uveče, ne kupljena lista.' },
+    text: 'Preko 850 članova na Discordu, 34k pratilaca na Instagram brendu. Ljudi koji se pojave u sredu uveče, ne kupljena lista.' },
   { icon: 'monitor',title: 'Integracija kroz ceo sistem',
     text: 'Discord objave, Instagram, TikTok, YouTube, Twitch i sajt — jedan identitet na svakoj površini.' },
   { icon: 'gift',   title: 'Deo koji ide zajednici',
@@ -206,10 +206,11 @@ CW.data.partnerBenefits = [
    STATISTIKA ZAJEDNICE — stvarni brojevi
    ========================================================================== */
 CW.data.communityStats = [
-  { id: 'discord',   value: '700+',   label: 'Članova na Discordu' },
-  { id: 'instagram', value: '1.719',  label: 'Pratilaca na Instagramu' },
+  { id: 'discord',   value: '850+',   label: 'Članova na Discordu' },
+  { id: 'instagram', value: '1.719',  label: 'Webshop pratilaca na Instagramu' },
   { id: 'games',     value: '6',      label: 'Igara sa svojim kanalima' },
-  { id: 'boosts',    value: '14/33',  label: 'Server boostova' },
+  /* Brend nalog, ne webshop — dva različita Instagram naloga, zato oba stoje. */
+  { id: 'brand',     value: '34k',    label: 'Pratilaca na Instagram brendu' },
   { id: 'services',  value: '7',      label: 'Usluga u ponudi' },
   { id: 'active',    value: '24/7',   label: 'Aktivna zajednica' }
 ];
@@ -491,7 +492,7 @@ CW.data.about = {
   promise: 'Nikad ne loviš sam. Svaki član dobija svoje mesto u čoporu — podršku, priznanje i pravu priliku.',
   positioning: 'Centralno mesto koje okuplja gejmere — za igru, druženje i takmičenje.',
   story: [
-    'Počeli smo kao Discord server za grupu gejmera. Danas nas je preko 700, kroz šest igara.',
+    'Počeli smo kao Discord server za grupu gejmera. Danas nas je preko 850, kroz šest igara.',
     'Vuk preživljava kroz čopor, ne kroz samostalnu snagu. To je i cela ideja.'
   ],
   values: [
@@ -503,10 +504,10 @@ CW.data.about = {
   ],
   /* Dugoročna vizija — kompletan gaming ekosistem */
   ecosystem: [
-    { icon: 'discord',  name: 'Discord zajednica', status: 'active',  note: 'Preko 700 članova, šest igara.' },
+    { icon: 'discord',  name: 'Discord zajednica', status: 'active',  note: 'Preko 850 članova, šest igara.' },
     { icon: 'monitor',  name: 'Web sajt',          status: 'wip',     note: 'U izradi — ovo što gledaš.' },
     { icon: 'cart',     name: 'Gaming shop',       status: 'active',  note: 'Prvi proizvodi u ponudi.' },
-    { icon: 'instagram',name: 'Instagram',         status: 'active',  note: '1.719 pratilaca.' },
+    { icon: 'instagram',name: 'Instagram',         status: 'active',  note: '34k pratilaca na brendu, 1.719 na webshopu.' },
     { icon: 'tiktok',   name: 'TikTok',            status: 'active',  note: 'Kratki sadržaj i klipovi.' },
     { icon: 'youtube',  name: 'YouTube',           status: 'active',  note: 'Duži sadržaj i highlights.' },
     { icon: 'twitch',   name: 'Twitch',            status: 'active',  note: 'Streamovi zajednice.' },
