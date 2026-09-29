@@ -1,5 +1,5 @@
 -- ============================================================================
---  CRAZYWOLVES — KOMPLETNA POSTAVKA BAZE
+--  WOLFPACK — KOMPLETNA POSTAVKA BAZE
 --  ---------------------------------------------------------------------------
 --  JEDAN fajl. Zamenjuje ranija tri (supabase-schema / -orders / -lager),
 --  koja su sklonjena u supabase/staro/.
@@ -1074,7 +1074,7 @@ insert into public.products
    stock_status, stock, is_active, sort_order,
    fulfillment, allow_cod, track_stock)
 values
-  ('solja-zvanicna', 'Zvanična CrazyWolves šolja', 'zvanicna-solja', 'drinkware', 'merch',
+  ('solja-zvanicna', 'Zvanična Wolfpack šolja', 'zvanicna-solja', 'drinkware', 'merch',
    149000, 1290,
    'Keramička šolja sa zvaničnim grbom. Limitirano izdanje.',
    'product-mug', 'in_stock', 25, true, 0,
@@ -1124,7 +1124,7 @@ values
    'Kapije se zatvaraju. Vukovi se okupljaju. Gradi se nešto veće nego ikada pre.',
    E'Kapije se zatvaraju. Vukovi se okupljaju.\n\n'
    '## Šta se sprema\n\n'
-   'CrazyWolves Discord je trenutno u rekonstrukciji. Tokom radova deo kanala '
+   'Wolfpack Discord je trenutno u rekonstrukciji. Tokom radova deo kanala '
    'ostaje potpuno otvoren.\n\n'
    '> Ne pravimo još jedan server. Pravimo mesto gde se gejmeri, stratezi i '
    'takmičari okupljaju.\n\n'
@@ -1133,15 +1133,15 @@ values
    array['discord','najava'], now() - interval '9 days'),
 
   ('sajt-u-izradi', 'Web sajt je u izradi', 'web-sajt-u-izradi',
-   'CrazyWolves dobija svoj dom na internetu. Ovo je prva faza.',
-   E'CrazyWolves dobija svoj dom na internetu.\n\n'
+   'Wolfpack dobija svoj dom na internetu. Ovo je prva faza.',
+   E'Wolfpack dobija svoj dom na internetu.\n\n'
    'Prva faza donosi zvanični shop, Wolfpack Store i blog. Sve ostalo stiže kasnije.',
    'banner-construction-sr', 'objave', 'published', false,
    array['sajt'], now() - interval '4 days'),
 
   ('wolfpack-store', 'Otvaramo Wolfpack Store', 'wolfpack-store',
    'Digitalna prodavnica: igre, gift kartice, ključevi i pretplate — na jednom mestu.',
-   E'Wolfpack Store je zvanična digitalna prodavnica CrazyWolves zajednice.\n\n'
+   E'Wolfpack Store je zvanična digitalna prodavnica Wolfpack zajednice.\n\n'
    '## Šta se prodaje\n\n'
    '- Steam, Epic i konzolni ključevi\n'
    '- Gift kartice: Steam, PSN, Xbox, Google Play\n'
@@ -1163,7 +1163,7 @@ values
 on conflict (id) do nothing;
 
 insert into public.settings (key, value) values
-  ('site_name',          'CrazyWolves Community'),
+  ('site_name',          'Wolfpack Community'),
   ('tagline',            'The hunt never ends.'),
   ('discord',            'https://discord.gg/crazywolves'),
   ('instagram',          'https://instagram.com/crazywolves.rs'),
@@ -1177,7 +1177,7 @@ insert into public.settings (key, value) values
   ('default_currency',       'RSD'),
   -- Kome stiže kopija svake porudžbine. UPIŠI SVOJ MEJL.
   ('order_email_to',   'info.crazywolves@gmail.com'),
-  ('order_email_from', 'CrazyWolves <info.crazywolves@gmail.com>'),
+  ('order_email_from', 'Wolfpack <info.crazywolves@gmail.com>'),
   ('shop_open',        'true'),
   ('wolfpack_open',    'true')
 on conflict (key) do nothing;

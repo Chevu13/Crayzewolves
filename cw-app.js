@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — APPLICATION
+   WOLFPACK — APPLICATION
    Route table, page-level behaviour, form validation, boot sequence.
    ========================================================================== */
 
@@ -17,7 +17,7 @@
        jednog reda ovde kada zatrebaju. */
     .add('',                    CW.pages.home,      {
       title: function () { return 'Zvanični shop'; },
-      description: function () { return 'CrazyWolves — Discord zajednica, CS2 tim i zvanični shop. Šolje, oprema i gaming proizvodi, direktno od zajednice.'; }
+      description: function () { return 'Wolfpack — Discord zajednica, CS2 tim i zvanični shop. Šolje, oprema i gaming proizvodi, direktno od zajednice.'; }
     })
     .add('vesti',               CW.pages.news,      { title: function () { return 'Blog'; } })
     .add('vesti/:id',           CW.pages.article,   {
@@ -29,7 +29,7 @@
     /* --- shop --- */
     .add('shop',                CW.pages.shop,         {
       title: function () { return 'Zvanični shop'; },
-      description: function () { return 'Zvanični CrazyWolves shop — šolje, oprema i gaming proizvodi sa grbom zajednice. Dostava po Srbiji i regionu.'; }
+      description: function () { return 'Zvanični Wolfpack shop — šolje, oprema i gaming proizvodi sa grbom zajednice. Dostava po Srbiji i regionu.'; }
     })
     .add('shop/:category',      CW.pages.catalog,      { title: function (c) { var k = CW.find('categories', c.params.category); return k ? k.name : 'Svi proizvodi'; } })
     .add('proizvod/:slug',      CW.pages.product,      {

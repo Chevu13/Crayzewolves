@@ -5,7 +5,7 @@
 3. Sajt je za ~20 sekundi živ na adresi tipa `random-ime.netlify.app`
 4. Ime se menja u *Site configuration → Change site name*
 
-Za svoj domen (`crazywolves.rs`): *Domain management → Add a domain*,
+Za svoj domen (`wolfpack.rs`): *Domain management → Add a domain*,
 pa kod registrara postavi Netlify nameservere.
 
 ## Šta je već podešeno

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — PODACI ZAJEDNICE
+   WOLFPACK — PODACI ZAJEDNICE
    --------------------------------------------------------------------------
    SVE ISPOD JE STVARNO. Ranija verzija ovog fajla sadržala je izmišljene
    igrače, trofeje, turnire i sponzore — to je uklonjeno.
@@ -38,9 +38,9 @@ CW.data = CW.data || {};
    IDENTITET BRENDA
    ========================================================================== */
 CW.brand = {
-  name: 'CrazyWolves',
-  full: 'CrazyWolves Community',
-  hub: 'CrazyWolves Gaming Hub',
+  name: 'Wolfpack',
+  full: 'Wolfpack Community',
+  hub: 'Wolfpack Gaming Hub',
   tagline: 'The hunt never ends.',
   taglineSr: 'Lov se nikad ne završava.',
   /* Nasleđena poruka sa lockup grafike; ostaje kao potpis, ne kao slogan. */
@@ -49,7 +49,7 @@ CW.brand = {
   positioning: 'The Home of Balkan Gamers',
   positioningSr: 'Dom balkanskih gejmera',
   positioningEn: 'The Home of Balkan Gamers',
-  website: 'crazywolves.rs',
+  website: 'wolfpack.rs',
   discord: 'discord.gg/crazywolves',
   instagram: '@crazywolves.rs',
   status: 'Sajt je u izradi — Discord i Instagram su aktivni.'
@@ -80,7 +80,7 @@ CW.data.services = [
   {
     id: 'gaming-store',
     icon: 'cart',
-    name: 'CrazyWolves Gaming Store',
+    name: 'Wolfpack Gaming Store',
     blurb: 'Digitalni proizvodi i in-game predmeti za sve što igraš.',
     items: ['Igre i DLC', 'In-game valuta', 'Nalozi i boosting', 'Ekskluzivne ponude'],
     featured: true
@@ -150,12 +150,12 @@ CW.data.cs2Team = {
   status: 'recruiting',
   headline: 'Ponosno sponzorišemo CS2 tim',
   subline: 'Gradimo ekipu. Jedan cilj. Pobeda.',
-  intro: 'Pridruži se CrazyWolves CS2 timu i postani deo nečeg većeg.',
+  intro: 'Pridruži se Wolfpack CS2 timu i postani deo nečeg većeg.',
   offer: [
     { icon: 'shield',  title: 'Profesionalno okruženje', text: 'Treninzi, analiza i podrška za tvoj napredak.' },
     { icon: 'users',   title: 'Iskusan tim i podrška',   text: 'Rad sa iskusnim igračima i staff timom.' },
     { icon: 'zap',     title: 'Razvoj i napredak igrača',text: 'Fokus na tvoj individualni rast i zajednički uspeh.' },
-    { icon: 'trophy',  title: 'Učešće na turnirima i ligama', text: 'Predstavljaj CrazyWolves na turnirima i ligama.' },
+    { icon: 'trophy',  title: 'Učešće na turnirima i ligama', text: 'Predstavljaj Wolfpack na turnirima i ligama.' },
     { icon: 'target',  title: 'Konkurentna atmosfera',   text: 'Disciplina, komunikacija i timski duh.' },
     { icon: 'gift',    title: 'Podrška sponzora',        text: 'Oprema, uslovi i podrška za vrhunske rezultate.' },
     { icon: 'star',    title: 'Nagrade i benefiti',      text: 'Nagrade za uspeh i dodatni benefiti za članove tima.' }
@@ -269,7 +269,7 @@ CW.data.news = [
     title: 'Stiže nova era',
     dek: 'Kapije se zatvaraju. Vukovi se okupljaju. Gradi se nešto veće nego ikada pre.',
     categoryId: 'objave',
-    author: 'CrazyWolves Team',
+    author: 'Wolfpack Team',
     dayOffset: -9,
     readMin: 3,
     featured: true,
@@ -277,7 +277,7 @@ CW.data.news = [
     image: 'discord-announce',
     tags: ['discord', 'objave'],
     body: [
-      { type: 'p', text: 'CrazyWolves Discord je trenutno u rekonstrukciji. Tokom tog procesa pojedini delovi servera ostaju potpuno aktivni — zajednica ne staje.' },
+      { type: 'p', text: 'Wolfpack Discord je trenutno u rekonstrukciji. Tokom tog procesa pojedini delovi servera ostaju potpuno aktivni — zajednica ne staje.' },
       { type: 'h2', text: 'Ne pravimo još jedan server' },
       { type: 'p', text: 'Ovo je projekat koji menja način na koji se naša zajednica povezuje, igra i raste. Mesto gde se okupljaju gejmeri, stratezi, kreatori i takmičari.' },
       { type: 'quote', text: 'The hunt never ends.' },
@@ -288,9 +288,9 @@ CW.data.news = [
   {
     id: 'sajt-u-izradi',
     title: 'Web sajt je u izradi',
-    dek: 'CrazyWolves dobija svoj dom na internetu. Ovo je prva faza.',
+    dek: 'Wolfpack dobija svoj dom na internetu. Ovo je prva faza.',
     categoryId: 'objave',
-    author: 'CrazyWolves Team',
+    author: 'Wolfpack Team',
     dayOffset: -4,
     readMin: 2,
     featured: false,
@@ -313,9 +313,9 @@ CW.data.news = [
   {
     id: 'partnerstvo-wolf3tv',
     title: 'Zvanična saradnja sa WOLF3TV',
-    dek: 'Jači zajedno — CrazyWolves i WOLF3TV potpisuju partnerstvo.',
+    dek: 'Jači zajedno — Wolfpack i WOLF3TV potpisuju partnerstvo.',
     categoryId: 'partneri',
-    author: 'CrazyWolves Team',
+    author: 'Wolfpack Team',
     dayOffset: -14,
     readMin: 2,
     featured: false,
@@ -323,7 +323,7 @@ CW.data.news = [
     image: 'partner-wolf3tv',
     tags: ['partneri'],
     body: [
-      { type: 'p', text: 'WOLF3TV postaje zvanični partner CrazyWolves zajednice. Saradnja je nastala iz onoga što nam je zajedničko: jaka zajednica, gaming strast i uzajamna podrška.' },
+      { type: 'p', text: 'WOLF3TV postaje zvanični partner Wolfpack zajednice. Saradnja je nastala iz onoga što nam je zajedničko: jaka zajednica, gaming strast i uzajamna podrška.' },
       { type: 'h2', text: 'Šta to znači u praksi' },
       { type: 'p', text: 'Zajednički sadržaj, gostovanja i uzajamna promocija. Jedan cilj — pobeda. Jači zajedno.' },
       { type: 'p', text: 'Zainteresovan za saradnju? Otvori ticket ili piši preko stranice Kontakt.' }
@@ -335,7 +335,7 @@ CW.data.news = [
     title: 'Sedam usluga, jedan tim',
     dek: 'Gaming store, community management, dizajn, Discord setup, sajtovi, marketing i custom zahtevi.',
     categoryId: 'usluge',
-    author: 'CrazyWolves Team',
+    author: 'Wolfpack Team',
     dayOffset: -20,
     readMin: 4,
     featured: false,
@@ -346,7 +346,7 @@ CW.data.news = [
       { type: 'p', text: 'Naš tim pruža pouzdana, brza i profesionalna rešenja prilagođena gejmerima i online zajednicama.' },
       { type: 'h2', text: 'Šta radimo' },
       { type: 'list', items: [
-        'CrazyWolves Gaming Store — igre, DLC, in-game valuta, nalozi i boosting.',
+        'Wolfpack Gaming Store — igre, DLC, in-game valuta, nalozi i boosting.',
         'Community Management — rast i održavanje aktivnih zajednica.',
         'Grafički dizajn i brending — logotipi, baneri, brend identitet.',
         'Discord setup i automatizacija — serveri, botovi, role i dozvole.',
@@ -363,7 +363,7 @@ CW.data.news = [
     title: 'Tražimo igrače za CS2 tim',
     dek: 'Gradimo ekipu. Prijave su otvorene preko Discord ticketa.',
     categoryId: 'timovi',
-    author: 'CrazyWolves Team',
+    author: 'Wolfpack Team',
     dayOffset: -26,
     readMin: 3,
     featured: false,
@@ -371,13 +371,13 @@ CW.data.news = [
     image: 'banner-cs2-team',
     tags: ['cs2', 'timovi'],
     body: [
-      { type: 'p', text: 'CrazyWolves ponosno sponzoriše CS2 tim i trenutno traži igrače. Nema zatvorenog kruga — prijava je otvorena svima koji misle da imaju šta treba.' },
+      { type: 'p', text: 'Wolfpack ponosno sponzoriše CS2 tim i trenutno traži igrače. Nema zatvorenog kruga — prijava je otvorena svima koji misle da imaju šta treba.' },
       { type: 'h2', text: 'Šta nudimo igračima' },
       { type: 'list', items: [
         'Profesionalno okruženje — treninzi, analiza i podrška.',
         'Rad sa iskusnim igračima i staff timom.',
         'Fokus na individualni rast i zajednički uspeh.',
-        'Učešće na turnirima i ligama pod CrazyWolves imenom.',
+        'Učešće na turnirima i ligama pod Wolfpack imenom.',
         'Disciplina, komunikacija i timski duh.',
         'Oprema, uslovi i podrška sponzora.',
         'Nagrade za uspeh i dodatni benefiti.'
@@ -389,9 +389,9 @@ CW.data.news = [
   {
     id: 'solja-drop',
     title: 'Zvanična šolja je stigla',
-    dek: 'Prvi proizvod u CrazyWolves shopu. Limitirano izdanje, napravljeno za vukove.',
+    dek: 'Prvi proizvod u Wolfpack shopu. Limitirano izdanje, napravljeno za vukove.',
     categoryId: 'shop',
-    author: 'CrazyWolves Shop',
+    author: 'Wolfpack Shop',
     dayOffset: -31,
     readMin: 2,
     featured: false,
@@ -399,7 +399,7 @@ CW.data.news = [
     image: 'product-mug',
     tags: ['shop'],
     body: [
-      { type: 'p', text: 'Prvi zvanični CrazyWolves proizvod: keramička šolja sa grbom i porukom zajednice.' },
+      { type: 'p', text: 'Prvi zvanični Wolfpack proizvod: keramička šolja sa grbom i porukom zajednice.' },
       { type: 'h2', text: 'Zašto baš šolja' },
       { type: 'p', text: 'Jer je prva stvar koju uzmeš ujutru i poslednja pre noćne sesije. Kvalitetna keramika za svakodnevnu upotrebu, dugotrajna štampa koja ne bledi, i poklon koji ima smisla za gejmera.' },
       { type: 'p', text: 'Limitirano izdanje. Naruči preko Discorda ili stranice proizvoda.' }
@@ -419,7 +419,7 @@ CW.data.events = [
     dayOffset: 3,
     time: '20:00',
     endTime: '23:59',
-    location: 'CrazyWolves Discord',
+    location: 'Wolfpack Discord',
     city: 'Online',
     capacity: 0,
     registered: 0,
@@ -450,12 +450,12 @@ CW.data.events = [
     registrationOpen: true,
     featured: false,
     image: null,
-    blurb: 'Redovni giveaway za članove zajednice — igre, in-game predmeti i CrazyWolves proizvodi.',
+    blurb: 'Redovni giveaway za članove zajednice — igre, in-game predmeti i Wolfpack proizvodi.',
     details: [
       'Učestvuju svi članovi Discorda.',
       'Uslovi se objavljuju uz svaki giveaway.',
       'Izvlačenje je javno, u glasovnom kanalu.',
-      'Nagrade obezbeđuju CrazyWolves i partneri.'
+      'Nagrade obezbeđuju Wolfpack i partneri.'
     ]
   },
   {
@@ -488,7 +488,7 @@ CW.data.events = [
    ========================================================================== */
 CW.data.about = {
   mission: 'Da gejmerima damo pravi čopor kome pripadaju — mesto za takmičenje, napredak, vidljivost i zajedničke pobede.',
-  vision: 'Da CrazyWolves preraste u kompletan gaming ekosistem i postane prepoznatljiv regionalni brend.',
+  vision: 'Da Wolfpack preraste u kompletan gaming ekosistem i postane prepoznatljiv regionalni brend.',
   promise: 'Nikad ne loviš sam. Svaki član dobija svoje mesto u čoporu — podršku, priznanje i pravu priliku.',
   positioning: 'Centralno mesto koje okuplja gejmere — za igru, druženje i takmičenje.',
   story: [
@@ -536,7 +536,7 @@ CW.data.communityBenefits = [
   { icon: 'users',    title: 'Prava zajednica, ne grupni chat', text: 'Glasovni kanali skoro svako veče i ljudi koji primete kad te nema.' },
   { icon: 'target',   title: 'Ekipa za svaku igru',   text: 'Duo, Squad i Trio kanali za svih šest igara. Uđeš i igraš.' },
   { icon: 'trophy',   title: 'Put do tima',           text: 'CS2 tim aktivno traži igrače. Prijava ide preko ticketa, otvorena je svima.' },
-  { icon: 'gift',     title: 'Giveaway i nagrade',    text: 'Redovni giveaway za članove — igre, in-game predmeti i CrazyWolves proizvodi.' },
+  { icon: 'gift',     title: 'Giveaway i nagrade',    text: 'Redovni giveaway za članove — igre, in-game predmeti i Wolfpack proizvodi.' },
   { icon: 'star',     title: 'Premium Area',          text: 'Za boostere i premium članove: poseban chat, nagrade i glasovni kanal.' },
   { icon: 'shield',   title: 'Moderacija koja je tu', text: 'Staff tim je prisutan. Prijave se rešavaju istog dana, ne za nedelju dana.' }
 ];
@@ -557,8 +557,8 @@ CW.data.socials = [
   { id: 'discord',   name: 'Discord',   handle: 'discord.gg/crazywolves', url: 'https://discord.gg/crazywolves' },
   { id: 'instagram', name: 'Instagram', handle: '@crazywolves.rs',        url: '#' },
   { id: 'tiktok',    name: 'TikTok',    handle: '@crazywolves.rs',        url: '#' },
-  { id: 'youtube',   name: 'YouTube',   handle: 'CrazyWolves',            url: '#' },
-  { id: 'twitch',    name: 'Twitch',    handle: 'CrazyWolves',            url: '#' }
+  { id: 'youtube',   name: 'YouTube',   handle: 'Wolfpack',            url: '#' },
+  { id: 'twitch',    name: 'Twitch',    handle: 'Wolfpack',            url: '#' }
 ];
 
 /* ==========================================================================

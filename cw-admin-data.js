@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — ADMIN: SLOJ PODATAKA
+   WOLFPACK — ADMIN: SLOJ PODATAKA
    --------------------------------------------------------------------------
    Sve što admin panel čita i piše ide kroz CW.api. Metode su namerno
    asinhrone (vraćaju Promise) iako trenutni adapter radi sinhrono — kada
@@ -223,7 +223,7 @@ window.CW = window.CW || {};
     get: function () {
       var raw = readRaw(NS + 'settings');
       var base = {
-        siteName: 'CrazyWolves Community',
+        siteName: 'Wolfpack Community',
         tagline: 'The hunt never ends.',
         discord: 'https://discord.gg/crazywolves',
         instagram: 'https://instagram.com/crazywolves.rs',

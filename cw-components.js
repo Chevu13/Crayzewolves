@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — ZAJEDNIČKE KOMPONENTE
+   WOLFPACK — ZAJEDNIČKE KOMPONENTE
    Header, navigacija, footer, drawer-i, pretraga i biblioteka kartica.
    Svaka funkcija vraća HTML string; ponašanje se kači delegiranim
    [data-act] handlerima, pa se markup može slobodno ponovo iscrtavati.
@@ -59,7 +59,7 @@ CW.c.logoLockup = function (size, withSub) {
 
   return mark +
     '<span>' +
-      '<span class="logo__word">CRAZY<em>WOLVES</em></span>' +
+      '<span class="logo__word">WOLF<em>PACK</em></span>' +
       (withSub === false ? '' : '<span class="logo__sub">COMMUNITY</span>') +
     '</span>';
 };
@@ -98,7 +98,7 @@ CW.c.header = function () {
     '<div class="container container--wide">' +
       '<div class="header__inner">' +
 
-        '<a class="logo" href="#/" aria-label="CrazyWolves — početna">' + CW.c.logoLockup(38) + '</a>' +
+        '<a class="logo" href="#/" aria-label="Wolfpack — početna">' + CW.c.logoLockup(38) + '</a>' +
 
         '<nav class="nav" aria-label="Glavna navigacija">' + primary + '</nav>' +
 
@@ -230,7 +230,7 @@ CW.c.footer = function () {
 
           '<div class="footer__brand">' +
             '<a class="logo" href="#/">' + CW.c.logoLockup(40) + '</a>' +
-            '<p class="footer__desc">CrazyWolves Gaming Hub — dom balkanskih gejmera. ' +
+            '<p class="footer__desc">Wolfpack Gaming Hub — dom balkanskih gejmera. ' +
               'Preko 850 članova, šest igara sa svojim kanalima, zvanični shop i usluge za zajednice. ' +
               'Vuk sam preživi — čopor pobeđuje.</p>' +
             '<div class="socials mt-3">' +
@@ -284,7 +284,7 @@ CW.c.footer = function () {
       '</div>' +
 
       '<div class="footer__bottom">' +
-        '<div class="footer__copy">© ' + new Date().getFullYear() + ' CrazyWolves Community · ' + CW.esc(CW.brand.website) + '</div>' +
+        '<div class="footer__copy">© ' + new Date().getFullYear() + ' Wolfpack Community · ' + CW.esc(CW.brand.website) + '</div>' +
         '<div class="footer__legal">' +
           '<a href="#/privatnost">Politika privatnosti</a>' +
           '<a href="#/uslovi">Uslovi korišćenja</a>' +
@@ -405,7 +405,7 @@ CW.c.searchOverlay = function () {
   return '' +
   '<div class="search-overlay" data-overlay>' +
     '<div class="search-panel" role="dialog" aria-modal="true" aria-label="Pretraga">' +
-      '<label class="visually-hidden" for="site-search">Pretraži CrazyWolves</label>' +
+      '<label class="visually-hidden" for="site-search">Pretraži Wolfpack</label>' +
       '<input class="search-panel__input" id="site-search" type="search" ' +
         'placeholder="Traži usluge, proizvode, vesti…" autocomplete="off" data-search-input>' +
       '<div class="search-results" data-search-results>' + CW.c.searchDefault() + '</div>' +

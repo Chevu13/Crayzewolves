@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — ADMIN: ADAPTER ZA SUPABASE
+   WOLFPACK — ADMIN: ADAPTER ZA SUPABASE
    --------------------------------------------------------------------------
    Preuzima CW.api i preusmerava ga na bazu. Učitava se POSLE
    cw-admin-data.js, pa se svi ekrani panela ne menjaju — oni i dalje zovu

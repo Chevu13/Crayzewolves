@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — ADMIN: BIRAČ SLIKE
+   WOLFPACK — ADMIN: BIRAČ SLIKE
    --------------------------------------------------------------------------
    Jedna komponenta za sva mesta u panelu gde se bira slika (objava,
    proizvod, kasnije i digitalni proizvodi). Tri načina, svi vode do istog

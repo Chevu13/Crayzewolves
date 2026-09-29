@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — ADMIN: PONAŠANJE
+   WOLFPACK — ADMIN: PONAŠANJE
    --------------------------------------------------------------------------
    Rute panela, zaštita pristupa, čuvanje i brisanje, Markdown render.
    Učitava se posle admin ekrana, a pre cw-app.js koji registruje rute.
@@ -364,7 +364,7 @@ window.CW = window.CW || {};
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
-        a.download = 'crazywolves-sadrzaj-' + new Date().toISOString().slice(0, 10) + '.json';
+        a.download = 'wolfpack-sadrzaj-' + new Date().toISOString().slice(0, 10) + '.json';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

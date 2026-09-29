@@ -1,5 +1,5 @@
 -- ============================================================================
---  CRAZYWOLVES — PORUDŽBINE KOJE STVARNO ULAZE U BAZU
+--  WOLFPACK — PORUDŽBINE KOJE STVARNO ULAZE U BAZU
 --  ---------------------------------------------------------------------------
 --  Pokreni POSLE supabase-postavka.sql i supabase-dopuna-01.sql.
 --  Sme da se pokrene više puta.

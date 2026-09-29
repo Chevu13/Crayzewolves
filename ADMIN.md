@@ -7,7 +7,7 @@
 
 
 Rađen po uzoru na Heng admin — ista podela na bočnu navigaciju i radnu
-površinu, isti tok „lista → editor → sačuvaj", ali sa CrazyWolves tokenima
+površinu, isti tok „lista → editor → sačuvaj", ali sa Wolfpack tokenima
 i u vanilla JavaScript-u, jer je sajt takav.
 
 ## Otvaranje

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — ADMIN: EKRANI
+   WOLFPACK — ADMIN: EKRANI
    --------------------------------------------------------------------------
    Panel deli dizajn-tokene sa javnim sajtom (cw-theme.css), ali ima svoj
    raspored: bočna navigacija + radna površina, bez zaglavlja i podnožja
@@ -38,7 +38,7 @@ CW.admin = CW.admin || {};
           '<div class="adm__brand">' +
             CW.logoMark(30) +
             '<div>' +
-              '<div class="adm__brand-name">CrazyWolves</div>' +
+              '<div class="adm__brand-name">Wolfpack</div>' +
               '<div class="adm__brand-sub">Admin panel</div>' +
             '</div>' +
           '</div>' +
@@ -358,7 +358,7 @@ CW.admin = CW.admin || {};
             '<div class="field">' +
               '<label class="field__label" for="adm-title">Naslov *</label>' +
               '<input class="input input--lg" id="adm-title" name="title" required ' +
-                'placeholder="Nova era za CrazyWolves">' +
+                'placeholder="Nova era za Wolfpack">' +
               '<p class="field__error" data-error-for="title"></p>' +
             '</div>' +
             '<div class="field mt-3">' +

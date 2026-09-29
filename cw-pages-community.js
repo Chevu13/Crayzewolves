@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — STRANICE ZAJEDNICE
+   WOLFPACK — STRANICE ZAJEDNICE
    Početna · Usluge · Zajednica · CS2 tim · Vesti · Članak · Događaji ·
    Partneri · O nama · Kontakt
    ========================================================================== */
@@ -99,11 +99,11 @@ CW.pages.home = function () {
   /* ---------- HERO ----------
      Preko cele širine: fotografija ide iza teksta, ne pored njega. Raniji
      raspored je stavljao naslov levo, a lockup baner desno — pa se ime
-     CRAZYWOLVES pojavljivalo dvaput, a široka slika stisnuta u pola
+     WOLFPACK pojavljivalo dvaput, a široka slika stisnuta u pola
      stupca ispadala sitna na monitoru. */
   '<section class="hero home-hero">' +
     '<div class="home-hero__bg">' +
-      CW.img('banner-nova-era', { ratio: '21 / 9', eager: true, fit: 'cover', ph: 'CRAZYWOLVES' }) +
+      CW.img('banner-nova-era', { ratio: '21 / 9', eager: true, fit: 'cover', ph: 'WOLFPACK' }) +
       '<div class="home-hero__scrim"></div>' +
     '</div>' +
 
@@ -111,7 +111,7 @@ CW.pages.home = function () {
       '<div class="home-hero__copy">' +
         '<div class="t-eyebrow">' + CW.esc(CW.brand.positioningSr) + '</div>' +
         '<h1 class="home-hero__title mt-2">Lov se<br>nikad ne<br><em>završava.</em></h1>' +
-        '<p class="t-lead home-hero__lede">Zvanična CrazyWolves oprema.</p>' +
+        '<p class="t-lead home-hero__lede">Zvanična Wolfpack oprema.</p>' +
 
         /* Shop je primarno dugme; Discord ostaje, ali kao sporedno —
            sajt prvo prodaje, pa poziva u zajednicu. */
@@ -308,7 +308,7 @@ CW.pages.cs2 = function () {
 
   '<section class="section--tight container container--wide">' +
     '<div class="brackets" style="border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
-      CW.img('banner-cs2-team', { eager: true, ph: 'CRAZYWOLVES CS2 TIM' }) +
+      CW.img('banner-cs2-team', { eager: true, ph: 'WOLFPACK CS2 TIM' }) +
     '</div>' +
   '</section>' +
 
@@ -362,7 +362,7 @@ CW.pages.community = function () {
           '</div>' +
         '</div>' +
         '<div class="brackets" style="border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
-          CW.img('hero-flag-hills', { ratio: '16 / 9', eager: true, ph: 'CRAZYWOLVES ZASTAVA' }) +
+          CW.img('hero-flag-hills', { ratio: '16 / 9', eager: true, ph: 'WOLFPACK ZASTAVA' }) +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -743,7 +743,7 @@ CW.pages.partners = function () {
     '<div class="container container--wide page-hero__inner">' +
       CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Partneri', path: '/partneri' }]) +
       '<h1 class="t-h1 mt-2">Partneri i saradnje</h1>' +
-      '<p class="t-lead mt-2">Sa kim sarađujemo i kako izgleda saradnja sa CrazyWolves zajednicom.</p>' +
+      '<p class="t-lead mt-2">Sa kim sarađujemo i kako izgleda saradnja sa Wolfpack zajednicom.</p>' +
     '</div>' +
   '</section>' +
 
@@ -776,7 +776,7 @@ CW.pages.partners = function () {
 
   '<section class="section section--surface">' +
     '<div class="container container--wide">' +
-      CW.c.sectionHead({ eyebrow: 'Zašto CrazyWolves', title: 'Šta dobija partner' }) +
+      CW.c.sectionHead({ eyebrow: 'Zašto Wolfpack', title: 'Šta dobija partner' }) +
       '<div class="grid grid--2">' +
         CW.data.partnerBenefits.map(function (b) {
           return '<div class="benefit">' +
@@ -824,12 +824,12 @@ CW.pages.about = function () {
       CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'O nama', path: '/o-nama' }]) +
       '<div class="grid grid--2 mt-4" style="align-items:center;gap:var(--space-5)">' +
         '<div>' +
-          '<div class="t-eyebrow">O CrazyWolves</div>' +
+          '<div class="t-eyebrow">O Wolfpack</div>' +
           '<h1 class="t-hero mt-2">Napravljeno<br>od čopora,<br><span class="t-gold">za čopor.</span></h1>' +
           '<p class="t-lead mt-3">' + CW.esc(a.positioning) + '</p>' +
         '</div>' +
         '<div class="brackets" style="border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
-          CW.img('hero-flag-city', { ratio: '16 / 9', eager: true, ph: 'CRAZYWOLVES' }) +
+          CW.img('hero-flag-city', { ratio: '16 / 9', eager: true, ph: 'WOLFPACK' }) +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -967,7 +967,7 @@ CW.pages.contact = function (ctx) {
             '<label class="check">' +
               '<input type="checkbox" name="consent" required>' +
               '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-              '<span class="check__label">Saglasan sam da CrazyWolves čuva i koristi moje podatke radi odgovora na ovaj upit, kako je opisano u <a class="link-underline" href="#/privatnost">Politici privatnosti</a>. <span class="field__req">*</span></span>' +
+              '<span class="check__label">Saglasan sam da Wolfpack čuva i koristi moje podatke radi odgovora na ovaj upit, kako je opisano u <a class="link-underline" href="#/privatnost">Politici privatnosti</a>. <span class="field__req">*</span></span>' +
             '</label>' +
             '<div class="field__error hidden" data-error-for="consent"></div>' +
 

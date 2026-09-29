@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — REGISTAR SLIKA
+   WOLFPACK — REGISTAR SLIKA
    --------------------------------------------------------------------------
    Sve slike žive u images/ i putuju uz sajt.
 
@@ -18,7 +18,7 @@ CW.IMAGES = {
   'logo-shield': {
     local: 'images/logo-shield.webp',
     w: 1092, h: 1092, crop: 'none', group: 'brend',
-    alt: 'CrazyWolves grb — zlatni vuk u štitu'
+    alt: 'Wolfpack grb — zlatni vuk u štitu'
   },
 
   /* Tesno isecen grb, kvadratan. Puna fotografija ima zelenu podlogu oko
@@ -27,12 +27,12 @@ CW.IMAGES = {
   'logo-mark': {
     local: 'images/logo-mark.webp',
     w: 600, h: 600, crop: 'none', group: 'brend',
-    alt: 'CrazyWolves grb'
+    alt: 'Wolfpack grb'
   },
   'banner-lockup': {
     local: 'images/banner-lockup.webp',
     w: 1881, h: 836, crop: 'none', group: 'brend',
-    alt: 'CRAZYWOLVES COMMUNITY — zvanični lockup'
+    alt: 'WOLFPACK COMMUNITY — zvanični lockup'
   },
 
   /* ---------- ŠIROKI BANERI ----------
@@ -43,7 +43,7 @@ CW.IMAGES = {
   'banner-nova-era': {
     local: 'images/banner-nova-era.webp',
     w: 1983, h: 793, crop: 'none', group: 'brend',
-    alt: 'Stiže nova era — CrazyWolves prodavnica se otvara uskoro'
+    alt: 'Stiže nova era — Wolfpack prodavnica se otvara uskoro'
   },
   'banner-wolfpack-store': {
     local: 'images/banner-wolfpack-store.webp',
@@ -58,17 +58,17 @@ CW.IMAGES = {
   'banner-solja': {
     local: 'images/banner-solja.webp',
     w: 1983, h: 793, crop: 'none', group: 'proizvod',
-    alt: 'Zvanična CrazyWolves šolja — limitirano izdanje'
+    alt: 'Zvanična Wolfpack šolja — limitirano izdanje'
   },
   'banner-cs2': {
     local: 'images/banner-cs2.webp',
     w: 1774, h: 887, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves ponosno sponzoriše CS2 tim'
+    alt: 'Wolfpack ponosno sponzoriše CS2 tim'
   },
   'banner-usluge': {
     local: 'images/banner-usluge.webp',
     w: 1983, h: 793, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves usluge — Wolfpack Store, Discord, marketing, dizajn i sajtovi'
+    alt: 'Wolfpack usluge — Wolfpack Store, Discord, marketing, dizajn i sajtovi'
   },
   'banner-construction-sr': {
     local: 'images/banner-construction-sr.webp',
@@ -90,12 +90,12 @@ CW.IMAGES = {
   'banner-join-wolfpack': {
     local: 'images/banner-join-wolfpack.webp',
     w: 1983, h: 793, crop: 'none', group: 'blog',
-    alt: 'WOLF3TV × CrazyWolves — Join the Wolfpack'
+    alt: 'WOLF3TV × Wolfpack — Join the Wolfpack'
   },
   'banner-wolf3tv': {
     local: 'images/banner-wolf3tv.webp',
     w: 1983, h: 793, crop: 'none', group: 'blog',
-    alt: 'WOLF3TV — zvanični brend predstavnik CrazyWolves zajednice'
+    alt: 'WOLF3TV — zvanični brend predstavnik Wolfpack zajednice'
   },
 
   /* ---------- PROIZVODI ----------
@@ -105,7 +105,7 @@ CW.IMAGES = {
   'product-mug': {
     local: 'images/product-solja.webp',
     w: 1100, h: 1100, crop: 'safe', group: 'proizvod',
-    alt: 'Zvanična CrazyWolves šolja sa kutijom — limitirano izdanje'
+    alt: 'Zvanična Wolfpack šolja sa kutijom — limitirano izdanje'
   },
   'product-wolfpack': {
     local: 'images/product-wolfpack.webp',
@@ -124,12 +124,12 @@ CW.IMAGES = {
   'banner-cs2-team': {
     local: 'images/banner-cs2.webp',
     w: 1774, h: 887, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves ponosno sponzoriše CS2 tim'
+    alt: 'Wolfpack ponosno sponzoriše CS2 tim'
   },
   'banner-services': {
     local: 'images/banner-usluge.webp',
     w: 1983, h: 793, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves usluge — Wolfpack Store, Discord, marketing, dizajn i sajtovi'
+    alt: 'Wolfpack usluge — Wolfpack Store, Discord, marketing, dizajn i sajtovi'
   },
   'partner-wolf3tv': {
     local: 'images/banner-saradnja-wolf3tv.webp',
@@ -139,7 +139,7 @@ CW.IMAGES = {
   'discord-announce': {
     local: 'images/banner-nova-era.webp',
     w: 1983, h: 793, crop: 'none', group: 'brend',
-    alt: 'Stiže nova era — CrazyWolves prodavnica se otvara uskoro'
+    alt: 'Stiže nova era — Wolfpack prodavnica se otvara uskoro'
   },
 
   /* ---------- ZADRŽANO IZ PRVE FAZE ----------
@@ -147,37 +147,37 @@ CW.IMAGES = {
   'banner-server-guide': {
     local: 'images/banner-server-guide.webp',
     w: 1568, h: 784, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves Server Guide'
+    alt: 'Wolfpack Server Guide'
   },
   'services-overview': {
     local: 'images/services-overview.webp',
     w: 896, h: 1344, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves usluge — pregled svih servisa'
+    alt: 'Wolfpack usluge — pregled svih servisa'
   },
   'hero-flag-hills': {
     local: 'images/hero-flag-hills.webp',
     w: 1204, h: 560, crop: 'safe', group: 'brend',
-    alt: 'CrazyWolves zastava iznad doline'
+    alt: 'Wolfpack zastava iznad doline'
   },
   'hero-flag-city': {
     local: 'images/hero-flag-city.webp',
     w: 1260, h: 560, crop: 'safe', group: 'brend',
-    alt: 'CrazyWolves zastava nad gradom'
+    alt: 'Wolfpack zastava nad gradom'
   },
   'promo-instagram': {
     local: 'images/promo-instagram.webp',
     w: 1008, h: 1204, crop: 'none', group: 'blog',
-    alt: 'Zaprati CrazyWolves na Instagramu'
+    alt: 'Zaprati Wolfpack na Instagramu'
   },
   'instagram-profile': {
     local: 'images/instagram-profile.webp',
     w: 728, h: 616, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves Instagram profil'
+    alt: 'Wolfpack Instagram profil'
   },
   'discord-sidebar': {
     local: 'images/discord-sidebar-top.webp',
     w: 364, h: 952, crop: 'none', group: 'discord',
-    alt: 'CrazyWolves Discord — kanali dobrodošlice'
+    alt: 'Wolfpack Discord — kanali dobrodošlice'
   },
   'discord-business': {
     local: 'images/discord-channels-business.webp',
@@ -206,27 +206,27 @@ CW.IMAGES = {
   'sablon-blog': {
     local: 'images/sablon-blog.webp',
     w: 1200, h: 800, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves — šablon za objavu'
+    alt: 'Wolfpack — šablon za objavu'
   },
   'sablon-blog-2': {
     local: 'images/sablon-blog-2.webp',
     w: 1200, h: 800, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves — šablon za novost'
+    alt: 'Wolfpack — šablon za novost'
   },
   'sablon-blog-3': {
     local: 'images/sablon-blog-3.webp',
     w: 1200, h: 800, crop: 'none', group: 'blog',
-    alt: 'CrazyWolves — šablon za najavu'
+    alt: 'Wolfpack — šablon za najavu'
   },
   'sablon-proizvod': {
     local: 'images/sablon-proizvod.webp',
     w: 1200, h: 1200, crop: 'none', group: 'proizvod',
-    alt: 'CrazyWolves — šablon za proizvod'
+    alt: 'Wolfpack — šablon za proizvod'
   },
   'sablon-proizvod-2': {
     local: 'images/sablon-proizvod-2.webp',
     w: 1200, h: 1200, crop: 'none', group: 'proizvod',
-    alt: 'CrazyWolves — proizvod uskoro'
+    alt: 'Wolfpack — proizvod uskoro'
   }
 };
 

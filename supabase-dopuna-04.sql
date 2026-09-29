@@ -1,5 +1,5 @@
 -- ============================================================================
---  CRAZYWOLVES — DOPUNA 04: KONTAKT ADRESA
+--  WOLFPACK — DOPUNA 04: KONTAKT ADRESA
 --  ---------------------------------------------------------------------------
 --  Pokreni u Supabase → SQL Editor. Sme da se pokrene više puta.
 --
@@ -18,7 +18,7 @@ insert into public.settings (key, value) values
 
   -- Pošiljalac mejla potvrde porudžbine. Mora se poklapati sa SMTP_USER u
   -- tajnama Edge funkcije — Gmail odbija da šalje sa tuđe adrese.
-  ('order_email_from', 'CrazyWolves <info.crazywolves@gmail.com>')
+  ('order_email_from', 'Wolfpack <info.crazywolves@gmail.com>')
 on conflict (key) do update set value = excluded.value;
 
 

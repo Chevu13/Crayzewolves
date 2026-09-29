@@ -18,7 +18,7 @@ ne trebaju — sadržaj im je ušao u novi fajl, a njih sam sklonio u
 
 | Polje | Šta upisati |
 |---|---|
-| Name | `crazywolves` |
+| Name | `wolfpack` |
 | Database Password | Generiši i **sačuvaj ga** — treba za direktan pristup bazi |
 | Region | **Frankfurt (eu-central-1)** — najbliži Srbiji, najmanje kašnjenje |
 | Plan | Free je dovoljan za početak |
@@ -120,7 +120,7 @@ primenjuju na svaki zahtev bez obzira na to ko ga šalje.
 
 | Polje | Vrednost |
 |---|---|
-| Site URL | adresa sa Vercela, npr. `https://crazywolves.vercel.app` |
+| Site URL | adresa sa Vercela, npr. `https://wolfpack.vercel.app` |
 | Redirect URLs | ista adresa + `http://localhost:4321` za lokalni rad |
 
 Bez ovoga potvrda registracije i resetovanje lozinke ne rade.

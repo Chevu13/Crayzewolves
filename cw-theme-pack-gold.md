@@ -1,9 +1,9 @@
 # Theme — "Pack Gold"
 
-A custom theme generated for the CrazyWolves Community website. The ten preset
+A custom theme generated for the Wolfpack Community website. The ten preset
 themes in the theme library (Ocean Depths, Golden Hour, Midnight Galaxy, etc.)
 would all have overridden the approved brand identity, so this theme was
-derived directly from **CrazyWolves Brand Guide v1.0** instead. The brand guide
+derived directly from **Wolfpack Brand Guide v1.0** instead. The brand guide
 remains the single source of truth; this file is its machine-readable form.
 
 Implemented in `cw-theme.css` as CSS custom properties.

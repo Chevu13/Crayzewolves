@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — CORE
+   WOLFPACK — CORE
    Utilities · icon set · formatting · state store · router · toasts
    Framework-free by design: this layer is what a React/Next port would
    replace, while the data files and CSS carry over untouched.
@@ -749,7 +749,7 @@ CW.router = (function () {
     CW.pendingMount = [];
     outlet.innerHTML = view(ctx);
     outlet.className = hit && hit.route.bodyClass ? hit.route.bodyClass : '';
-    document.title = (hit && hit.route.title ? hit.route.title(ctx) : 'Page Not Found') + ' — CrazyWolves';
+    document.title = (hit && hit.route.title ? hit.route.title(ctx) : 'Page Not Found') + ' — Wolfpack';
     syncMeta(hit, ctx);
 
     CW.pendingMount.forEach(function (fn) { try { fn(); } catch (e) { console.error(e); } });

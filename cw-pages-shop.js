@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — SHOP PAGES
+   WOLFPACK — SHOP PAGES
    Shop landing · Category listing · Product detail · Cart · Checkout ·
    Order confirmation
    ========================================================================== */
@@ -286,7 +286,7 @@ CW.pages.catalog = function (ctx) {
         { label: cat ? cat.name : 'Svi proizvodi', path: '' }
       ]) +
       '<h1 class="t-h1 mt-2">' + CW.esc(cat ? cat.name : 'Svi proizvodi') + '</h1>' +
-      '<p class="t-lead mt-2">' + CW.esc(cat ? cat.blurb : 'Sve iz zvaničnog CrazyWolves shopa — odeća, oprema i sitnice.') + '</p>' +
+      '<p class="t-lead mt-2">' + CW.esc(cat ? cat.blurb : 'Sve iz zvaničnog Wolfpack shopa — odeća, oprema i sitnice.') + '</p>' +
     '</div>' +
   '</section>' +
 
@@ -843,7 +843,7 @@ CW.pages.checkout = function (ctx) {
   /* Distraction-free header — the only place the global nav is replaced */
   '<div class="checkout-header">' +
     '<div class="container container--wide checkout-header__inner">' +
-      '<a class="logo" href="#/">' + CW.logoMark(34) + '<span class="logo__word">CRAZY<em>WOLVES</em></span></a>' +
+      '<a class="logo" href="#/">' + CW.logoMark(34) + '<span class="logo__word">WOLF<em>PACK</em></span></a>' +
       '<div class="stepper" aria-label="Tok kase">' +
         '<div class="stepper__step is-done"><span class="stepper__num">' + CW.icon('check', 14) + '</span><span class="stepper__label">Korpa</span></div>' +
         '<span class="stepper__bar"></span>' +

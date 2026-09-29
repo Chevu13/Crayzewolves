@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — SLANJE PORUDŽBINE
+   WOLFPACK — SLANJE PORUDŽBINE
    --------------------------------------------------------------------------
    Pregledač šalje samo ono što sme da odredi: šta je poručeno, koliko
    komada i ko poručuje. Cene, dostavu i pravila plaćanja računa Edge

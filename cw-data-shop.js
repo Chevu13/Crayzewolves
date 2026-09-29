@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — PODACI ZA SHOP I PODRŠKU
+   WOLFPACK — PODACI ZA SHOP I PODRŠKU
    --------------------------------------------------------------------------
    Ranija verzija je sadržala 16 izmišljenih proizvoda. Uklonjeni su.
 
@@ -38,7 +38,7 @@ CW.data.categories = [
 
 CW.data.collections = [
   { id: 'zvanicno', name: 'Zvanična kolekcija', tagline: 'Napravljeno za vukove.',
-    blurb: 'Proizvodi sa zvaničnim CrazyWolves grbom i porukom zajednice.' },
+    blurb: 'Proizvodi sa zvaničnim Wolfpack grbom i porukom zajednice.' },
   { id: 'uskoro',   name: 'Uskoro',              tagline: 'U pripremi.',
     blurb: 'Artikli koji se pripremaju. Najava ide prvo na Discord i Instagram.' }
 ];
@@ -80,7 +80,7 @@ CW.data.products = [
     /* ---- JEDINI STVARNI PROIZVOD ---- */
     id: 'solja-zvanicna',
     slug: 'zvanicna-solja',
-    name: 'Zvanična CrazyWolves šolja',
+    name: 'Zvanična Wolfpack šolja',
     categoryId: 'drinkware',
     collectionId: 'zvanicno',
     price: 149000,          /* 1.490 RSD — PROVERI CENU */
@@ -90,7 +90,7 @@ CW.data.products = [
     image: 'product-mug',
     shortDesc: 'Keramička šolja sa zvaničnim grbom i porukom zajednice. Limitirano izdanje — napravljeno za vukove.',
     description:
-      'Prvi zvanični CrazyWolves proizvod. Grb i ime zajednice odštampani po celom obimu.' +
+      'Prvi zvanični Wolfpack proizvod. Grb i ime zajednice odštampani po celom obimu.' +
       'Kvalitetna keramika za svakodnevnu upotrebu i štampa koja ne bledi pranjem. Poklon koji ima smisla za gejmera, stratega ili vuka.',
     materials: 'Glazirana keramika. Zapremina oko 330 ml.',
     care: 'Može u mašinu za sudove. Ne koristiti abrazivna sredstva preko štampe.',
@@ -252,7 +252,7 @@ CW.data.faqs = [
   { id: 'f6', categoryId: 'timovi', q: 'Kako da se prijavim za CS2 tim?',
     a: 'Otvori ticket na Discordu i prijavi se. Prijave su otvorene svima — tim se trenutno gradi i traži igrače.' },
   { id: 'f7', categoryId: 'timovi', q: 'Šta dobijam kao član tima?',
-    a: 'Treninge i analizu, učešće na turnirima pod CrazyWolves imenom, podršku sponzora i nagrade za rezultate.' },
+    a: 'Treninge i analizu, učešće na turnirima pod Wolfpack imenom, podršku sponzora i nagrade za rezultate.' },
   { id: 'f8', categoryId: 'timovi', q: 'Da li postoje timovi za druge igre?',
     a: 'Trenutno se formira samo CS2 tim. Ostale igre imaju aktivne zajednice i glasovne kanale, a timovi se otvaraju kako zajednica raste.' },
 
@@ -264,7 +264,7 @@ CW.data.faqs = [
     a: 'Da. Community management, dizajn i izrada sajtova ne zavise od teme zajednice.' },
 
   { id: 'f12', categoryId: 'shop', q: 'Šta je trenutno u prodaji?',
-    a: 'Zvanična CrazyWolves šolja. Majice, duksevi i stikeri su u pripremi i biće najavljeni prvo na Discordu i Instagramu.' },
+    a: 'Zvanična Wolfpack šolja. Majice, duksevi i stikeri su u pripremi i biće najavljeni prvo na Discordu i Instagramu.' },
   { id: 'f13', categoryId: 'shop', q: 'Kako naručujem?',
     a: 'Preko korpe na sajtu ili preko ticketa na Discordu — kako ti je lakše.' },
   { id: 'f14', categoryId: 'shop', q: 'Kako se plaća?',
@@ -344,7 +344,7 @@ CW.data.policies = {
     intro: 'Šta prikupljamo, zašto, i šta možeš da tražiš od nas.',
     sections: [
       { id: 'rukovalac', title: 'Ko smo mi', body: [
-        'CrazyWolves Community je rukovalac podacima prikupljenim preko ovog sajta.',
+        'Wolfpack Community je rukovalac podacima prikupljenim preko ovog sajta.',
         'PROVERI: pun naziv pravnog lica, adresa sedišta i matični broj moraju se upisati pre puštanja uživo.'
       ] },
       { id: 'sta', title: 'Šta prikupljamo', body: [
@@ -393,7 +393,7 @@ CW.data.policies = {
         'Cene su u dinarima. Troškovi dostave se prikazuju odvojeno pre plaćanja.'
       ] },
       { id: 'zig', title: 'Intelektualna svojina', body: [
-        'Naziv CrazyWolves, grb sa vukom, wordmark i sav sadržaj sajta pripadaju CrazyWolves zajednici.',
+        'Naziv Wolfpack, grb sa vukom, wordmark i sav sadržaj sajta pripadaju Wolfpack zajednici.',
         'Članovi zajednice smeju da koriste grb u avatarima, stream overlay-ima i klipovima uz navođenje izvora. Nije dozvoljena prodaja proizvoda sa našim znakom niti predstavljanje kao zvanični partner bez pisanog dogovora.'
       ] },
       { id: 'ponasanje', title: 'Ponašanje u zajednici', body: [
@@ -439,5 +439,5 @@ CW.data.shopTrust = [
   { icon: 'truck',  title: 'Dostava 2–4 radna dana', text: 'Kurirska služba, sa praćenjem pošiljke.' },
   { icon: 'refresh',title: 'Povraćaj u roku od 14 dana', text: 'Nekorišćeno, u originalnom pakovanju.' },
   { icon: 'discord',title: 'Podrška na Discordu',    text: 'Otvori ticket — odgovor stiže isti dan.' },
-  { icon: 'shield', title: 'Zvanični proizvodi',     text: 'Direktno od CrazyWolves zajednice.' }
+  { icon: 'shield', title: 'Zvanični proizvodi',     text: 'Direktno od Wolfpack zajednice.' }
 ];

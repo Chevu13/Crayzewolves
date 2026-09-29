@@ -1,6 +1,6 @@
-# CrazyWolves Community
+# Wolfpack Community
 
-Zvanični sajt i prodavnica CrazyWolves zajednice.
+Zvanični sajt i prodavnica Wolfpack zajednice.
 
 **Dve prodavnice** — merch (šolje, odeća, dodaci) i Wolfpack Store (igre,
 gift kartice, Steam ključevi, pretplate) — plus blog i admin panel, na

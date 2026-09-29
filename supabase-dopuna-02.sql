@@ -1,5 +1,5 @@
 -- ============================================================================
---  CRAZYWOLVES — DOPUNA 02
+--  WOLFPACK — DOPUNA 02
 --  ---------------------------------------------------------------------------
 --  Pokreni POSLE supabase-postavka.sql i supabase-dopuna-01.sql, u istom
 --  SQL Editoru. Sme da se pokrene više puta.

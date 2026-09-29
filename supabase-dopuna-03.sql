@@ -1,5 +1,5 @@
 -- ============================================================================
---  CRAZYWOLVES — DOPUNA 03: NAČINI DOSTAVE
+--  WOLFPACK — DOPUNA 03: NAČINI DOSTAVE
 --  ---------------------------------------------------------------------------
 --  Pokreni POSLE supabase-postavka.sql, -dopuna-01, -dopuna-02 i
 --  supabase-porudzbine.sql. Sme da se pokrene više puta.

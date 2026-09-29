@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — PODEŠAVANJA
+   WOLFPACK — PODEŠAVANJA
    --------------------------------------------------------------------------
    JEDINO mesto gde stoje ključevi. Ne traži ih po drugim fajlovima.
 

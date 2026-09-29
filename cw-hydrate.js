@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — PUNJENJE SAJTA IZ BAZE
+   WOLFPACK — PUNJENJE SAJTA IZ BAZE
    --------------------------------------------------------------------------
    Sajt i dalje ima ugrađene podatke u cw-data-*.js. Oni sada služe kao
    rezerva: ako baza odgovori, sadržaj se zamenjuje; ako ne odgovori
@@ -74,7 +74,7 @@ window.CW = window.CW || {};
         w: ratioW, h: ratioH,
         crop: 'none',
         group: 'db',
-        alt: alt || 'CrazyWolves'
+        alt: alt || 'Wolfpack'
       };
     }
     return key;
@@ -149,7 +149,7 @@ window.CW = window.CW || {};
             title: p.title,
             dek: p.excerpt || '',
             categoryId: p.category_id || 'objave',
-            author: p.author || 'CrazyWolves',
+            author: p.author || 'Wolfpack',
             dayOffset: daysAgo(p.published_at),
             readMin: p.read_min || Math.max(1, Math.round(words(p.content) / 200)),
             featured: Boolean(p.is_featured),

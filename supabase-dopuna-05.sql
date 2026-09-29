@@ -1,5 +1,5 @@
 -- ============================================================================
---  CRAZYWOLVES — DOPUNA 05: PRIJAVA PREKO GOOGLE-A
+--  WOLFPACK — DOPUNA 05: PRIJAVA PREKO GOOGLE-A
 --  ---------------------------------------------------------------------------
 --  Pokreni u Supabase → SQL Editor. Sme da se pokrene više puta.
 --

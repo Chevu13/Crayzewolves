@@ -1,5 +1,5 @@
 -- ============================================================================
---  CRAZYWOLVES — PROVERA I DODAVANJE ADMINA
+--  WOLFPACK — PROVERA I DODAVANJE ADMINA
 --  ---------------------------------------------------------------------------
 --  Pokreni u Supabase → SQL Editor kad se neko ne može prijaviti u panel.
 --  Sme da se pokrene više puta.

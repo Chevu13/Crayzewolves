@@ -20,7 +20,7 @@ nalog svojim Gmail-om i potvrde stižu tamo.
 
 Kad kupiš domen: **Domains** → Add Domain → upiši tri DNS zapisa (SPF, DKIM,
 DMARC) → onda promeni `order_email_from` u tabeli `settings` na
-`CrazyWolves <porudzbine@crazywolves.rs>`.
+`Wolfpack <porudzbine@crazywolves.rs>`.
 
 ## Korak 3 — Edge funkcija
 

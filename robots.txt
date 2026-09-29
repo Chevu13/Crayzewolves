@@ -12,4 +12,4 @@ Disallow: /app.html
 # zastita — pravu zastitu radi RLS u bazi.
 Disallow: /app#/admin
 
-Sitemap: https://crazywolves.rs/sitemap.xml
+Sitemap: https://wolfpack.rs/sitemap.xml

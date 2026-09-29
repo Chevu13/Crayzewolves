@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — ADMIN: PORUDŽBINE
+   WOLFPACK — ADMIN: PORUDŽBINE
    Lista i pojedinačna porudžbina. Učitava se posle cw-admin-pages.js.
    ========================================================================== */
 

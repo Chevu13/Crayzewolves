@@ -20,7 +20,7 @@ putanju na svom domenu umesto kao adresu sajta. Otuda greška.
 
 | Polje | Vrednost |
 |---|---|
-| **Site URL** | `https://www.crazywolves.rs/app` |
+| **Site URL** | `https://www.wolfpack.rs/app` |
 
 Mora ceo, sa `https://`, **i sa `/app` na kraju**.
 
@@ -32,8 +32,8 @@ njim da uradi.
 **Redirect URLs** — dodaj sve četiri, svaku u svoj red:
 
 ```
-https://www.crazywolves.rs/app
-https://crazywolves.rs/app
+https://www.wolfpack.rs/app
+https://wolfpack.rs/app
 https://crayzewolves.vercel.app/app
 http://localhost:4321/app.html
 ```
@@ -41,7 +41,7 @@ http://localhost:4321/app.html
 Bez ovog spiska Supabase odbija adresu koju sajt pošalje i tiho pada nazad
 na Site URL.
 
-> Domen `crazywolves.rs` preusmerava na `www.crazywolves.rs`, zato **www**
+> Domen `wolfpack.rs` preusmerava na `www.wolfpack.rs`, zato **www**
 > verzija ide kao Site URL, a obe stoje u Redirect URLs.
 
 ---
@@ -58,7 +58,7 @@ uključi **Enable Custom SMTP**:
 | Polje | Vrednost |
 |---|---|
 | Sender email | `info.crazywolves@gmail.com` |
-| Sender name | `CrazyWolves` |
+| Sender name | `Wolfpack` |
 | Host | `smtp.gmail.com` |
 | Port | `465` |
 | Username | `info.crazywolves@gmail.com` |
@@ -99,8 +99,8 @@ naslov i nalepi sadržaj fajla u polje **Message body**:
 
 | Šablon | Subject | Fajl |
 |---|---|---|
-| Confirm signup | `Potvrdi svoj nalog — CrazyWolves` | [`potvrda-naloga.html`](potvrda-naloga.html) |
-| Reset password | `Promena lozinke — CrazyWolves` | [`nova-lozinka.html`](nova-lozinka.html) |
+| Confirm signup | `Potvrdi svoj nalog — Wolfpack` | [`potvrda-naloga.html`](potvrda-naloga.html) |
+| Reset password | `Promena lozinke — Wolfpack` | [`nova-lozinka.html`](nova-lozinka.html) |
 
 Šabloni su u bojama sajta, sa grbom i porukom čopora. Pisani su tabelama i
 sa stilovima u samim atributima — Outlook i Gmail brišu `<style>` iz
@@ -127,7 +127,7 @@ Pa **Edge Functions → Secrets**, dodaj:
 | `SMTP_PORT` | `465` |
 | `SMTP_USER` | `info.crazywolves@gmail.com` |
 | `SMTP_PASS` | **ista App Password** iz odeljka 2 |
-| `SMTP_FROM` | `CrazyWolves <info.crazywolves@gmail.com>` |
+| `SMTP_FROM` | `Wolfpack <info.crazywolves@gmail.com>` |
 
 `SUPABASE_URL` i `SUPABASE_SERVICE_ROLE_KEY` Supabase dodaje sam.
 
@@ -157,7 +157,7 @@ neko gađa funkciju tuđim brojevima porudžbina.
 
 ### Provera
 
-1. Naruči nešto na `https://www.crazywolves.rs/app`
+1. Naruči nešto na `https://www.wolfpack.rs/app`
 2. Mejl stigne na adresu koju si upisao na kasi, sa
    `info.crazywolves@gmail.com`
 3. Kopija stigne na `info.crazywolves@gmail.com`
@@ -171,7 +171,7 @@ potvrde — tamo piše tačan razlog (`[CW] Mejl potvrde nije poslat: ...`).
 
 ## Provera da sve radi
 
-1. Otvori `https://www.crazywolves.rs/app#/nalog/zaboravljena`
+1. Otvori `https://www.wolfpack.rs/app#/nalog/zaboravljena`
 2. Upiši svoju adresu → **Pošalji link**
 3. Mejl treba da stigne **sa `info.crazywolves@gmail.com`**, na srpskom
 4. Klik na dugme otvara `.../app#/nalog/nova-lozinka` sa formom za novu

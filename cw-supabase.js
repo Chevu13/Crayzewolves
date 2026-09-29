@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — SUPABASE KLIJENT
+   WOLFPACK — SUPABASE KLIJENT
    --------------------------------------------------------------------------
    Namerno bez zvanične biblioteke: sajt nema build korak, a ovde nam treba
    samo prijava, čitanje/pisanje tabela i otpremanje slika. To je nekoliko

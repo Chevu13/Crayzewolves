@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZYWOLVES — CUSTOMER ACCOUNT + LEGAL / SUPPORT PAGES
+   WOLFPACK — CUSTOMER ACCOUNT + LEGAL / SUPPORT PAGES
    Customer-facing only. No admin surfaces.
    ========================================================================== */
 
