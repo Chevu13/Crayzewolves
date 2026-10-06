@@ -72,6 +72,8 @@
     .add('admin/proizvodi',        CW.admin.guard(CW.admin.products),   { title: function () { return 'Admin — proizvodi'; } })
     .add('admin/proizvodi/novi',   CW.admin.guard(CW.admin.productEdit),{ title: function () { return 'Admin — novi proizvod'; } })
     .add('admin/proizvodi/:id',    CW.admin.guard(CW.admin.productEdit),{ title: function () { return 'Admin — izmena proizvoda'; } })
+    .add('admin/kodovi',           CW.admin.guard(CW.admin.keys),       { title: function () { return 'Admin — Steam kodovi'; } })
+    .add('admin/kodovi/:id',       CW.admin.guard(CW.admin.keysDetail), { title: function () { return 'Admin — kodovi proizvoda'; } })
     .add('admin/kategorije',       CW.admin.guard(CW.admin.categories), { title: function () { return 'Admin — kategorije'; } })
     .add('admin/podesavanja',      CW.admin.guard(CW.admin.settings),   { title: function () { return 'Admin — podešavanja'; } })
 
@@ -1029,15 +1031,20 @@
       /* ---------- checkout ---------- */
       case 'checkout-form': {
         ev.preventDefault();
-        var cv = validate(form, {
+        /* Digitalna korpa nema polja za adresu — tražiti ih značilo bi
+           tražiti nešto što na ekranu ne postoji. */
+        var pravila = {
           email:     { required: true, email: true },
           firstName: { required: true },
           lastName:  { required: true },
-          line1:     { required: true, requiredMsg: 'We need a street address to deliver to' },
-          city:      { required: true },
-          postcode:  { required: true },
-          terms:     { required: true, requiredMsg: 'You must accept the terms to place an order' }
-        });
+          terms:     { required: true, requiredMsg: 'Moraš prihvatiti uslove da bi porudžbina prošla' }
+        };
+        if (form.elements.line1) {
+          pravila.line1    = { required: true, requiredMsg: 'Treba nam ulica i broj za dostavu' };
+          pravila.city     = { required: true };
+          pravila.postcode = { required: true };
+        }
+        var cv = validate(form, pravila);
 
         /* Card fields are only required when card is the chosen method */
         var pay = form.querySelector('[name=payment]:checked');

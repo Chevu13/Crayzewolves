@@ -740,6 +740,43 @@ CW.pages.accountOrder = function (ctx) {
             '</aside>' +
           '</div>' +
         '</div>';
+
+      paintKeys(o);
+    }
+
+    /* Kodovi stoje u bazi odvojeno od porudžbine i vide se tek kad je
+       plaćena — zato posebnim pozivom, posle crtanja. */
+    function paintKeys(o) {
+      var digital = (o.items || []).some(function (i) { return i.fulfillment === 'digital'; });
+      if (!digital || !CW.sb || !CW.sb.enabled) return;
+
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = '<div class="card__body"><div class="t-eyebrow t-eyebrow--gold">Tvoji kodovi</div>' +
+        '<p class="t-sm mt-2">Učitavanje…</p></div>';
+      var stack = host.querySelector('.stack-4');
+      if (stack) stack.insertBefore(card, stack.children[2] || null);
+
+      CW.sb.rpc('my_order_keys', { p_order_number: o.order_number }).then(function (rows) {
+        rows = rows || [];
+        card.innerHTML = '<div class="card__body">' +
+          '<div class="t-eyebrow t-eyebrow--gold">Tvoji kodovi</div>' +
+          (rows.length
+            ? '<div class="stack stack-1 mt-2">' + rows.map(function (k) {
+                return '<div class="order-key">' +
+                  '<span class="order-key__name">' + CW.esc(k.product_name) + '</span>' +
+                  '<code class="order-key__code">' + CW.esc(k.code) + '</code>' +
+                '</div>';
+              }).join('') + '</div>' +
+              '<p class="t-xs mt-2">Kod se aktivira u Steam klijentu: Games → Activate a Product on Steam.</p>'
+            : '<p class="t-sm mt-2">Kodovi se dodeljuju čim potvrdimo uplatu. ' +
+              'Javićemo ti se sa podacima za plaćanje.</p>') +
+        '</div>';
+      }).catch(function () {
+        card.innerHTML = '<div class="card__body">' +
+          '<div class="t-eyebrow t-eyebrow--gold">Tvoji kodovi</div>' +
+          '<p class="t-sm mt-2">Kodovi još nisu dostupni. Piši nam ako je uplata prošla.</p></div>';
+      });
     }
   });
 

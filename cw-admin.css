@@ -589,3 +589,15 @@ a.adm-row:hover .adm-row__title { color: var(--color-gold); }
 .adm-media__lib[open] > summary::before { content: '▾ '; }
 .adm-media__lib > summary:hover { color: var(--color-gold); }
 .adm-media__lib > summary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
+
+/* Steam kodovi — monospace, da se slična slova razlikuju. */
+.adm-code { font-family: Consolas, 'SF Mono', Menlo, monospace; letter-spacing: .5px; }
+.adm-code--row {
+  padding: 6px 10px;
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-2);
+  margin-bottom: 6px;
+  word-break: break-all;
+}

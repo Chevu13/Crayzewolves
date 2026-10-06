@@ -32,8 +32,10 @@ window.CW = window.CW || {};
       var digital = CW.orders.hasDigital();
       return CW.data.paymentMethods.filter(function (m) {
         /* Digitalna roba se ne plaća pouzećem — nema kurira koji bi
-           naplatio kod poslat mejlom. */
+           naplatio kod poslat mejlom. Obrnuto, uplata po dogovoru ima
+           smisla samo kod digitalne robe. */
         if (digital && m.id === 'pouzece') return false;
+        if (!digital && m.id === 'racun') return false;
         return true;
       });
     },

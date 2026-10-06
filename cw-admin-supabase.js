@@ -89,6 +89,8 @@ window.CW = window.CW || {};
       image: r.image || '',
       badges: r.badges || [],
       stockStatus: (r.stock_status || 'in_stock').toUpperCase(),
+      /* Panel radi sa jednim poljem „vrsta", baza sa tri kolone. */
+      kind: r.shop === 'digital' ? 'DIGITAL' : 'MERCH',
       stock: r.stock || 0,
       isActive: r.is_active !== false,
       updatedAt: r.updated_at
@@ -109,6 +111,14 @@ window.CW = window.CW || {};
     if (p.image !== undefined)        out.image = p.image || null;
     if (p.stockStatus !== undefined)  out.stock_status = String(p.stockStatus).toLowerCase();
     if (p.stock !== undefined)        out.stock = p.stock;
+    /* Digitalni proizvod nema lager u komadima — zaliha mu je broj
+       slobodnih kodova, pa mu se `track_stock` gasi. */
+    if (p.kind !== undefined) {
+      var dig = p.kind === 'DIGITAL';
+      out.shop = dig ? 'digital' : 'merch';
+      out.fulfillment = dig ? 'digital' : 'physical';
+      out.track_stock = !dig;
+    }
     if (p.isActive !== undefined)     out.is_active = Boolean(p.isActive);
     return out;
   }
@@ -285,6 +295,40 @@ window.CW = window.CW || {};
     events: function (id) {
       return CW.sb.from('order_events').select('*').eq('order_id', id)
         .order('created_at', false).get().then(function (r) { return r || []; });
+    }
+  };
+
+  /* ====================================================================
+     STEAM KODOVI
+     --------------------------------------------------------------------
+     Kod je roba: tabelu `product_keys` vidi samo admin (RLS). Kupcu kod
+     stiže tek kad porudžbina bude plaćena — tada ga okidač u bazi sam
+     dodeli prvoj porudžbini na redu.
+     ==================================================================== */
+  api.keys = {
+    all: function () {
+      return CW.sb.from('product_keys').select('*').order('created_at').get()
+        .then(function (rows) { return rows || []; });
+    },
+    forProduct: function (productId) {
+      return CW.sb.from('product_keys').select('*')
+        .eq('product_id', productId).order('created_at').get()
+        .then(function (rows) { return rows || []; });
+    },
+    forOrder: function (orderId) {
+      return CW.sb.from('product_keys').select('*').eq('order_id', orderId).get()
+        .then(function (rows) { return rows || []; });
+    },
+    /* Vraća koliko je ubačeno; duplikate baza odbija (jedinstven indeks
+       na kodu), pa se isti kod ne može prodati dvaput. */
+    add: function (productId, codes) {
+      if (!codes.length) return Promise.resolve(0);
+      return CW.sb.from('product_keys').insert(codes.map(function (c) {
+        return { product_id: productId, code: c };
+      })).then(function () { return codes.length; });
+    },
+    remove: function (id) {
+      return CW.sb.from('product_keys').eq('id', id).remove();
     }
   };
 

@@ -137,6 +137,17 @@ CW.admin = CW.admin || {};
       CW.api.orders.get(id).then(function (o) {
         A._order = o;
         paint(o);
+        return CW.api.keys.forOrder(id).catch(function () { return []; });
+      }).then(function (keys) {
+        var host = document.getElementById('adm-ord-keys');
+        if (host) {
+          host.innerHTML = keys.length
+            ? '<h2 class="t-h3">Steam kodovi</h2>' +
+              '<div class="mt-2">' + keys.map(function (k) {
+                return '<div class="adm-code adm-code--row">' + CW.esc(k.code) + '</div>';
+              }).join('') + '</div>'
+            : '';
+        }
         return CW.api.orders.events(id);
       }).then(function (events) {
         var host = document.getElementById('adm-ord-events');
@@ -247,7 +258,15 @@ CW.admin = CW.admin || {};
                 '<span>Potvrda</span><span>' +
                   (o.email_sent_at ? 'Poslata' : '<span class="t-error">Nije poslata</span>') + '</span>' +
               '</div>' +
+              (o.payment_status === 'paid' ? '' :
+                '<button class="btn btn--secondary full mt-3" type="button" data-act="adm-ord-paid">' +
+                  'Označi kao plaćeno</button>' +
+                '<p class="t-xs mt-2">Digitalnoj robi se tek tada dodeljuju Steam kodovi.</p>') +
             '</div>' +
+
+            /* Kodovi koje je ova porudžbina dobila — da se vide i ovde, ne
+               samo kupcu, kad pita šta mu je tačno poslato. */
+            '<div class="adm-panel mt-3" id="adm-ord-keys"></div>' +
           '</aside>' +
         '</div>';
     }

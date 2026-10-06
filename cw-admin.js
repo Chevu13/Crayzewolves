@@ -239,6 +239,7 @@ window.CW = window.CW || {};
       categoryId: f.elements.categoryId.value,
       stockStatus: f.elements.stockStatus.value,
       stock: Math.max(0, parseInt(f.elements.stock.value, 10) || 0),
+      kind: f.elements.kind ? f.elements.kind.value : 'MERCH',
       image: f.elements.image.value || null,
       isActive: f.elements.stockStatus.value !== 'COMING_SOON'
     };
@@ -327,6 +328,37 @@ window.CW = window.CW || {};
           CW.toast('Preimenovano.', 'success');
           CW.router.refresh();
         });
+      });
+      return;
+    }
+
+    if (act === 'adm-key-del') {
+      ev.preventDefault();
+      if (!window.confirm('Obrisati ovaj kod?')) return;
+      CW.api.keys.remove(t.getAttribute('data-id')).then(function () {
+        CW.toast('Kod je obrisan.', 'success');
+        if (CW.admin._reloadKeys) CW.admin._reloadKeys();
+      }).catch(function (e) {
+        CW.toast(e.message || 'Brisanje nije uspelo.', 'error');
+      });
+      return;
+    }
+
+    /* Plaćanje se potvrđuje ručno — nema online naplate. Čim porudžbina
+       pređe u plaćeno, okidač u bazi dodeljuje Steam kodove. */
+    if (act === 'adm-ord-paid') {
+      ev.preventDefault();
+      var ord = CW.admin._order;
+      if (!ord) return;
+      if (!window.confirm('Označiti porudžbinu ' + ord.order_number + ' kao plaćenu?' +
+          '\n\nDigitalnoj robi se tada dodeljuju kodovi.')) return;
+      t.disabled = true;
+      CW.api.orders.update(ord.id, { payment_status: 'paid' }).then(function () {
+        CW.toast('Porudžbina je označena kao plaćena.', 'success');
+        CW.router.refresh();
+      }).catch(function (e) {
+        t.disabled = false;
+        CW.toast(e.message || 'Čuvanje nije uspelo.', 'error');
       });
       return;
     }
@@ -437,6 +469,43 @@ window.CW = window.CW || {};
 
     if (f.matches('[data-form="adm-post"]')) { ev.preventDefault(); savePost(false); return; }
     if (f.matches('[data-form="adm-product"]')) { ev.preventDefault(); saveProduct(); return; }
+
+    if (f.matches('[data-form="adm-keys"]')) {
+      ev.preventDefault();
+      var pid = f.getAttribute('data-product');
+      var box = f.elements.codes;
+      /* Iz nalepljenog teksta uzimamo samo neprazne redove, bez duplikata u
+         istom unosu — ostale duplikate odbija sama baza. */
+      var seen = {};
+      var codes = String(box.value || '').split(/\r?\n/)
+        .map(function (c) { return c.trim(); })
+        .filter(function (c) {
+          if (!c || seen[c]) return false;
+          seen[c] = true;
+          return true;
+        });
+
+      if (!codes.length) {
+        CW.toast('Nalepi bar jedan kod.', 'error');
+        return;
+      }
+
+      var btn = f.querySelector('[type="submit"]');
+      if (btn) btn.disabled = true;
+      CW.api.keys.add(pid, codes).then(function (n) {
+        box.value = '';
+        CW.toast(n + ' ' + CW.plural(n, 'kod dodat', 'koda dodata', 'kodova dodato'), 'success');
+        if (CW.admin._reloadKeys) CW.admin._reloadKeys();
+      }).catch(function (e) {
+        var msg = /duplicate|unique/i.test(e.message || '')
+          ? 'Neki od kodova već postoji u bazi — nijedan nije upisan.'
+          : (e.message || 'Dodavanje nije uspelo.');
+        CW.toast(msg, 'error');
+      }).then(function () {
+        if (btn) btn.disabled = false;
+      });
+      return;
+    }
 
     if (f.matches('[data-form="adm-settings"]')) {
       ev.preventDefault();

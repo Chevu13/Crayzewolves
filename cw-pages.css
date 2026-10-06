@@ -1013,3 +1013,22 @@ a.feature-drop__media:hover img { transform: scale(1.02); }
 /* Bočni filteri se primenjuju u trenutku klika — dugme ostaje samo u fioci
    na telefonu, gde bi svako crtanje zatvorilo fioku. */
 .catalog__filters [data-drawer-only] { display: none; }
+
+
+/* Kod koji je kupac dobio — vidljiv i lak za prepisivanje. */
+.order-key {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-2);
+}
+.order-key__name { font-size: var(--fs-sm); color: var(--color-muted); }
+.order-key__code {
+  font-family: Consolas, 'SF Mono', Menlo, monospace;
+  font-size: var(--fs-body);
+  color: var(--color-gold);
+  letter-spacing: 1px;
+  word-break: break-all;
+}

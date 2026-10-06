@@ -484,6 +484,13 @@ CW.store = (function () {
       if (!method) method = methods[0];
 
       var shipping = method.price;
+      /* Kod se šalje mejlom — korpa bez ijedne fizičke stvari nema šta da
+         plati kuriru. Isto računa i baza, pa se iznosi poklapaju. */
+      var fizicko = state.cart.some(function (line) {
+        var p = CW.product(line.productId);
+        return !p || (p.fulfillment !== 'digital' && p.categoryId !== 'digital');
+      });
+      if (!fizicko) shipping = 0;
       if (subtotal - discount >= CW.shopConfig.freeShippingThreshold) shipping = 0;
       if (c && c.type === 'shipping' && subtotal >= (c.minSpend || 0)) shipping = 0;
       if (state.cart.length === 0) shipping = 0;

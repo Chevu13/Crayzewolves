@@ -304,6 +304,15 @@ window.CW = window.CW || {};
   /* ---- izvoz / uvoz ----
      Dok nema backenda, ovo je način da se rad prenese na drugi računar
      ili preda programeru za ubacivanje u bazu. */
+  /* Bez baze nema ni kodova — panel tada radi samo kao pregled. */
+  api.keys = {
+    all:        function () { return Promise.resolve([]); },
+    forProduct: function () { return Promise.resolve([]); },
+    forOrder:   function () { return Promise.resolve([]); },
+    add:        function () { return Promise.reject(new Error('Kodovi se čuvaju u bazi — panel trenutno radi bez nje.')); },
+    remove:     function () { return Promise.reject(new Error('Kodovi se čuvaju u bazi — panel trenutno radi bez nje.')); }
+  };
+
   api.exportAll = function () {
     return Promise.all([api.posts.all(), api.products.all(), api.categories.all(), api.settings.get()])
       .then(function (r) {

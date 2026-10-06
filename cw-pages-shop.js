@@ -808,6 +808,13 @@ CW.pages.checkout = function (ctx) {
       }) + '</section>';
   }
 
+  /* Korpa u kojoj nema nijedne fizičke stvari ne traži ni adresu ni
+     kurira — kod stiže na mejl. */
+  var samoDigitalno = cart.every(function (line) {
+    var p = CW.product(line.productId);
+    return p && (p.fulfillment === 'digital' || p.categoryId === 'digital');
+  });
+
   var shipId = ctx.query.ship || 'standard';
   var t = CW.store.totals(shipId);
   var coupon = CW.store.coupon();
@@ -889,6 +896,7 @@ CW.pages.checkout = function (ctx) {
         '</fieldset>' +
 
         /* ---------- SHIPPING ADDRESS ---------- */
+        (samoDigitalno ? '' :
         '<fieldset class="fieldset">' +
           '<legend class="fieldset__legend">2 — Adresa za dostavu</legend>' +
           '<div class="field-row">' +
@@ -933,9 +941,16 @@ CW.pages.checkout = function (ctx) {
               '</select>' +
             '</div>' +
           '</div>' +
-        '</fieldset>' +
+        '</fieldset>') +
 
         /* ---------- DELIVERY ---------- */
+        (samoDigitalno ?
+        '<fieldset class="fieldset">' +
+          '<legend class="fieldset__legend">2 — Isporuka</legend>' +
+          '<div class="alert alert--info">' + CW.icon('zap', 18) +
+            '<span>Kod stiže na imejl čim potvrdimo uplatu. Nema dostave ni troška slanja.</span>' +
+          '</div>' +
+        '</fieldset>' :
         '<fieldset class="fieldset">' +
           '<legend class="fieldset__legend">3 — Način dostave</legend>' +
           '<div class="stack stack-1">' +
@@ -952,14 +967,14 @@ CW.pages.checkout = function (ctx) {
               '</label>';
             }).join('') +
           '</div>' +
-        '</fieldset>' +
+        '</fieldset>') +
 
         /* ---------- PAYMENT ---------- */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">4 — Plaćanje</legend>' +
+          '<legend class="fieldset__legend">' + (samoDigitalno ? '3' : '4') + ' — Plaćanje</legend>' +
 
           '<div class="stack stack-1">' +
-            CW.data.paymentMethods.map(function (m, i) {
+            CW.orders.availablePayments().map(function (m, i) {
               /* Kartica je najavljena ali još ne radi — onemogućena, ne samo
                  opisana kao "u pripremi". Disabled input i ne prima klik, pa
                  se ne može ni izabrati ni slučajno poslati porudžbina na nju. */
@@ -1019,7 +1034,7 @@ CW.pages.checkout = function (ctx) {
 
         /* ---------- NOTES + TERMS ---------- */
         '<fieldset class="fieldset">' +
-          '<legend class="fieldset__legend">5 — Poslednji korak</legend>' +
+          '<legend class="fieldset__legend">' + (samoDigitalno ? '4' : '5') + ' — Poslednji korak</legend>' +
           '<div class="field">' +
             '<label class="field__label" for="co-notes">Napomena uz porudžbinu <span class="t-muted">(opciono)</span></label>' +
             '<textarea class="textarea" id="co-notes" name="notes" style="min-height:88px" placeholder="Uputstvo za dostavu, šifra interfona, sve što kurir treba da zna."></textarea>' +

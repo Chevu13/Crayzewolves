@@ -26,6 +26,7 @@ CW.admin = CW.admin || {};
     { path: '/admin/objave',     icon: 'file',     label: 'Objave' },
     { path: '/admin/porudzbine', icon: 'package',  label: 'Porudžbine' },
     { path: '/admin/proizvodi',  icon: 'tag',      label: 'Proizvodi' },
+    { path: '/admin/kodovi',     icon: 'zap',      label: 'Steam kodovi' },
     { path: '/admin/kategorije', icon: 'folder',   label: 'Kategorije' },
     { path: '/admin/podesavanja',icon: 'settings', label: 'Podešavanja' }
   ];
@@ -517,6 +518,7 @@ CW.admin = CW.admin || {};
           f.elements.categoryId.value = p.categoryId || '';
           f.elements.stockStatus.value = p.stockStatus || 'IN_STOCK';
           f.elements.stock.value = p.stock || 0;
+          f.elements.kind.value = p.kind || 'MERCH';
           CW.adm.setImage('adm-prod-image', p.image || '');
           var del = document.getElementById('adm-prod-delete');
           if (del) del.classList.remove('hidden');
@@ -580,7 +582,16 @@ CW.admin = CW.admin || {};
 
         '<aside class="adm-editor__side">' +
           '<div class="adm-panel">' +
+            /* Vrsta odlučuje sve ostalo: digitalni proizvod nema lager u
+               komadima nego kodove, ne traži adresu i ne ide kurirom. */
             '<div class="field">' +
+              '<label class="field__label" for="adm-prod-kind">Vrsta proizvoda</label>' +
+              '<select class="input" id="adm-prod-kind" name="kind">' +
+                '<option value="MERCH">Fizički — šalje se kurirom</option>' +
+                '<option value="DIGITAL">Digitalni — Steam kod na mejl</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="field mt-3">' +
               '<label class="field__label" for="adm-prod-cat">Kategorija</label>' +
               '<select class="input" id="adm-prod-cat" name="categoryId"></select>' +
             '</div>' +
@@ -597,7 +608,8 @@ CW.admin = CW.admin || {};
             '<div class="field mt-3">' +
               '<label class="field__label" for="adm-prod-qty">Komada na lageru</label>' +
               '<input class="input" id="adm-prod-qty" name="stock" type="number" min="0" step="1">' +
-              '<p class="t-xs mt-1">Za digitalne proizvode se ne upisuje — broje se slobodni Steam kodovi.</p>' +
+              '<p class="t-xs mt-1">Za digitalne proizvode se ne upisuje — zaliha je broj ' +
+                'slobodnih kodova (ekran <b>Steam kodovi</b>).</p>' +
             '</div>' +
           '</div>' +
 
@@ -622,6 +634,122 @@ CW.admin = CW.admin || {};
       '</form>',
 
       '<a class="btn btn--ghost btn--sm" href="#/admin/proizvodi">' + CW.icon('arrow-left', 15) + ' Nazad</a>'
+    );
+  };
+
+  /* ======================================================================
+     STEAM KODOVI
+     ----------------------------------------------------------------------
+     Jedan ekran po digitalnom proizvodu: nalepiš kodove, oni čekaju u redu
+     i baza ih sama dodeljuje kupcima kojima je porudžbina plaćena.
+     ====================================================================== */
+  A.keys = function () {
+    CW.onMount(function () {
+      Promise.all([CW.api.products.all(), CW.api.keys.all()]).then(function (r) {
+        var digital = r[0].filter(function (p) { return p.kind === 'DIGITAL'; });
+        var keys = r[1];
+        var host = document.getElementById('adm-keys-list');
+        if (!host) return;
+
+        host.innerHTML = digital.length
+          ? digital.map(function (p) {
+              var mine = keys.filter(function (k) { return k.product_id === p.id; });
+              var free = mine.filter(function (k) { return k.status === 'available'; }).length;
+              var sold = mine.filter(function (k) { return k.status === 'sold'; }).length;
+              return '<a class="adm-row" href="#/admin/kodovi/' + encodeURIComponent(p.id) + '">' +
+                '<div class="adm-row__icon">' + CW.icon('zap', 15) + '</div>' +
+                '<div class="adm-row__main">' +
+                  '<div class="adm-row__title">' + CW.esc(p.name) + '</div>' +
+                  '<div class="adm-row__meta">' + sold + ' prodato · ' + CW.money(p.price) + '</div>' +
+                '</div>' +
+                '<span class="adm-pill adm-pill--' + (free ? 'ok' : 'bad') + '">' +
+                  (free ? free + ' slobodno' : 'nema kodova') + '</span>' +
+              '</a>';
+            }).join('')
+          : empty('zap', 'Nijedan proizvod nije označen kao digitalni.',
+              '<a class="btn btn--primary btn--sm mt-3" href="#/admin/proizvodi">Otvori proizvode</a>');
+      }).catch(function (e) {
+        var host = document.getElementById('adm-keys-list');
+        if (host) host.innerHTML = empty('alert', e.message);
+      });
+    });
+
+    return A.shell('/admin/kodovi', 'Steam kodovi',
+      '<p class="t-sm">Proizvod je u prodaji dok ima slobodnih kodova. Kad se potroše, ' +
+        'sajt ga sam prikazuje kao rasprodat.</p>' +
+      '<div class="adm-panel mt-3"><div id="adm-keys-list">' + skeletonRows(3) + '</div></div>'
+    );
+  };
+
+  A.keysDetail = function (ctx) {
+    var id = ctx.params.id;
+
+    CW.onMount(function () {
+      load();
+      var back = document.getElementById('adm-keys-name');
+      CW.api.products.get(id).then(function (p) {
+        A._keyProduct = p;
+        if (back) back.textContent = p.name;
+      }).catch(function () { /* naziv nije presudan za rad ekrana */ });
+    });
+
+    function load() {
+      Promise.all([CW.api.keys.forProduct(id), CW.api.orders.all()]).then(function (r) {
+        var keys = r[0];
+        var byId = {};
+        (r[1] || []).forEach(function (o) { byId[o.id] = o.order_number; });
+
+        var free = keys.filter(function (k) { return k.status === 'available'; }).length;
+        var cnt = document.getElementById('adm-keys-count');
+        if (cnt) {
+          cnt.textContent = free + ' slobodno · ' + (keys.length - free) + ' prodato';
+        }
+
+        var host = document.getElementById('adm-key-rows');
+        if (!host) return;
+        host.innerHTML = keys.length
+          ? keys.map(function (k) {
+              var sold = k.status === 'sold';
+              return '<div class="adm-row adm-row--static">' +
+                '<div class="adm-row__main">' +
+                  '<div class="adm-row__title adm-code">' + CW.esc(k.code) + '</div>' +
+                  '<div class="adm-row__meta">' +
+                    (sold
+                      ? 'Prodato ' + CW.fmtDate(k.sold_at) +
+                        (byId[k.order_id] ? ' · ' + CW.esc(byId[k.order_id]) : '')
+                      : 'Čeka kupca') +
+                  '</div>' +
+                '</div>' +
+                '<span class="adm-pill adm-pill--' + (sold ? 'neutral' : 'ok') + '">' +
+                  (sold ? 'Prodat' : 'Slobodan') + '</span>' +
+                (sold ? '' :
+                  '<button class="btn btn--ghost btn--sm" type="button" data-act="adm-key-del" ' +
+                    'data-id="' + CW.esc(k.id) + '">' + CW.icon('trash', 14) + '</button>') +
+              '</div>';
+            }).join('')
+          : empty('zap', 'Još nema kodova za ovaj proizvod.');
+      });
+    }
+
+    A._reloadKeys = load;
+
+    return A.shell('/admin/kodovi', 'Kodovi proizvoda',
+      '<div class="adm-panel">' +
+        '<h2 class="t-h3" id="adm-keys-name">Učitavanje…</h2>' +
+        '<p class="t-sm mt-1" id="adm-keys-count">&nbsp;</p>' +
+      '</div>' +
+
+      '<form class="adm-panel mt-3" data-form="adm-keys" data-product="' + CW.esc(id) + '" novalidate>' +
+        '<label class="field__label" for="adm-keys-new">Novi kodovi</label>' +
+        '<p class="t-xs mb-2">Jedan kod u svaki red. Isti kod se ne može uneti dvaput.</p>' +
+        '<textarea class="input adm-code" id="adm-keys-new" name="codes" rows="8" ' +
+          'placeholder="XXXXX-YYYYY-ZZZZZ&#10;AAAAA-BBBBB-CCCCC"></textarea>' +
+        '<button class="btn btn--primary mt-3" type="submit">Dodaj kodove</button>' +
+      '</form>' +
+
+      '<div class="adm-panel mt-3"><div id="adm-key-rows">' + skeletonRows(3) + '</div></div>',
+
+      '<a class="btn btn--ghost btn--sm" href="#/admin/kodovi">' + CW.icon('arrow-left', 15) + ' Nazad</a>'
     );
   };
 

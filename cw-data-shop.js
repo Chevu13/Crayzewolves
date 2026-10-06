@@ -202,11 +202,14 @@ CW.data.shippingMethods = [
   { id: 'licno',   name: 'Lično preuzimanje', eta: 'Po dogovoru',    price: 0,     desc: 'Dogovara se preko Discorda.' }
 ];
 
-/* Uplata na račun je sklonjena iz ponude — traži ručno izdavanje
-   predračuna i ručno praćenje uplate. U bazi vrednost `bank` OSTAJE
-   dozvoljena, da se ranije porudžbine i dalje čitaju u panelu. */
+/* Pouzeće važi samo za robu koju kurir nosi. Digitalna roba se ne može
+   naplatiti kuriru, a kartica još ne radi — zato za nju postoji uplata po
+   dogovoru, koju prodavac ručno potvrdi u panelu. Tek tada baza dodeljuje
+   Steam kod. */
 CW.data.paymentMethods = [
   { id: 'pouzece', name: 'Plaćanje pouzećem', desc: 'Plaćaš kuriru pri preuzimanju.' },
+  { id: 'racun',   name: 'Uplata po dogovoru',
+    desc: 'Javljamo ti se sa podacima za uplatu. Kod stiže čim uplata legne.' },
   { id: 'kartica', name: 'Kartica',           desc: 'U pripremi — biće dostupno uskoro.' }
 ];
 
