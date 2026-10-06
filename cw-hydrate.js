@@ -178,6 +178,12 @@ window.CW = window.CW || {};
             ? (slobodnoKodova[p.id] || 0)
             : (p.stock || 0);
 
+          /* „Nema na stanju" iz panela je odluka prodavca i jača je od
+             brojača — roba možda postoji u magacinu, ali se sada ne prodaje.
+             Isto pravilo važi i u bazi (create_order), da se ne može zaobići
+             direktnim pozivom. */
+          if (p.stock_status === 'out_of_stock') naStanju = 0;
+
           /* Ceo sajt računa zalihu preko VARIJANTI (CW.stockOf sabira
              v.stock). Proizvod unet kroz panel nema varijante, pa bi bez
              ovoga svaki proizvod iz baze pisao „Rasprodato" — i dugme za

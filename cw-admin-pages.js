@@ -690,10 +690,20 @@ CW.admin = CW.admin || {};
       CW.api.products.get(id).then(function (p) {
         A._keyProduct = p;
         if (back) back.textContent = p.name;
+        load();
       }).catch(function () { /* naziv nije presudan za rad ekrana */ });
     });
 
     function load() {
+      /* Kodovi imaju smisla samo na digitalnom proizvodu — na fizičkom bi
+         ostali neiskorišćeni, jer ih porudžbina nikad ne traži. */
+      var warn = document.getElementById('adm-keys-warn');
+      if (warn && A._keyProduct && A._keyProduct.kind !== 'DIGITAL') {
+        warn.innerHTML = '<div class="adm-empty">' + CW.icon('alert', 22) +
+          '<p>Ovaj proizvod nije označen kao digitalni, pa mu kodovi ništa ne znače. ' +
+          'Promeni mu vrstu u <b>Proizvodi → izmena</b>.</p></div>';
+      }
+
       Promise.all([CW.api.keys.forProduct(id), CW.api.orders.all()]).then(function (r) {
         var keys = r[0];
         var byId = {};
@@ -737,6 +747,7 @@ CW.admin = CW.admin || {};
       '<div class="adm-panel">' +
         '<h2 class="t-h3" id="adm-keys-name">Učitavanje…</h2>' +
         '<p class="t-sm mt-1" id="adm-keys-count">&nbsp;</p>' +
+        '<div id="adm-keys-warn"></div>' +
       '</div>' +
 
       '<form class="adm-panel mt-3" data-form="adm-keys" data-product="' + CW.esc(id) + '" novalidate>' +
