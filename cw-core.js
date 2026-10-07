@@ -550,11 +550,16 @@ CW.store = (function () {
       var u = CW.sb && CW.sb.enabled && CW.sb.auth.user();
       if (!u) return null;
       var meta = u.user_metadata || {};
+      /* Nasa registracija pise first_name/last_name, Google given_name/
+         family_name, a neki nalozi samo puno ime — citamo sve oblike, da
+         kupac na kasi ne kuca ono sto vec znamo. */
+      var puno = String(meta.full_name || meta.name || '').trim();
       return {
         id: u.id,
         email: u.email,
-        firstName: meta.first_name || '',
-        lastName: meta.last_name || ''
+        firstName: meta.first_name || meta.given_name || puno.split(' ')[0] || '',
+        lastName: meta.last_name || meta.family_name ||
+          (puno.indexOf(' ') !== -1 ? puno.slice(puno.indexOf(' ') + 1) : '')
       };
     },
 

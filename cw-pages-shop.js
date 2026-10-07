@@ -854,6 +854,24 @@ CW.pages.checkout = function (ctx) {
     });
   }
 
+  /* Ime i prezime stoje uz kupca, a ne uz adresu: digitalna kasa nema
+     odeljak sa adresom, pa bi ta polja nestala — a baza ih traži. */
+  var ime_polja =
+    '<div class="field-row">' +
+      '<div class="field">' +
+        '<label class="field__label" for="co-first">Ime <span class="field__req">*</span></label>' +
+        '<input class="input" id="co-first" name="firstName" type="text" autocomplete="given-name" required value="' +
+          (user ? CW.esc(user.firstName) : '') + '">' +
+        '<div class="field__error hidden" data-error-for="co-first"></div>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label class="field__label" for="co-last">Prezime <span class="field__req">*</span></label>' +
+        '<input class="input" id="co-last" name="lastName" type="text" autocomplete="family-name" required value="' +
+          (user ? CW.esc(user.lastName) : '') + '">' +
+        '<div class="field__error hidden" data-error-for="co-last"></div>' +
+      '</div>' +
+    '</div>';
+
   return '' +
   '<div class="shop-page">' +
   /* Distraction-free header — the only place the global nav is replaced */
@@ -884,7 +902,10 @@ CW.pages.checkout = function (ctx) {
            možda želi drugačiji broj za kurira nego onaj iz profila. */
         '<fieldset class="fieldset">' +
           (user
-            ? '<input type="hidden" id="co-email" name="email" value="' + CW.esc(user.email) + '">' +
+            ? '<legend class="fieldset__legend">1 — Tvoji podaci</legend>' +
+              '<input type="hidden" id="co-email" name="email" value="' + CW.esc(user.email) + '">' +
+              '<p class="t-xs mb-2">Potvrda ide na ' + CW.esc(user.email) + '.</p>' +
+              ime_polja +
               '<div class="field">' +
                 '<label class="field__label" for="co-phone">Telefon <span class="t-muted">(za kurira)</span></label>' +
                 '<input class="input" id="co-phone" name="phone" type="tel" autocomplete="tel" value="">' +
@@ -898,6 +919,7 @@ CW.pages.checkout = function (ctx) {
                 '<div class="field__hint">Ovde stižu potvrda porudžbine i broj za praćenje.</div>' +
                 '<div class="field__error hidden" data-error-for="co-email"></div>' +
               '</div>' +
+              ime_polja +
               '<div class="field">' +
                 '<label class="field__label" for="co-phone">Telefon <span class="t-muted">(za kurira)</span></label>' +
                 '<input class="input" id="co-phone" name="phone" type="tel" autocomplete="tel" value="">' +
@@ -908,18 +930,6 @@ CW.pages.checkout = function (ctx) {
         (samoDigitalno ? '' :
         '<fieldset class="fieldset">' +
           '<legend class="fieldset__legend">2 — Adresa za dostavu</legend>' +
-          '<div class="field-row">' +
-            '<div class="field">' +
-              '<label class="field__label" for="co-first">Ime <span class="field__req">*</span></label>' +
-              '<input class="input" id="co-first" name="firstName" type="text" autocomplete="given-name" required value="' + (user ? CW.esc(user.firstName) : '') + '">' +
-              '<div class="field__error hidden" data-error-for="co-first"></div>' +
-            '</div>' +
-            '<div class="field">' +
-              '<label class="field__label" for="co-last">Prezime <span class="field__req">*</span></label>' +
-              '<input class="input" id="co-last" name="lastName" type="text" autocomplete="family-name" required value="' + (user ? CW.esc(user.lastName) : '') + '">' +
-              '<div class="field__error hidden" data-error-for="co-last"></div>' +
-            '</div>' +
-          '</div>' +
           '<div class="field">' +
             '<label class="field__label" for="co-addr">Adresa <span class="field__req">*</span></label>' +
             '<input class="input" id="co-addr" name="line1" type="text" autocomplete="address-line1" required value="' + (addr ? CW.esc(addr.line1) : '') + '">' +
