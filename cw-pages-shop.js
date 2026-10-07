@@ -465,7 +465,7 @@ CW.pages.product = function (ctx) {
         '<div class="row row--wrap" style="gap:8px">' +
           CW.c.badges(p) +
           (soldout ? '<span class="badge badge--soldout">Sold Out</span>' : '') +
-          (low ? '<span class="badge badge--low">Only ' + stock + ' left</span>' : '') +
+          (low ? '<span class="badge badge--low">Još samo ' + stock + '</span>' : '') +
         '</div>' +
         '<div class="t-eyebrow mt-2">' + CW.esc(cat.name) + (col ? ' · ' + CW.esc(col.name) : '') + '</div>' +
         '<h1 class="t-h1 mt-1">' + CW.esc(p.name) + '</h1>' +
@@ -564,7 +564,16 @@ CW.pages.product = function (ctx) {
           { q: 'Materijali', a: p.materials },
           { q: 'Održavanje', a: p.care },
           { q: 'Dostava i povraćaj', a: 'Standardna dostava 3–5 radnih dana (' + CW.money(CW.shopConfig.defaultShipping) + '), ekspresna 1–2 radna dana. Besplatno preko ' + CW.money(CW.shopConfig.freeShippingThreshold) + '. Returns accepted within 14 days on unworn items with original tags, limited drops included.' }
-        ].map(function (item, i) {
+        ]
+        /* Opis iz panela je običan tekst, a ugrađeni podaci znaju da budu
+           spisak — zato se sve svodi na tekst. Prazni odeljci se izbacuju,
+           da proizvod bez opisa ne dobije praznu harmoniku. */
+        .map(function (item) {
+          var tekst = Array.isArray(item.a) ? item.a.join('\n\n') : String(item.a == null ? '' : item.a);
+          return { q: item.q, a: tekst.trim() };
+        })
+        .filter(function (item) { return item.a; })
+        .map(function (item, i) {
           return '<div class="accordion__item' + (i === 0 ? ' is-open' : '') + '">' +
             '<button class="accordion__trigger" type="button" data-act="accordion" aria-expanded="' + (i === 0) + '">' +
               '<span>' + CW.esc(item.q) + '</span>' +

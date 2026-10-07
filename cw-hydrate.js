@@ -178,11 +178,11 @@ window.CW = window.CW || {};
             ? (slobodnoKodova[p.id] || 0)
             : (p.stock || 0);
 
-          /* „Nema na stanju" iz panela je odluka prodavca i jača je od
-             brojača — roba možda postoji u magacinu, ali se sada ne prodaje.
-             Isto pravilo važi i u bazi (create_order), da se ne može zaobići
+          /* Dostupnost iz panela je jača od brojača: „Nema na stanju" i
+             „U pripremi" zaustavljaju prodaju i kad lager postoji. Isto
+             pravilo važi i u bazi (create_order), da se ne može zaobići
              direktnim pozivom. */
-          if (p.stock_status === 'out_of_stock') naStanju = 0;
+          if (p.stock_status !== 'in_stock') naStanju = 0;
 
           /* Ceo sajt računa zalihu preko VARIJANTI (CW.stockOf sabira
              v.stock). Proizvod unet kroz panel nema varijante, pa bi bez
@@ -192,9 +192,22 @@ window.CW = window.CW || {};
              Zato proizvod bez varijanti dobija jednu, podrazumevanu, koja
              nosi pravu zalihu. Postojeće varijante (veličine majice) se ne
              diraju — panel ih još ne uređuje. */
-          var variants = (old.variants && old.variants.length)
-            ? old.variants
-            : [{ id: p.id + '-default', name: 'Standard', stock: naStanju }];
+          var variants;
+          if (old.variants && old.variants.length) {
+            /* Veličine i boje panel još ne uređuje, pa se zadržavaju iz
+               ugrađenih podataka — ali lager iz njih NE važi, jer bi onda
+               sajt prodavao robu koju je prodavac u panelu zaustavio.
+               Kod jedne varijante ona nosi ceo lager iz baze; kod više njih
+               se zadržava njihov odnos, a sve se gasi kad roba nije u
+               prodaji. */
+            variants = old.variants.map(function (v) {
+              return Object.assign({}, v, {
+                stock: old.variants.length === 1 ? naStanju : (naStanju ? v.stock : 0)
+              });
+            });
+          } else {
+            variants = [{ id: p.id + '-default', name: 'Standard', stock: naStanju }];
+          }
 
           return {
             id: p.id,

@@ -202,9 +202,16 @@
 
   function pdpProduct() { return pdp.productId ? CW.product(pdp.productId) : null; }
 
+  /* Ima li proizvod uopšte šta da se bira? Roba uneta kroz panel ima jednu
+     varijantu bez veličine i boje — tu nema izbora, pa se ne sme tražiti. */
+  function pdpImaIzbor(p) {
+    return (p.variants || []).some(function (v) { return v.size || v.colorId; });
+  }
+
   function pdpVariant() {
     var p = pdpProduct();
     if (!p) return null;
+    if (!pdpImaIzbor(p)) return p.variants[0] || null;
     var found = null;
     p.variants.forEach(function (v) {
       if (v.size === pdp.size && v.colorId === pdp.color) found = v;
@@ -247,14 +254,19 @@
     var line = document.querySelector('[data-stock-line]');
     var v = pdpVariant();
     if (line) {
-      if (!pdp.size || !pdp.color) {
+      var izbor = pdpImaIzbor(p);
+      var digitalno = p.fulfillment === 'digital';
+      if (izbor && (!pdp.size || !pdp.color)) {
         line.innerHTML = '<div class="status status--upcoming"><span class="status__dot"></span>Izaberi opciju da vidiš dostupnost</div>';
       } else if (!v || v.stock === 0) {
-        line.innerHTML = '<div class="status status--offline"><span class="status__dot"></span>Sold out in this combination</div>';
+        line.innerHTML = '<div class="status status--offline"><span class="status__dot"></span>' +
+          (izbor ? 'Rasprodato u ovoj kombinaciji' : 'Rasprodato') + '</div>';
       } else if (v.stock <= CW.shopConfig.lowStockThreshold) {
-        line.innerHTML = '<div class="status status--soon"><span class="status__dot"></span>Only ' + v.stock + ' left in this size</div>';
+        line.innerHTML = '<div class="status status--soon"><span class="status__dot"></span>Još samo ' + v.stock +
+          (izbor ? ' u ovoj veličini' : ' na stanju') + '</div>';
       } else {
-        line.innerHTML = '<div class="status status--live"><span class="status__dot"></span>In stock, ships in 1 working day</div>';
+        line.innerHTML = '<div class="status status--live"><span class="status__dot"></span>' +
+          (digitalno ? 'Na stanju — kod stiže na mejl' : 'Na stanju, šalje se za 1 radni dan') + '</div>';
       }
     }
 
@@ -607,13 +619,15 @@
         var prod = CW.product(t.getAttribute('data-pid'));
         if (!prod) break;
 
-        /* Explicit validation when a required variation is missing */
-        if (!pdp.color) { flagVariantError('color'); CW.toast({ type: 'warning', title: 'Choose a colour', text: 'Pick a colour before adding to cart.' }); break; }
-        if (!pdp.size)  { flagVariantError('size');  CW.toast({ type: 'warning', title: 'Izaberi veličinu', text: 'Pick a size before adding to cart.' }); break; }
+        /* Veličina i boja se traže samo ako ih proizvod uopšte ima. */
+        if (pdpImaIzbor(prod)) {
+          if (!pdp.color) { flagVariantError('color'); CW.toast({ type: 'warning', title: 'Izaberi boju', text: 'Boja se bira pre dodavanja u korpu.' }); break; }
+          if (!pdp.size)  { flagVariantError('size');  CW.toast({ type: 'warning', title: 'Izaberi veličinu', text: 'Veličina se bira pre dodavanja u korpu.' }); break; }
+        }
 
         var variant = pdpVariant();
         if (!variant || variant.stock === 0) {
-          CW.toast({ type: 'error', title: 'Rasprodato', text: 'Ta veličina u toj boji nije dostupna.' });
+          CW.toast({ type: 'error', title: 'Rasprodato', text: 'Ovaj artikal trenutno nije dostupan.' });
           break;
         }
 
@@ -624,15 +638,20 @@
           if (!res.ok) {
             CW.toast({
               type: 'warning',
-              title: res.reason === 'stock-limit' ? 'Stock limit reached' : 'Could not add to cart',
-              text: res.reason === 'stock-limit' ? 'Only ' + res.max + ' available in this size.' : 'Please try again.'
+              title: res.reason === 'stock-limit' ? 'Nema više na stanju' : 'Dodavanje nije uspelo',
+              text: res.reason === 'stock-limit' ? 'Dostupno je još ' + res.max + '.' : 'Pokušaj ponovo.'
             });
             return;
           }
           CW.toast({
             type: 'success', thumb: true,
-            title: 'Added to cart',
-            text: prod.name + ' · ' + pdp.size + ' · ' + CW.shopOptions.colors[pdp.color].name
+            title: 'Dodato u korpu',
+            /* Varijanta se pominje samo ako proizvod zaista ima izbor —
+               „Standard" uz naziv nikome ništa ne govori. */
+            text: prod.name + (function () {
+              var lbl = CW.variantLabel ? CW.variantLabel(prod, variant.id) : '';
+              return lbl ? ' · ' + lbl : '';
+            }())
           });
           CW.ui.refreshHeader();
           pdpSync();
