@@ -1147,6 +1147,13 @@ CW.pages.confirmation = function () {
   var d = order.details || {};
   var eta = new Date(Date.now() + 4 * 86400000);
 
+  /* Digitalna porudžbina nema šta da se pakuje ni prati — čeka se uplata,
+     pa kod stiže mejlom. */
+  var digitalno = (order.items || []).every(function (l) {
+    var p = CW.product(l.productId);
+    return p && (p.fulfillment === 'digital' || p.categoryId === 'digital');
+  });
+
   return '' +
   '<div class="shop-page">' +
   '<section class="container container--wide">' +
@@ -1155,11 +1162,16 @@ CW.pages.confirmation = function () {
       '<div class="t-eyebrow t-eyebrow--gold">Porudžbina potvrđena</div>' +
       '<h1 class="t-h1 mt-2">Dobro došao u čopor.</h1>' +
       '<p class="t-lead mx-auto mt-3" style="max-width:52ch">Porudžbina je primljena. Potvrda stiže na ' +
-        '<strong class="t-offwhite">' + CW.esc(d.email || 'tvoju imejl adresu') + '</strong>, a broj za praćenje čim pošiljka krene.</p>' +
+        '<strong class="t-offwhite">' + CW.esc(d.email || 'tvoju imejl adresu') + '</strong>' +
+        (digitalno
+          ? ', a Steam kod čim vidimo uplatu.</p>'
+          : ', a broj za praćenje čim pošiljka krene.</p>') +
       '<div class="row mt-4" style="justify-content:center;gap:10px;flex-wrap:wrap">' +
         '<span class="badge badge--gold">Porudžbina ' + CW.esc(order.id) + '</span>' +
         '<span class="badge badge--neutral">' + CW.money(order.totals.total) + '</span>' +
-        '<span class="badge badge--neutral">Očekivana dostava ' + CW.fmtDate(eta.toISOString(), 'short') + '</span>' +
+        (digitalno
+          ? '<span class="badge badge--neutral">Kod stiže po potvrdi uplate</span>'
+          : '<span class="badge badge--neutral">Očekivana dostava ' + CW.fmtDate(eta.toISOString(), 'short') + '</span>') +
       '</div>' +
     '</div>' +
   '</section>' +
@@ -1193,20 +1205,25 @@ CW.pages.confirmation = function () {
 
       '<aside class="stack stack-3">' +
         '<div class="card"><div class="card__body">' +
-          '<div class="t-eyebrow t-eyebrow--gold">Dostava</div>' +
+          '<div class="t-eyebrow t-eyebrow--gold">' + (digitalno ? 'Isporuka' : 'Dostava') + '</div>' +
           '<div class="spec-list mt-2">' +
             '<div class="spec-list__row"><span class="spec-list__k">Ime</span><span class="spec-list__v">' + CW.esc((d.firstName || '') + ' ' + (d.lastName || '')) + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Adresa</span><span class="spec-list__v">' + CW.esc(d.line1 || '—') + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Grad</span><span class="spec-list__v">' + CW.esc((d.postcode || '') + ' ' + (d.city || '')) + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Država</span><span class="spec-list__v">' + CW.esc(d.country || '—') + '</span></div>' +
-            '<div class="spec-list__row"><span class="spec-list__k">Način dostave</span><span class="spec-list__v">' + CW.esc(d.shippingName || 'Standardna dostava') + '</span></div>' +
+            (digitalno
+              ? '<div class="spec-list__row"><span class="spec-list__k">Imejl</span><span class="spec-list__v">' + CW.esc(d.email || '—') + '</span></div>' +
+                '<div class="spec-list__row"><span class="spec-list__k">Način isporuke</span><span class="spec-list__v">Steam kod na imejl</span></div>'
+              : '<div class="spec-list__row"><span class="spec-list__k">Adresa</span><span class="spec-list__v">' + CW.esc(d.line1 || '—') + '</span></div>' +
+                '<div class="spec-list__row"><span class="spec-list__k">Grad</span><span class="spec-list__v">' + CW.esc((d.postcode || '') + ' ' + (d.city || '')) + '</span></div>' +
+                '<div class="spec-list__row"><span class="spec-list__k">Država</span><span class="spec-list__v">' + CW.esc(d.country || '—') + '</span></div>' +
+                '<div class="spec-list__row"><span class="spec-list__k">Način dostave</span><span class="spec-list__v">' + CW.esc(d.shippingName || 'Standardna dostava') + '</span></div>') +
             '<div class="spec-list__row"><span class="spec-list__k">Plaćanje</span><span class="spec-list__v">' + CW.esc(d.paymentName || 'Kartica') + '</span></div>' +
           '</div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card__body">' +
           '<div class="t-eyebrow t-eyebrow--gold">Treba nešto da se izmeni?</div>' +
-          '<p class="t-sm mt-2">Dok porudžbina nije poslata, još može da se izmeni. Javi se sa brojem porudžbine što pre.</p>' +
+          '<p class="t-sm mt-2">' + (digitalno
+            ? 'Dok kod nije poslat, porudžbina još može da se izmeni. Javi se sa njenim brojem.'
+            : 'Dok porudžbina nije poslata, još može da se izmeni. Javi se sa brojem porudžbine što pre.') + '</p>' +
           '<a class="btn btn--quiet btn--full mt-2" href="#/contact?topic=merch">Kontaktiraj prodavnicu</a>' +
         '</div></div>' +
       '</aside>' +
@@ -1221,16 +1238,27 @@ CW.pages.confirmation = function () {
         '<h3 class="t-h4">1. Proveri mejl</h3>' +
         '<p class="t-sm">Potvrda sa svim detaljima porudžbine je na putu. Proveri i spam ako ne stigne za desetak minuta.</p>' +
       '</div>' +
-      '<div class="next-step">' +
-        '<div class="benefit__icon">' + CW.icon('package', 20) + '</div>' +
-        '<h3 class="t-h4">2. Pakujemo</h3>' +
-        '<p class="t-sm">Porudžbine se pakuju radnim danima. Tvoja kreće u roku od jednog radnog dana.</p>' +
-      '</div>' +
-      '<div class="next-step">' +
-        '<div class="benefit__icon">' + CW.icon('truck', 20) + '</div>' +
-        '<h3 class="t-h4">3. Praćenje</h3>' +
-        '<p class="t-sm">Broj za praćenje stiže čim pošiljka krene iz magacina. Pojavljuje se i u tvom nalogu.</p>' +
-      '</div>' +
+      (digitalno
+        ? '<div class="next-step">' +
+            '<div class="benefit__icon">' + CW.icon('card', 20) + '</div>' +
+            '<h3 class="t-h4">2. Proveravamo uplatu</h3>' +
+            '<p class="t-sm">Javljamo ti se sa podacima za uplatu. Čim je vidimo, porudžbina ide dalje.</p>' +
+          '</div>' +
+          '<div class="next-step">' +
+            '<div class="benefit__icon">' + CW.icon('zap', 20) + '</div>' +
+            '<h3 class="t-h4">3. Šaljemo kod</h3>' +
+            '<p class="t-sm">Steam kod stiže na imejl, a stoji i u tvom nalogu, pod Porudžbine.</p>' +
+          '</div>'
+        : '<div class="next-step">' +
+            '<div class="benefit__icon">' + CW.icon('package', 20) + '</div>' +
+            '<h3 class="t-h4">2. Pakujemo</h3>' +
+            '<p class="t-sm">Porudžbine se pakuju radnim danima. Tvoja kreće u roku od jednog radnog dana.</p>' +
+          '</div>' +
+          '<div class="next-step">' +
+            '<div class="benefit__icon">' + CW.icon('truck', 20) + '</div>' +
+            '<h3 class="t-h4">3. Praćenje</h3>' +
+            '<p class="t-sm">Broj za praćenje stiže čim pošiljka krene iz magacina. Pojavljuje se i u tvom nalogu.</p>' +
+          '</div>') +
     '</div>' +
 
     '<div class="row mt-4" style="gap:12px;flex-wrap:wrap">' +
@@ -1239,10 +1267,16 @@ CW.pages.confirmation = function () {
     '</div>' +
   '</section>' +
 
-  '<section class="section--tight container container--wide">' + CW.c.ctaBand({
-    eyebrow: 'Dok čekaš',
-    title: 'Upoznaj druge koji nose isto',
-    text: 'Podeli fotku u Den kanalu na Discordu. Neko će sigurno reći koju je veličinu uzeo.'
-  }) + '</section>' +
+  '<section class="section--tight container container--wide">' + CW.c.ctaBand(digitalno
+    ? {
+      eyebrow: 'Dok čekaš',
+      title: 'Nađi ekipu za igru',
+      text: 'Na Discordu se svako veče traži neko za partiju. Javi se u kanalu svoje igre.'
+    }
+    : {
+      eyebrow: 'Dok čekaš',
+      title: 'Upoznaj druge koji nose isto',
+      text: 'Podeli fotku u Den kanalu na Discordu. Neko će sigurno reći koju je veličinu uzeo.'
+    }) + '</section>' +
   '</div>';
 };
