@@ -112,9 +112,29 @@ window.CW = window.CW || {};
      prijavu. Ovo je udobnost, ne bezbednost — pravu zaštitu radi server,
      jer se ovo ovde može zaobići u pregledaču.
      ====================================================================== */
+  /* Sesija je jedna za ceo sajt: ko se prijavi kao kupac u shopu, prijavljen
+     je i ovde. Zato prijava nije dovoljna — pri svakom ulasku se pita baza je
+     li taj nalog admin. Odgovor se pamti za tu sesiju, da se ne pita na svaki
+     klik. Bez ove provere panel se otvarao kupcu, a baza je tiho odbijala
+     svaki upis. */
+  var adminProveren = null;
+
   CW.admin.guard = function (view) {
     return function (ctx) {
       if (!CW.api.session.get()) return CW.admin.login(ctx);
+
+      if (adminProveren === false) return CW.admin.login(ctx);
+
+      if (adminProveren === null && CW.sb && CW.sb.enabled) {
+        CW.sb.rpc('is_admin').then(function (jeAdmin) {
+          adminProveren = Boolean(jeAdmin);
+          if (jeAdmin) return;
+          CW.toast('Ovaj nalog nema prava administratora. Prijavi se admin nalogom.', 'error');
+          CW.api.session.clear();
+          CW.router.refresh();
+        }).catch(function () { /* mreža padne — ostaje kako jeste */ });
+      }
+
       return view(ctx);
     };
   };

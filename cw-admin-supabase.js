@@ -167,11 +167,20 @@ window.CW = window.CW || {};
             return fromDb(rows[0]);
           });
       },
+      /* Kad RLS ne pusti upis, PostgREST ne vraća grešku nego praznu listu
+         — nula izmenjenih redova. Bez ove provere panel je na to pucao
+         („Cannot read properties of undefined"), umesto da kaže šta je. */
       create: function (data) {
-        return CW.sb.from(table).insert(toDb(data)).then(fromDb);
+        return CW.sb.from(table).insert(toDb(data)).then(function (row) {
+          if (!row) throw new Error('Zapis nije napravljen — ovaj nalog nema prava administratora. Odjavi se i prijavi admin nalogom.');
+          return fromDb(row);
+        });
       },
       update: function (id, patch) {
-        return CW.sb.from(table).eq('id', id).update(toDb(patch)).then(fromDb);
+        return CW.sb.from(table).eq('id', id).update(toDb(patch)).then(function (row) {
+          if (!row) throw new Error('Izmena nije sačuvana — ovaj nalog nema prava administratora ili zapis više ne postoji.');
+          return fromDb(row);
+        });
       },
       remove: function (id) {
         return CW.sb.from(table).eq('id', id).remove().then(function () { return true; });
