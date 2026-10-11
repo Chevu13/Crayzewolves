@@ -39,6 +39,9 @@
   --color-amber:        #C98A3C;
   --color-bronze:       #96613A;
   --color-gold-light:   #EFC983;
+  /* Krupni brojevi i cifre — zlatna sa naslova; na svetloj podlozi ide
+     tamnija nijansa iste boje, da ostane čitljiva. */
+  --color-gold-num:     #D4A24E;
   --color-pack-green:   #4A6B51;   /* samo partnerstva */
 
   /* ---------- COLOR / NEUTRAL + TEXT ----------
@@ -267,6 +270,7 @@ body:not(.is-admin) #app {
 
   --color-gold:         #8A5714;   /*  5.8:1  akcenat i puna popuna */
   --color-gold-light:   #6E440D;   /* hover je TAMNIJI na svetloj podlozi */
+  --color-gold-num:     #B5801F;   /*  3.2:1 na kremastoj — samo krupan tekst */
   --color-amber:        #8F5417;   /*  4.7:1  nadnaslov, i na uvucenoj traci */
   --color-bronze:       #7A4E22;
 
@@ -375,6 +379,9 @@ body:not(.is-admin) #app {
 
   --color-gold:         #D4A24E;
   --color-gold-light:   #EFC983;
+  /* Krupni brojevi i cifre — zlatna sa naslova; na svetloj podlozi ide
+     tamnija nijansa iste boje, da ostane čitljiva. */
+  --color-gold-num:     #D4A24E;
   --color-amber:        #C98A3C;
   --color-bronze:       #96613A;
 

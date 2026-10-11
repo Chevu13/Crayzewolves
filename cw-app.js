@@ -74,6 +74,7 @@
     .add('admin/proizvodi/:id',    CW.admin.guard(CW.admin.productEdit),{ title: function () { return 'Admin — izmena proizvoda'; } })
     .add('admin/kodovi',           CW.admin.guard(CW.admin.keys),       { title: function () { return 'Admin — Steam kodovi'; } })
     .add('admin/kodovi/:id',       CW.admin.guard(CW.admin.keysDetail), { title: function () { return 'Admin — kodovi proizvoda'; } })
+    .add('admin/nalozi',           CW.admin.guard(CW.admin.accounts),   { title: function () { return 'Admin — nalozi'; } })
     .add('admin/kategorije',       CW.admin.guard(CW.admin.categories), { title: function () { return 'Admin — kategorije'; } })
     .add('admin/podesavanja',      CW.admin.guard(CW.admin.settings),   { title: function () { return 'Admin — podešavanja'; } })
 

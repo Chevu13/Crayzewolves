@@ -305,6 +305,8 @@ window.CW = window.CW || {};
      Dok nema backenda, ovo je način da se rad prenese na drugi računar
      ili preda programeru za ubacivanje u bazu. */
   /* Bez baze nema ni kodova — panel tada radi samo kao pregled. */
+  api.customers = { all: function () { return Promise.resolve([]); } };
+
   api.keys = {
     all:        function () { return Promise.resolve([]); },
     forProduct: function () { return Promise.resolve([]); },

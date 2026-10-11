@@ -672,7 +672,7 @@ a.news-card:hover .news-card__title { color: var(--color-gold); }
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 3.4vw, 2.5rem);
   line-height: 1;
-  color: var(--color-gold);
+  color: var(--color-gold-num, var(--color-gold));
   font-variant-numeric: tabular-nums;
 }
 .stat-cell__lbl {
@@ -2067,7 +2067,10 @@ input[type='range']::-moz-range-thumb {
   top: 4px; left: 4px;
   width: calc(50% - 4px);
   height: calc(100% - 8px);
-  background: var(--color-gold);
+  /* Na kremastoj podlozi je zlatna iz teme duboka bronza — pretamna za
+     jastučić koji nosi tekst. Zato svoja, svetlija nijansa; tekst na njoj
+     ostaje skoro crn, pa je kontrast i dalje visok. */
+  background: #E0B063;
   border-radius: 999px;
   transition: transform var(--dur-base, .25s) var(--ease-out, ease);
 }

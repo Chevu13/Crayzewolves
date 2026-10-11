@@ -27,6 +27,7 @@ CW.admin = CW.admin || {};
     { path: '/admin/porudzbine', icon: 'package',  label: 'Porudžbine' },
     { path: '/admin/proizvodi',  icon: 'tag',      label: 'Proizvodi' },
     { path: '/admin/kodovi',     icon: 'zap',      label: 'Steam kodovi' },
+    { path: '/admin/nalozi',     icon: 'user',     label: 'Nalozi' },
     { path: '/admin/kategorije', icon: 'folder',   label: 'Kategorije' },
     { path: '/admin/podesavanja',icon: 'settings', label: 'Podešavanja' }
   ];
@@ -87,6 +88,17 @@ CW.admin = CW.admin || {};
       '<div class="adm-stat__value">' + CW.esc(String(value)) + '</div>' +
       (hint ? '<div class="adm-stat__hint">' + CW.esc(hint) + '</div>' : '') +
     '</div>';
+  }
+
+  /* Slika proizvoda može biti ključ iz ugrađenog registra ('product-mug')
+     ili puna adresa fajla otpremljenog kroz panel. Spisak je dosad crtao
+     samo prvo, pa su otpremljene slike ostajale kao prazan kvadrat. */
+  function thumb(value, alt) {
+    if (value && CW.IMAGES[value]) return CW.img(value, { ratio: '1 / 1', ph: alt });
+    if (value && /^https?:\/\//i.test(value)) {
+      return '<img class="adm-thumb" src="' + CW.esc(value) + '" alt="" loading="lazy">';
+    }
+    return '<div class="ph ph--1x1 ph--product" data-ph=""></div>';
   }
 
   function skeletonRows(n) {
@@ -466,11 +478,7 @@ CW.admin = CW.admin || {};
           ? rows.map(function (p) {
               var cat = cats.filter(function (c) { return c.id === p.categoryId; })[0];
               return '<a class="adm-row" href="#/admin/proizvodi/' + encodeURIComponent(p.id) + '">' +
-                '<div class="adm-row__thumb">' +
-                  (p.image && CW.IMAGES[p.image]
-                    ? CW.img(p.image, { ratio: '1 / 1', ph: p.name })
-                    : '<div class="ph ph--1x1 ph--product" data-ph=""></div>') +
-                '</div>' +
+                '<div class="adm-row__thumb">' + thumb(p.image, p.name) + '</div>' +
                 '<div class="adm-row__main">' +
                   '<div class="adm-row__title">' + CW.esc(p.name) + '</div>' +
                   '<div class="adm-row__meta">' + CW.esc(cat ? cat.name : 'Bez kategorije') +
@@ -490,6 +498,38 @@ CW.admin = CW.admin || {};
     );
   };
 
+  /* Digitalni proizvod nema lager u komadima — zaliha mu je broj slobodnih
+     kodova. Polje tada postaje prikaz, ne unos: pokazuje pravo stanje i vodi
+     na ekran gde se kodovi dosipaju. */
+  A._syncKind = function (productId) {
+    var f = document.querySelector('[data-form="adm-product"]');
+    if (!f || !f.elements.kind) return;
+    var digitalno = f.elements.kind.value === 'DIGITAL';
+    var polje = f.elements.stock;
+    var hint = document.getElementById('adm-prod-qty-hint');
+
+    polje.readOnly = digitalno;
+    polje.classList.toggle('is-locked', digitalno);
+
+    if (!digitalno) {
+      if (hint) hint.innerHTML = 'Koliko komada sme da se proda. Svaka porudžbina skida komad.';
+      return;
+    }
+
+    if (hint) hint.innerHTML = 'Zaliha je broj slobodnih Steam kodova — ne upisuje se ovde.';
+
+    if (!productId || !CW.api.keys) { polje.value = 0; return; }
+    CW.api.keys.forProduct(productId).then(function (keys) {
+      var slobodno = keys.filter(function (k) { return k.status === 'available'; }).length;
+      var prodato = keys.length - slobodno;
+      polje.value = slobodno;
+      if (hint) {
+        hint.innerHTML = 'Slobodnih kodova: <b>' + slobodno + '</b>, prodatih: ' + prodato +
+          '. <a class="link-underline" href="#/admin/kodovi/' + encodeURIComponent(productId) + '">Dodaj kodove</a>';
+      }
+    }).catch(function () { /* bez kodova ostaje samo objašnjenje */ });
+  };
+
   A.productEdit = function (ctx) {
     var id = ctx.params.id;
     var isNew = !id || id === 'novi';
@@ -502,7 +542,7 @@ CW.admin = CW.admin || {};
             return '<option value="' + CW.esc(c.id) + '">' + CW.esc(c.name) + '</option>';
           }).join('');
         }
-        if (isNew) { A._editing = null; return; }
+        if (isNew) { A._editing = null; A._syncKind(null); return; }
         CW.api.products.get(id).then(function (p) {
           A._editing = p;
           var f = document.querySelector('[data-form="adm-product"]');
@@ -519,6 +559,7 @@ CW.admin = CW.admin || {};
           f.elements.stockStatus.value = p.stockStatus || 'IN_STOCK';
           f.elements.stock.value = p.stock || 0;
           f.elements.kind.value = p.kind || 'MERCH';
+          A._syncKind(p.id);
           CW.adm.setImage('adm-prod-image', p.image || '');
           var del = document.getElementById('adm-prod-delete');
           if (del) del.classList.remove('hidden');
@@ -608,8 +649,8 @@ CW.admin = CW.admin || {};
             '<div class="field mt-3">' +
               '<label class="field__label" for="adm-prod-qty">Komada na lageru</label>' +
               '<input class="input" id="adm-prod-qty" name="stock" type="number" min="0" step="1">' +
-              '<p class="t-xs mt-1">Za digitalne proizvode se ne upisuje — zaliha je broj ' +
-                'slobodnih kodova (ekran <b>Steam kodovi</b>).</p>' +
+              '<p class="t-xs mt-1" id="adm-prod-qty-hint">Koliko komada sme da se proda. ' +
+                'Svaka porudžbina skida komad.</p>' +
             '</div>' +
           '</div>' +
 
@@ -761,6 +802,84 @@ CW.admin = CW.admin || {};
       '<div class="adm-panel mt-3"><div id="adm-key-rows">' + skeletonRows(3) + '</div></div>',
 
       '<a class="btn btn--ghost btn--sm" href="#/admin/kodovi">' + CW.icon('arrow-left', 15) + ' Nazad</a>'
+    );
+  };
+
+  /* ======================================================================
+     NALOZI
+     ====================================================================== */
+  A.accounts = function () {
+    CW.onMount(function () {
+      CW.api.customers.all().then(function (rows) {
+        A._accounts = rows;
+        render();
+      }).catch(function (e) {
+        var host = document.getElementById('adm-acc-list');
+        if (host) host.innerHTML = empty('alert', e.message);
+      });
+
+      var q = document.getElementById('adm-acc-search');
+      if (q) q.addEventListener('input', CW.debounce(render, 200));
+    });
+
+    function render() {
+      var host = document.getElementById('adm-acc-list');
+      if (!host || !A._accounts) return;
+
+      var term = ((document.getElementById('adm-acc-search') || {}).value || '').toLowerCase();
+      var rows = A._accounts.filter(function (c) {
+        if (!term) return true;
+        return ((c.first_name || '') + ' ' + (c.last_name || '') + ' ' + c.email)
+          .toLowerCase().indexOf(term) !== -1;
+      });
+
+      var count = document.getElementById('adm-acc-count');
+      if (count) {
+        count.textContent = rows.length + ' ' +
+          CW.plural(rows.length, 'nalog', 'naloga', 'naloga');
+      }
+
+      host.innerHTML = rows.length
+        ? rows.map(function (c) {
+            var ime = ((c.first_name || '') + ' ' + (c.last_name || '')).trim();
+            /* Google nalog i nalog sa lozinkom se drugačije rešavaju kad
+               neko ne može da uđe — zato piše koji je koji. */
+            var nacin = c.provider === 'google' ? 'Google' : 'Lozinka';
+            return '<div class="adm-row adm-row--static">' +
+              '<div class="adm-row__icon">' + CW.icon('user', 15) + '</div>' +
+              '<div class="adm-row__main">' +
+                '<div class="adm-row__title">' + CW.esc(ime || '—') +
+                  (c.is_admin ? ' <span class="adm-pill adm-pill--ok">admin</span>' : '') +
+                  (c.email_confirmed ? '' : ' <span class="adm-pill adm-pill--warn">mejl nije potvrđen</span>') +
+                '</div>' +
+                '<div class="adm-row__meta">' + CW.esc(c.email) +
+                  (c.phone ? ' · ' + CW.esc(c.phone) : '') +
+                  (c.city ? ' · ' + CW.esc(c.city) : '') +
+                '</div>' +
+                '<div class="adm-row__meta">Prijava: ' + nacin +
+                  ' · Poslednja: ' + (c.last_sign_in_at ? CW.fmtDate(c.last_sign_in_at) : 'nikad') +
+                  ' · Nalog od ' + CW.fmtDate(c.created_at) + '</div>' +
+              '</div>' +
+              '<div class="adm-row__amount">' +
+                c.orders_count + ' ' + CW.plural(c.orders_count, 'porudžbina', 'porudžbine', 'porudžbina') +
+                (c.spent_rsd ? '<div class="t-xs">' + CW.money(c.spent_rsd) + '</div>' : '') +
+              '</div>' +
+            '</div>';
+          }).join('')
+        : empty('user', term ? 'Nema naloga za tu pretragu.' : 'Još nema nijednog naloga.');
+    }
+
+    return A.shell('/admin/nalozi', 'Nalozi',
+      '<div class="adm-toolbar">' +
+        '<div class="adm-search">' + CW.icon('search', 15) +
+          '<input class="input" id="adm-acc-search" type="search" ' +
+            'placeholder="Ime ili imejl" aria-label="Pretraži naloge">' +
+        '</div>' +
+      '</div>' +
+      '<p class="t-sm mt-2" id="adm-acc-count">&nbsp;</p>' +
+      '<div class="adm-panel mt-2"><div id="adm-acc-list">' + skeletonRows(4) + '</div></div>' +
+      '<p class="t-xs mt-3">Lozinke se ne vide nigde — ni ovde ni u bazi. Ko ne može da uđe, ' +
+        'traži novu lozinku preko „Zaboravljena lozinka" na sajtu.</p>'
     );
   };
 

@@ -173,7 +173,17 @@ CW.pages.shop = function () {
    ========================================================================== */
 CW.pages.catalog = function (ctx) {
   var catId = ctx.params.category;
-  var cat = catId === 'all' ? null : CW.find('categories', catId);
+  /* Dve „kategorije" koje to zapravo nisu: vrsta robe. Stoje uz prave
+     kategorije, da se iz menija može ući i u jedno i u drugo. */
+  var VRSTE = {
+    merch:   { id: 'merch',   name: 'Merch',     shop: 'merch',
+               blurb: 'Šolje, odeća i dodaci — stiže kurirom na adresu.' },
+    digital: { id: 'digital', name: 'Digitalno', shop: 'digital',
+               blurb: 'Steam kodovi, gift kartice i pretplate — stižu na mejl.' }
+  };
+  var vrsta = VRSTE[catId] || null;
+
+  var cat = (catId === 'all' || vrsta) ? vrsta : CW.find('categories', catId);
   if (catId !== 'all' && !cat) return CW.pages.notFound();
 
   var q = ctx.query;
@@ -192,7 +202,9 @@ CW.pages.catalog = function (ctx) {
 
   /* ---- filtering ---- */
   var base = CW.data.products.filter(function (p) {
-    return catId === 'all' || p.categoryId === catId;
+    if (catId === 'all') return true;
+    if (vrsta) return (p.shop || 'merch') === vrsta.shop;
+    return p.categoryId === catId;
   });
 
   var list = base.filter(function (p) {

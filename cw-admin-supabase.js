@@ -308,6 +308,20 @@ window.CW = window.CW || {};
   };
 
   /* ====================================================================
+     NALOZI
+     --------------------------------------------------------------------
+     Pogled `customer_accounts` spaja profil kupca sa podacima o prijavi
+     (poslednja prijava, način prijave) i sam proverava da je pozivalac
+     admin — tabela `auth.users` ostaje zatvorena.
+     ==================================================================== */
+  api.customers = {
+    all: function () {
+      return CW.sb.from('customer_accounts').select('*').order('created_at', true).get()
+        .then(function (rows) { return rows || []; });
+    }
+  };
+
+  /* ====================================================================
      STEAM KODOVI
      --------------------------------------------------------------------
      Kod je roba: tabelu `product_keys` vidi samo admin (RLS). Kupcu kod

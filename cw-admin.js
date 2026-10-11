@@ -258,11 +258,16 @@ window.CW = window.CW || {};
       description: f.elements.description.value.trim(),
       categoryId: f.elements.categoryId.value,
       stockStatus: f.elements.stockStatus.value,
-      stock: Math.max(0, parseInt(f.elements.stock.value, 10) || 0),
       kind: f.elements.kind ? f.elements.kind.value : 'MERCH',
       image: f.elements.image.value || null,
       isActive: f.elements.stockStatus.value !== 'COMING_SOON'
     };
+
+    /* Kod digitalnog proizvoda lager se ne upisuje — zaliha mu je broj
+       slobodnih kodova, pa bi ručni broj samo lagao. */
+    if (data.kind !== 'DIGITAL') {
+      data.stock = Math.max(0, parseInt(f.elements.stock.value, 10) || 0);
+    }
 
     var editing = CW.admin._editing;
     var isNew = !editing || !editing.id;
@@ -276,6 +281,14 @@ window.CW = window.CW || {};
   }
 
   /* ---- delegirani događaji ---- */
+  /* Vrsta proizvoda se menja u letu: čim se prebaci na digitalni, polje za
+     lager prestaje da bude unos. */
+  document.addEventListener('change', function (ev) {
+    if (ev.target && ev.target.name === 'kind' && CW.admin._syncKind) {
+      CW.admin._syncKind(CW.admin._editing && CW.admin._editing.id);
+    }
+  });
+
   document.addEventListener('click', function (ev) {
     var t = ev.target.closest ? ev.target.closest('[data-act], [data-editor-tab], [data-save]') : null;
     if (!t) return;

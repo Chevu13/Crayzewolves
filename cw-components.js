@@ -26,12 +26,12 @@ CW.nav = {
 
        Ranije je i logo i SHOP vodilo na `/`, pa je dugme SHOP izgledalo kao
        da ne radi ništa — klik na njega je vraćao na istu stranicu. */
+    /* Prvo se bira vrsta robe, pa tek onda kategorija — to je podela koja
+       posetiocu stvarno znači: šalje se kurirom ili stiže na mejl. */
     { label: 'Shop', path: '/shop/all', match: '/shop', children: [
-      { label: 'Sve iz shopa', path: '/shop/all',        desc: 'Ceo asortiman na jednom mestu' },
-      { label: 'Šolje',        path: '/shop/drinkware',  desc: 'Keramika sa zvaničnim grbom' },
-      { label: 'Odeća',        path: '/shop/apparel',    desc: 'Majice i duksevi — u pripremi' },
-      { label: 'Dodaci',       path: '/shop/accessories',desc: 'Stikeri, podloge i sitnice' },
-      { label: 'Gaming Store', path: '/shop/digital',    desc: 'Igre, DLC i in-game valuta' }
+      { label: 'Merch',        path: '/shop/merch',   desc: 'Šolje, odeća, dodaci — stiže kurirom' },
+      { label: 'Digitalno',    path: '/shop/digital', desc: 'Steam kodovi i gift kartice — na mejl' },
+      { label: 'Sve iz shopa', path: '/shop/all',     desc: 'Ceo asortiman na jednom mestu' }
     ] },
     { label: 'Blog', path: '/vesti' }
   ],
@@ -76,10 +76,13 @@ CW.c.header = function () {
     if (!item.children) {
       return '<a class="nav__link" href="#' + item.path + '" data-nav="' + (item.match || item.path) + '">' + CW.esc(item.label) + '</a>';
     }
+    /* Klik otvara mali prozor ispod; sama stavka ne vodi nikuda dok se ne
+       izabere. Ranije je odmah odvodila na spisak, pa izbor nije ni viđen. */
     return '<div class="dropdown" data-dropdown>' +
-        '<a class="nav__link" href="#' + item.path + '" data-nav="' + (item.match || item.path) + '" aria-haspopup="true" aria-expanded="false">' +
+        '<button class="nav__link" type="button" data-act="toggle-dropdown" data-nav="' +
+          (item.match || item.path) + '" aria-haspopup="true" aria-expanded="false">' +
           CW.esc(item.label) + CW.icon('chevronD', 14) +
-        '</a>' +
+        '</button>' +
         '<div class="dropdown__panel dropdown__panel--wide hidden" data-dropdown-panel>' +
           item.children.map(function (c) {
             return '<a class="dropdown__item" href="#' + c.path + '"><b>' + CW.esc(c.label) + '</b><span>' + CW.esc(c.desc) + '</span></a>';
@@ -872,6 +875,16 @@ CW.ui.bind = function () {
       var link = node.querySelector('.nav__link');
       if (node !== dd && panel) { panel.classList.add('hidden'); if (link) link.setAttribute('aria-expanded', 'false'); }
     });
+
+    if (trigger && trigger.getAttribute('data-act') === 'toggle-dropdown' && dd) {
+      ev.preventDefault();
+      var panel = dd.querySelector('[data-dropdown-panel]');
+      if (panel) {
+        var open = panel.classList.toggle('hidden') === false;
+        trigger.setAttribute('aria-expanded', String(open));
+      }
+      return;
+    }
 
     if (!trigger) return;
     var act = trigger.getAttribute('data-act');
