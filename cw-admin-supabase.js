@@ -93,6 +93,7 @@ window.CW = window.CW || {};
       kind: r.shop === 'digital' ? 'DIGITAL' : 'MERCH',
       stock: r.stock || 0,
       sortOrder: r.sort_order || 0,
+      featuredSlot: r.featured_slot || 0,
       isActive: r.is_active !== false,
       updatedAt: r.updated_at
     };
@@ -122,6 +123,7 @@ window.CW = window.CW || {};
     }
     if (p.isActive !== undefined)     out.is_active = Boolean(p.isActive);
     if (p.sortOrder !== undefined)    out.sort_order = p.sortOrder;
+    if (p.featuredSlot !== undefined) out.featured_slot = p.featuredSlot;
     return out;
   }
 

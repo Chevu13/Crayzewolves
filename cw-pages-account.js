@@ -63,8 +63,8 @@ CW.pages._requireAuth = function (returnTo) {
       '<div class="empty__icon mx-auto">' + CW.icon('lock', 26) + '</div>' +
       '<h1 class="t-h2 mt-3">Prijavi se da nastaviš</h1>' +
       '<p class="t-sm mt-2">Za ovu stranicu je potrebna prijava.</p>' +
-      '<a class="btn btn--primary btn--full btn--lg mt-4" href="#/account/login?next=' + encodeURIComponent(returnTo) + '">Prijavi se</a>' +
-      '<a class="btn btn--ghost btn--full mt-1" href="#/account/register">Napravi nalog</a>' +
+      '<a class="btn btn--primary btn--full btn--lg mt-4" href="#/nalog/prijava?next=' + encodeURIComponent(returnTo) + '">Prijavi se</a>' +
+      '<a class="btn btn--ghost btn--full mt-1" href="#/nalog/registracija">Napravi nalog</a>' +
     '</div>' +
   '</section>';
 };
@@ -108,7 +108,7 @@ CW.pages.login = function (ctx) {
         '<div class="field">' +
           '<div class="row row--between">' +
             '<label class="field__label" for="li-pass">Password <span class="field__req">*</span></label>' +
-            '<a class="t-xs link-underline" href="#/account/forgot">Forgot?</a>' +
+            '<a class="t-xs link-underline" href="#/nalog/zaboravljena">Forgot?</a>' +
           '</div>' +
           '<input class="input" id="li-pass" name="password" type="password" autocomplete="current-password" required>' +
           '<div class="field__error hidden" data-error-for="li-pass"></div>' +
@@ -126,7 +126,7 @@ CW.pages.login = function (ctx) {
 
       '<div class="divider mt-3"><span class="divider__mark"></span></div>' +
 
-      '<p class="t-sm text-center">New here? <a class="link-underline" href="#/account/register">Napravi nalog</a></p>' +
+      '<p class="t-sm text-center">New here? <a class="link-underline" href="#/nalog/registracija">Napravi nalog</a></p>' +
       '<p class="t-xs text-center mt-2">Nalog nije obavezan za kupovinu, ali olakšava praćenje porudžbina.</p>' +
     '</div>' +
   '</section>';
@@ -206,7 +206,7 @@ CW.pages.register = function () {
       '</form>' +
 
       '<div class="divider"><span class="divider__mark"></span></div>' +
-      '<p class="t-sm text-center">Već imaš nalog? <a class="link-underline" href="#/account/login">Prijavi se</a></p>' +
+      '<p class="t-sm text-center">Već imaš nalog? <a class="link-underline" href="#/nalog/prijava">Prijavi se</a></p>' +
     '</div>' +
   '</section>';
 };
@@ -781,7 +781,7 @@ CW.pages.accountOrder = function (ctx) {
               '<div class="card"><div class="card__body">' +
                 '<div class="t-eyebrow t-eyebrow--gold">Treba ti pomoć?</div>' +
                 '<p class="t-sm mt-2">Navedi broj porudžbine ' + CW.esc(o.order_number) + ' i brzo je nalazimo.</p>' +
-                '<a class="btn btn--quiet btn--full mt-2" href="#/contact?topic=merch">Kontaktiraj prodavnicu</a>' +
+                '<a class="btn btn--quiet btn--full mt-2" href="#/kontakt?topic=merch">Kontaktiraj prodavnicu</a>' +
               '</div></div>' +
             '</aside>' +
           '</div>' +
@@ -861,7 +861,7 @@ CW.pages.wishlist = function () {
       '<section class="page-hero"><div class="container container--wide page-hero__inner">' +
         CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Lista želja', path: '/account/wishlist' }]) +
         '<h1 class="t-h1 mt-2">Lista želja</h1>' +
-        '<p class="t-lead mt-2">Saved on this device. <a class="link-underline" href="#/account/register">Napravi nalog</a> to keep it across devices.</p>' +
+        '<p class="t-lead mt-2">Saved on this device. <a class="link-underline" href="#/nalog/registracija">Napravi nalog</a> to keep it across devices.</p>' +
       '</div></section>' +
       '<section class="section container container--wide">' + body + '</section>';
   }
@@ -915,7 +915,7 @@ CW.pages.faq = function (ctx) {
         '<div class="card mt-4"><div class="card__body">' +
           '<div class="t-eyebrow t-eyebrow--gold">Still stuck?</div>' +
           '<p class="t-sm mt-2">Two working days by email, minutes in the Discord.</p>' +
-          '<a class="btn btn--secondary btn--full mt-2" href="#/contact">Contact us</a>' +
+          '<a class="btn btn--secondary btn--full mt-2" href="#/kontakt">Contact us</a>' +
         '</div></div>' +
       '</aside>' +
 
@@ -924,7 +924,7 @@ CW.pages.faq = function (ctx) {
           ? CW.c.empty({
               icon: 'search', title: 'No answers found',
               text: 'Nothing matches “' + (ctx.query.q || '') + '”. Try a different word, or ask us directly.',
-              actions: '<a class="btn btn--secondary" href="#/faq">Clear search</a><a class="btn btn--primary" href="#/contact">Contact us</a>'
+              actions: '<a class="btn btn--secondary" href="#/faq">Clear search</a><a class="btn btn--primary" href="#/kontakt">Contact us</a>'
             })
           : Object.keys(byCat).map(function (cid) {
               var c = CW.find('faqCategories', cid) || { name: '' };
@@ -992,7 +992,7 @@ CW.pages.policy = function (key) {
           '<div class="card mt-4"><div class="card__body">' +
             '<div class="t-eyebrow t-eyebrow--gold">Questions?</div>' +
             '<p class="t-sm mt-2">If anything here is unclear, ask — we would rather explain it than have you guess.</p>' +
-            '<a class="btn btn--secondary btn--full mt-2" href="#/contact">Contact us</a>' +
+            '<a class="btn btn--secondary btn--full mt-2" href="#/kontakt">Contact us</a>' +
           '</div></div>' +
         '</aside>' +
 
@@ -1021,7 +1021,7 @@ CW.pages.policy = function (key) {
                 '<div class="t-eyebrow t-eyebrow--gold">Related</div>' +
                 '<h3 class="t-h3">Help &amp; FAQ</h3>' +
                 '<p class="t-sm">Most questions are answered there first.</p></div></a>' +
-              '<a class="card card--link" href="#/contact"><div class="card__body">' +
+              '<a class="card card--link" href="#/kontakt"><div class="card__body">' +
                 '<div class="t-eyebrow t-eyebrow--gold">Related</div>' +
                 '<h3 class="t-h3">Contact us</h3>' +
                 '<p class="t-sm">Two working days by email.</p></div></a>' +

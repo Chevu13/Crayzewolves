@@ -216,6 +216,7 @@ window.CW = window.CW || {};
             shop: p.shop || 'merch',
             fulfillment: p.fulfillment || 'physical',
             trackStock: p.track_stock !== false,
+            featuredSlot: p.featured_slot || 0,
             stock: naStanju,
             categoryId: p.category_id,
             collectionId: p.collection_id || old.collectionId || '',

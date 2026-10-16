@@ -260,8 +260,15 @@ window.CW = window.CW || {};
       stockStatus: f.elements.stockStatus.value,
       kind: f.elements.kind ? f.elements.kind.value : 'MERCH',
       sortOrder: parseInt(f.elements.sortOrder.value, 10) || 0,
+      /* Bez kvačice je nula — proizvod tada nije na početnoj. */
+      featuredSlot: f.elements.featured && f.elements.featured.checked
+        ? (parseInt(f.elements.featuredSlot.value, 10) || 1)
+        : 0,
       image: f.elements.image.value || null,
-      isActive: f.elements.stockStatus.value !== 'COMING_SOON'
+      /* Vidljivost je sopstvena odluka, ne posledica dostupnosti: „U pripremi"
+         proizvod treba da se VIDI, sa oznakom Uskoro. Ranije ga je čuvanje
+         sakrivalo sa sajta, pa je prodavac mislio da ga je uneo uzalud. */
+      isActive: !(f.elements.hidden && f.elements.hidden.checked)
     };
 
     /* Kod digitalnog proizvoda lager se ne upisuje — zaliha mu je broj
@@ -287,6 +294,9 @@ window.CW = window.CW || {};
   document.addEventListener('change', function (ev) {
     if (ev.target && ev.target.name === 'kind' && CW.admin._syncKind) {
       CW.admin._syncKind(CW.admin._editing && CW.admin._editing.id);
+    }
+    if (ev.target && ev.target.name === 'featured' && CW.admin._syncFeatured) {
+      CW.admin._syncFeatured();
     }
   });
 

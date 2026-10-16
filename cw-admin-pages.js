@@ -483,7 +483,8 @@ CW.admin = CW.admin || {};
                   '<div class="adm-row__title">' + CW.esc(p.name) + '</div>' +
                   '<div class="adm-row__meta">' + CW.esc(cat ? cat.name : 'Bez kategorije') +
                     ' · ' + CW.money(p.price) +
-                    ' · redosled ' + (p.sortOrder || 0) + '</div>' +
+                    ' · redosled ' + (p.sortOrder || 0) +
+                    (p.featuredSlot ? ' · na početnoj ' + p.featuredSlot + '.' : '') + '</div>' +
                 '</div>' +
                 A.statusPill(p.stockStatus) +
               '</a>';
@@ -531,6 +532,14 @@ CW.admin = CW.admin || {};
     }).catch(function () { /* bez kodova ostaje samo objašnjenje */ });
   };
 
+  /* Izbor mesta ima smisla samo ako je kvačica uključena. */
+  A._syncFeatured = function () {
+    var f = document.querySelector('[data-form="adm-product"]');
+    if (!f || !f.elements.featured) return;
+    var wrap = document.getElementById('adm-prod-slot-wrap');
+    if (wrap) wrap.classList.toggle('hidden', !f.elements.featured.checked);
+  };
+
   A.productEdit = function (ctx) {
     var id = ctx.params.id;
     var isNew = !id || id === 'novi';
@@ -543,7 +552,7 @@ CW.admin = CW.admin || {};
             return '<option value="' + CW.esc(c.id) + '">' + CW.esc(c.name) + '</option>';
           }).join('');
         }
-        if (isNew) { A._editing = null; A._syncKind(null); return; }
+        if (isNew) { A._editing = null; A._syncKind(null); A._syncFeatured(); return; }
         CW.api.products.get(id).then(function (p) {
           A._editing = p;
           var f = document.querySelector('[data-form="adm-product"]');
@@ -561,6 +570,10 @@ CW.admin = CW.admin || {};
           f.elements.stock.value = p.stock || 0;
           f.elements.kind.value = p.kind || 'MERCH';
           f.elements.sortOrder.value = p.sortOrder || 0;
+          f.elements.hidden.checked = p.isActive === false;
+          f.elements.featured.checked = Boolean(p.featuredSlot);
+          f.elements.featuredSlot.value = String(p.featuredSlot || 1);
+          A._syncFeatured();
           A._syncKind(p.id);
           CW.adm.setImage('adm-prod-image', p.image || '');
           var del = document.getElementById('adm-prod-delete');
@@ -648,13 +661,39 @@ CW.admin = CW.admin || {};
             '</div>' +
             /* Bez ovog polja proizvod „Na stanju" sa lagerom 0 na sajtu piše
                „Rasprodato" — sajt kupovinu dozvoljava po broju komada. */
-            /* Manji broj = bliže početku. Prva tri iz ovog redosleda stoje na
-               početnoj strani, u „Izdvajamo iz shopa". */
+            /* Dva odvojena reda: gde stoji u shopu i da li je izdvojen na
+               početnoj. Ranije je to bio jedan broj, pa se nije moglo
+               izabrati jedno bez drugog. */
+            '<div class="field mt-3">' +
+              '<label class="adm-check">' +
+                '<input type="checkbox" name="hidden" id="adm-prod-hidden"> ' +
+                '<span>Sakrij sa sajta</span>' +
+              '</label>' +
+              '<p class="t-xs mt-1">Proizvod ostaje u panelu, ali ga posetilac ne vidi nigde. ' +
+                '„U pripremi" ga NE skriva — tada se vidi sa oznakom <b>Uskoro</b>.</p>' +
+            '</div>' +
+
             '<div class="field mt-3">' +
               '<label class="field__label" for="adm-prod-order">Redosled u shopu</label>' +
               '<input class="input" id="adm-prod-order" name="sortOrder" type="number" step="1" value="0">' +
-              '<p class="t-xs mt-1">Manji broj ide napred. Prva tri sa ovog spiska ' +
-                'stoje na početnoj, u „Izdvajamo iz shopa".</p>' +
+              '<p class="t-xs mt-1">Manji broj ide napred u spisku proizvoda.</p>' +
+            '</div>' +
+
+            '<div class="field mt-3">' +
+              '<label class="adm-check">' +
+                '<input type="checkbox" name="featured" id="adm-prod-featured"> ' +
+                '<span>Prikaži na početnoj („Izdvajamo iz shopa")</span>' +
+              '</label>' +
+              '<div class="row mt-2" id="adm-prod-slot-wrap" style="gap:8px;align-items:center">' +
+                '<label class="field__label" for="adm-prod-slot" style="margin:0">Mesto</label>' +
+                '<select class="input" id="adm-prod-slot" name="featuredSlot" style="max-width:110px">' +
+                  '<option value="1">1.</option>' +
+                  '<option value="2">2.</option>' +
+                  '<option value="3">3.</option>' +
+                '</select>' +
+              '</div>' +
+              '<p class="t-xs mt-1">Na početnoj stoje tri proizvoda. Merch i digitalno ' +
+                'imaju svoja tri mesta — prekidač bira koja se polica vidi.</p>' +
             '</div>' +
             '<div class="field mt-3">' +
               '<label class="field__label" for="adm-prod-qty">Komada na lageru</label>' +

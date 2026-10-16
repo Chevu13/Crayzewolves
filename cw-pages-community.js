@@ -88,8 +88,22 @@ CW.pages.home = function () {
   var merch = CW.data.products.filter(function (p) { return (p.shop || 'merch') !== 'digital'; });
   var digital = CW.data.products.filter(function (p) { return p.shop === 'digital'; });
 
-  /* Redosled dolazi iz panela (polje „Redosled u shopu"), ne iz koda —
-     prodavac sam bira šta stoji na početnoj. */
+  /* Šta stoji na početnoj bira prodavac u panelu: kvačica „Prikaži na
+     početnoj" i mesto 1–3. Ako izabere manje od tri, polica se dopunjava
+     ostatkom po redosledu iz shopa, da na početnoj nikad ne zjapi rupa. */
+  function zaPocetnu(lista) {
+    var izabrani = lista.filter(function (p) { return p.featuredSlot; })
+      .sort(function (a, b) { return a.featuredSlot - b.featuredSlot; });
+    var ostali = lista.filter(function (p) { return !p.featuredSlot; });
+    return izabrani.concat(ostali).slice(0, 3);
+  }
+
+  /* Brojevi na prekidaču pokazuju ceo asortiman, ne samo ova tri. */
+  var merchUkupno = merch.length;
+  var digitalUkupno = digital.length;
+
+  merch = zaPocetnu(merch);
+  digital = zaPocetnu(digital);
   var events = CW.data.events.slice().sort(function (a, b) { return a.dayOffset - b.dayOffset; }).slice(0, 3);
 
   return '' +
@@ -141,7 +155,7 @@ CW.pages.home = function () {
        ne još jedan red iznad police. */
     CW.c.sectionHead({
       title: 'Izdvajamo iz shopa',
-      action: shopSwitch(merch.length, digital.length)
+      action: shopSwitch(merchUkupno, digitalUkupno)
     }) +
 
     shopPane('merch', merch, true) +
