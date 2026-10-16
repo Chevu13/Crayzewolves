@@ -52,11 +52,15 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
+/* Svaki ishod ide i u Supabase logove. Bez toga se posle ne zna zašto mejl
+   nije otišao — u pregledaču se vidi samo da nije. */
+const json = (body: unknown, status = 200) => {
+  try { console.log('[mail]', status, JSON.stringify(body)); } catch { /* bez loga */ }
+  return new Response(JSON.stringify(body), {
     status,
     headers: { ...CORS, 'Content-Type': 'application/json' }
   });
+};
 
 /* Iznosi su u najmanjoj jedinici — 149000 = 1.490 RSD. */
 function novac(minor: number, currency: string): string {
@@ -400,6 +404,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const kind = String(body.kind || 'order');
+    console.log('[mail] zahtev', kind, body.orderNumber || '');
     const s = await podesavanja();
     const sajt = s.site_url || 'https://www.wolfpack.rs/app';
     const from = MAIL_FROM || s.order_email_from || 'Wolfpack <office@wolfpack.rs>';

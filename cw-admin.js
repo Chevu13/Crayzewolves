@@ -401,7 +401,9 @@ window.CW = window.CW || {};
         CW.toast('Porudžbina je označena kao plaćena.', 'success');
         /* Tek sada baza ima dodeljene kodove — mejl ih nosi kupcu. */
         if (CW.sb && CW.sb.mail) {
-          CW.sb.mail({ kind: 'status', orderNumber: ord.order_number });
+          CW.sb.mail({ kind: 'status', orderNumber: ord.order_number }).then(function (poslat) {
+            if (!poslat) CW.toast('Naplata je upisana, ali mejl kupcu nije poslat.', 'error');
+          });
         }
         CW.router.refresh();
       }).catch(function (e) {
@@ -432,7 +434,11 @@ window.CW = window.CW || {};
         /* Kupcu ide mejl samo kad se status stvarno promenio — ispravka
            broja pošiljke nije vest zbog koje se piše. */
         if (status !== o.status && CW.sb && CW.sb.mail) {
-          CW.sb.mail({ kind: 'status', orderNumber: o.order_number });
+          /* Ako mejl ne prođe, prodavac to mora da zna odmah — inače misli
+             da je kupac obavešten, a nije. */
+          CW.sb.mail({ kind: 'status', orderNumber: o.order_number }).then(function (poslat) {
+            if (!poslat) CW.toast('Status je sačuvan, ali mejl kupcu nije poslat.', 'error');
+          });
         }
         CW.router.refresh();
       }).catch(function (e) {
