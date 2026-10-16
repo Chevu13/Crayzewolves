@@ -169,6 +169,20 @@ function stavke(o: any, items: any[]): string {
       </tr>`).join('');
 }
 
+/* Cena, popust, dostava, ukupno — isti račun u svakom mejlu, da kupac ne
+   mora da pogađa odakle razlika između cene i iznosa koji plaća. */
+function iznosi(o: any, items: any[]): string {
+  const digitalno = items.some((i: any) => i.fulfillment === 'digital') && !o.address_line;
+  return `
+        ${red('Cena', novac(o.subtotal, o.currency))}
+        ${o.discount ? red('Popust', '− ' + novac(o.discount, o.currency)) : ''}
+        ${red(
+          digitalno ? 'Isporuka' : 'Dostava' + (o.shipping_method ? ' — ' + esc(o.shipping_method) : ''),
+          o.shipping_cost ? novac(o.shipping_cost, o.currency) : 'Besplatno'
+        )}
+        ${red('Ukupno', novac(o.total, o.currency), true)}`;
+}
+
 function kutija(naslov: string, sadrzaj: string): string {
   return `
     <tr><td style="padding:20px 24px 0;">
@@ -205,13 +219,7 @@ function mejlPorudzbine(o: any, items: any[], sajt: string): { subject: string; 
     <tr><td style="padding:8px 24px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
         ${stavke(o, items)}
-        ${red('Cena', novac(o.subtotal, o.currency))}
-        ${o.discount ? red('Popust', '− ' + novac(o.discount, o.currency)) : ''}
-        ${red(
-          digitalno ? 'Isporuka' : 'Dostava' + (o.shipping_method ? ' — ' + esc(o.shipping_method) : ''),
-          o.shipping_cost ? novac(o.shipping_cost, o.currency) : 'Besplatno'
-        )}
-        ${red('Ukupno', novac(o.total, o.currency), true)}
+        ${iznosi(o, items)}
       </table>
     </td></tr>
 
@@ -237,7 +245,9 @@ function mejlPorudzbine(o: any, items: any[], sajt: string): { subject: string; 
     text:
       `Zdravo ${o.first_name},\n\nprimili smo porudzbinu ${o.order_number}.\n\n` +
       items.map((i) => `${i.quantity} x ${i.name} — ${novac(i.line_total, o.currency)}`).join('\n') +
-      `\n\nUkupno: ${novac(o.total, o.currency)}\n\n` +
+      `\n\nCena: ${novac(o.subtotal, o.currency)}` +
+      `\nDostava: ${o.shipping_cost ? novac(o.shipping_cost, o.currency) : 'besplatno'}` +
+      `\nUkupno: ${novac(o.total, o.currency)}\n\n` +
       (digitalno ? 'Kod stize na ovu adresu cim potvrdimo uplatu.\n\n' : 'Javljamo se cim posaljemo.\n\n') +
       `Wolfpack — wolfpack.rs`
   };
@@ -290,7 +300,7 @@ function mejlStatusa(o: any, items: any[], kodovi: any[], sajt: string) {
     <tr><td style="padding:20px 24px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
         ${stavke(o, items)}
-        ${red('Ukupno', novac(o.total, o.currency), true)}
+        ${iznosi(o, items)}
       </table>
     </td></tr>
 
@@ -309,6 +319,8 @@ function mejlStatusa(o: any, items: any[], kodovi: any[], sajt: string) {
       `${naslov}\n\nPorudzbina ${o.order_number}\n${STATUS_TEKST[o.status] || ''}\n` +
       (o.tracking_number && o.status === 'shipped' ? `\nBroj posiljke: ${o.tracking_number}\n` : '') +
       (kodovi.length ? `\nKodovi:\n${kodovi.map((k) => k.code).join('\n')}\n` : '') +
+      `\nCena: ${novac(o.subtotal, o.currency)}` +
+      `\nDostava: ${o.shipping_cost ? novac(o.shipping_cost, o.currency) : 'besplatno'}` +
       `\nUkupno: ${novac(o.total, o.currency)}\n\nWolfpack — wolfpack.rs`
   };
 }
