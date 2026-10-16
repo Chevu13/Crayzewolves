@@ -653,9 +653,11 @@ CW.c.productCard = function (p) {
       '<div class="product-card__meta">' + CW.esc(cat.name) + '</div>' +
       '<a href="#/proizvod/' + p.slug + '"><h3 class="product-card__title">' + CW.esc(p.name) + '</h3></a>' +
       '<div class="product-card__price-row">' +
-        (soon
-          ? '<span class="t-label" style="color:var(--color-gold)">Najava uskoro</span>'
-          : '<span class="t-price">' + CW.money(p.price) + '</span>') +
+        /* I roba u najavi ima cenu — kupac po njoj odlučuje hoće li da je
+           čeka. Ranije je pisalo samo „Najava uskoro", pa je ispadalo da
+           cena još ne postoji. */
+        '<span class="t-price">' + CW.money(p.price) + '</span>' +
+        (soon ? '<span class="t-label" style="color:var(--color-gold)">Uskoro</span>' : '') +
       '</div>' +
     '</div>' +
   '</article>';
