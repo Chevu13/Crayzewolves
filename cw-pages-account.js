@@ -214,23 +214,67 @@ CW.pages.register = function () {
 /* ==========================================================================
    FORGOT PASSWORD
    ========================================================================== */
-CW.pages.forgot = function () {
+/* ==========================================================================
+   ZABORAVLJENA LOZINKA
+   --------------------------------------------------------------------------
+   Dva koraka na istoj stranici: adresa, pa kod iz mejla i nova lozinka.
+
+   Mejl nosi i dugme i šestocifreni kod. Dugme je brže, ali zaštitni programi
+   i sandučići unapred otvaraju linkove iz poruka i tako potroše jednokratni
+   token — korisnik posle klika dobije „link je istekao" iako ga nije ni
+   otvorio. Kod ne može tako da se potroši, pa je on ovde glavni put.
+   ========================================================================== */
+CW.pages.forgot = function (ctx) {
+  var mejl = (ctx && ctx.query && ctx.query.email) || '';
+
   return '' +
   '<section class="section container container--wide">' +
     '<div class="auth-card">' +
       '<div class="text-center">' +
         '<div class="empty__icon mx-auto">' + CW.icon('mail', 26) + '</div>' +
         '<h1 class="t-h2 mt-3">Zaboravljena lozinka</h1>' +
-        '<p class="t-sm mt-2">Upiši adresu sa svog naloga i poslacemo link za promenu lozinke. Važi jedan sat.</p>' +
+        '<p class="t-sm mt-2">Upiši adresu sa svog naloga. Šaljemo ti šestocifreni kod ' +
+          'i dugme u mejlu — dovoljno je bilo šta od toga.</p>' +
       '</div>' +
 
       '<form class="stack stack-3 mt-4" data-act="forgot-form" novalidate>' +
         '<div class="field">' +
           '<label class="field__label" for="fp-email">Imejl adresa <span class="field__req">*</span></label>' +
-          '<input class="input" id="fp-email" name="email" type="email" autocomplete="email" required>' +
+          '<input class="input" id="fp-email" name="email" type="email" autocomplete="email" required ' +
+            'value="' + CW.esc(mejl) + '">' +
           '<div class="field__error hidden" data-error-for="fp-email"></div>' +
         '</div>' +
-        '<button class="btn btn--primary btn--lg btn--full" type="submit">Pošalji link</button>' +
+        '<button class="btn btn--primary btn--lg btn--full" type="submit">Pošalji kod</button>' +
+        '<div data-form-status role="status" aria-live="polite"></div>' +
+      '</form>' +
+
+      /* Drugi korak stoji sakriven dok mejl ne krene — tako korisnik ne gleda
+         polja koja još nema čime da popuni. */
+      '<form class="stack stack-3 mt-4 hidden" data-act="reset-code-form" id="fp-step2" novalidate>' +
+        '<div class="divider"><span class="divider__mark"></span></div>' +
+        '<p class="t-sm text-center">Kod stiže za nekoliko sekundi. Važi 60 minuta.</p>' +
+
+        '<div class="field">' +
+          '<label class="field__label" for="fp-code">Kod iz mejla <span class="field__req">*</span></label>' +
+          '<input class="input" id="fp-code" name="code" inputmode="numeric" autocomplete="one-time-code" ' +
+            'maxlength="8" placeholder="123456" style="letter-spacing:4px;font-size:1.1rem" required>' +
+          '<div class="field__error hidden" data-error-for="fp-code"></div>' +
+        '</div>' +
+
+        '<div class="field">' +
+          '<label class="field__label" for="fp-pass">Nova lozinka <span class="field__req">*</span></label>' +
+          '<input class="input" id="fp-pass" name="password" type="password" autocomplete="new-password" minlength="6" required>' +
+          '<div class="field__hint">Najmanje šest znakova. Duža je bolja nego komplikovana.</div>' +
+          '<div class="field__error hidden" data-error-for="fp-pass"></div>' +
+        '</div>' +
+
+        '<div class="field">' +
+          '<label class="field__label" for="fp-pass2">Ponovi lozinku <span class="field__req">*</span></label>' +
+          '<input class="input" id="fp-pass2" name="password2" type="password" autocomplete="new-password" minlength="6" required>' +
+          '<div class="field__error hidden" data-error-for="fp-pass2"></div>' +
+        '</div>' +
+
+        '<button class="btn btn--primary btn--lg btn--full" type="submit">Postavi novu lozinku</button>' +
         '<div data-form-status role="status" aria-live="polite"></div>' +
       '</form>' +
 
@@ -288,7 +332,9 @@ CW.pages.newPassword = function () {
             '<div class="mt-1">Linkovi za promenu lozinke važe jedan sat i mogu se upotrebiti jednom. ' +
             'Zatraži nov ispod.</div></div>' +
           '</div>' +
-          '<a class="btn btn--primary btn--full mt-3" href="#/nalog/zaboravljena">Zatraži nov link</a>') +
+          '<a class="btn btn--primary btn--full mt-3" href="#/nalog/zaboravljena">Zatraži nov kod</a>' +
+          '<p class="t-xs text-center mt-2">Sandučići ponekad sami otvore link iz mejla i tako ga potroše. ' +
+            'Zato u istom mejlu stoji i šestocifreni kod — njime ide sigurnije.</p>') +
 
       '<div class="divider"><span class="divider__mark"></span></div>' +
       '<p class="t-sm text-center"><a class="link-underline" href="#/nalog/prijava">Nazad na prijavu</a></p>' +

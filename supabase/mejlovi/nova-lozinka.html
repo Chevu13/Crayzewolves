@@ -1,19 +1,31 @@
 <!-- ============================================================================
      WOLFPACK — PROMENA LOZINKE
      ----------------------------------------------------------------------------
-     Supabase → Authentication → Email Templates → "Reset password"
-     Nalepi SAMO sadržaj ovog fajla u polje „Message body".
+     Supabase → Authentication → Email Templates → Reset password
+     Subject: Promena lozinke — Wolfpack
 
-     Promenljive:
-       {{ .ConfirmationURL }}   link koji otvara formu za novu lozinku
-       {{ .Email }}             adresa naloga
+     Mejl nosi DVOJE:
 
-     Link vodi na Site URL, pa Site URL MORA biti
-     https://www.wolfpack.rs/app  — vidi PROCITAJ.md.
-     ============================================================================ -->
+       1. šestocifreni kod  {{ .Token }}      ← glavni put
+       2. dugme sa linkom   {{ .ConfirmationURL }}
+
+     Zašto oba: zaštitni programi i poštanski sandučići unapred otvaraju
+     linkove iz poruka i time potroše jednokratni token — korisnik posle
+     klika dobije „link je istekao" iako ga nije ni otvorio. Kod se ne može
+     potrošiti tako, jer ga mašina ne vidi kao adresu.
+
+     Kod se upisuje na stranici #/nalog/zaboravljena, odmah ispod polja za
+     adresu. Link vodi na #/nalog/nova-lozinka.
+
+     Da link radi, u Supabase → Authentication → URL Configuration mora da
+     stoji Site URL sa /app na kraju (npr. https://www.wolfpack.rs/app).
+
+     Tabele i stilovi u atributima, bez <style> u zaglavlju: Outlook i Gmail
+     brišu zaglavlje i ne podržavaju moderan raspored.
+     ========================================================================= -->
 
 <div style="background:#F4F0E6;padding:28px 12px;font-family:Arial,Helvetica,sans-serif;color:#403829;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #DCD2BC;border-radius:4px;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E4DDCB;">
 
     <tr>
       <td style="background:#14120E;padding:22px 24px;">
@@ -23,50 +35,42 @@
     </tr>
 
     <tr>
-      <td style="padding:28px 24px 8px;">
+      <td style="padding:26px 24px 0;">
         <h1 style="margin:0 0 10px;font-size:22px;line-height:1.25;color:#171309;">Promena lozinke</h1>
         <p style="margin:0 0 18px;font-size:15px;line-height:1.65;">
-          Stigao nam je zahtev za promenu lozinke na nalogu
-          <b style="color:#171309;">{{ .Email }}</b>.
-          Klikni ispod i upiši novu.
+          Neko je zatražio novu lozinku za nalog <b>{{ .Email }}</b>.
+          Ako to nisi bio ti, ovaj mejl slobodno obriši — lozinka ostaje ista.
         </p>
       </td>
     </tr>
 
     <tr>
-      <td style="padding:0 24px 24px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td style="background:#D4A24E;border-radius:2px;">
-              <a href="{{ .ConfirmationURL }}"
-                 style="display:inline-block;padding:15px 30px;color:#14120E;font-size:15px;font-weight:bold;text-decoration:none;letter-spacing:.05em;text-transform:uppercase;">
-                Postavi novu lozinku
-              </a>
-            </td>
-          </tr>
-        </table>
+      <td style="padding:0 24px;">
+        <div style="padding:18px 16px;background:#F4F0E6;border-radius:4px;text-align:center;">
+          <div style="color:#6F654F;font-size:11px;text-transform:uppercase;letter-spacing:.14em;">Tvoj kod</div>
+          <div style="font-family:Consolas,'Courier New',monospace;font-size:34px;letter-spacing:8px;color:#171309;font-weight:bold;padding:8px 0 2px;">{{ .Token }}</div>
+          <div style="color:#6F654F;font-size:12px;">Upiši ga na sajtu, u polje ispod svoje adrese.</div>
+        </div>
       </td>
     </tr>
 
     <tr>
-      <td style="padding:0 24px 26px;">
-        <p style="margin:0 0 6px;font-size:13px;color:#6F654F;line-height:1.6;">
-          Ako dugme ne radi, prekopiraj ovu adresu u pregledač:
+      <td style="padding:20px 24px 0;text-align:center;">
+        <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#D4A24E;color:#14110C;text-decoration:none;font-weight:bold;font-size:15px;padding:13px 26px;border-radius:4px;">
+          Ili otvori stranicu za novu lozinku
+        </a>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="padding:20px 24px 26px;">
+        <p style="margin:0 0 6px;font-size:13px;color:#6F654F;line-height:1.7;">
+          Kod i link važe <b>60 minuta</b> i koriste se jednom.
+          Ako link javi da je istekao, upotrebi kod — njega sandučići ne mogu da potroše.
         </p>
-        <p style="margin:0;font-size:12px;color:#8A5714;word-break:break-all;line-height:1.5;">
+        <p style="margin:10px 0 0;font-size:12px;color:#8A5714;word-break:break-all;line-height:1.5;">
           {{ .ConfirmationURL }}
         </p>
-      </td>
-    </tr>
-
-    <tr>
-      <td style="padding:0 24px 26px;">
-        <div style="border-top:1px solid #E4DDCB;padding-top:16px;font-size:13px;color:#6F654F;line-height:1.7;">
-          Link važi <b>jedan sat</b> i može se upotrebiti <b>jednom</b>.
-          <br><br>
-          <b style="color:#171309;">Nisi ti ovo tražio?</b> Zanemari mejl —
-          lozinka ostaje ista dok se neko ne prijavi ovim linkom.
-        </div>
       </td>
     </tr>
 

@@ -202,6 +202,38 @@ window.CW = window.CW || {};
       });
     },
 
+    /**
+     * Šestocifreni kod iz mejla pretvara u sesiju.
+     *
+     * Zašto kod, a ne samo link: zaštitni programi i pregledači poštanskih
+     * sandučića unapred otvaraju linkove iz mejla i time potroše jednokratni
+     * token — korisnik onda klikne i dobije „link je istekao" iako ga niko
+     * nije koristio. Kod se ne može potrošiti tako, jer ga mašina ne vidi
+     * kao adresu.
+     */
+    verifyRecovery: function (email, token) {
+      return fetch(CFG.url + '/auth/v1/verify', {
+        method: 'POST',
+        headers: { apikey: CFG.anonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'recovery', email: String(email || '').trim(), token: String(token || '').trim() })
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          if (!r.ok) {
+            var msg = d.error_description || d.msg || d.message || '';
+            if (/expired|invalid|otp/i.test(msg)) {
+              throw new Error('Kod nije ispravan ili je istekao. Zatraži nov.');
+            }
+            if (/rate|too many/i.test(msg)) {
+              throw new Error('Previše pokušaja. Sačekaj minut pa probaj ponovo.');
+            }
+            throw new Error(msg || 'Provera koda nije uspela.');
+          }
+          if (d.access_token) writeSession(d);
+          return d;
+        });
+      });
+    },
+
     updateAuthUser: function (patch) {
       var s = sb.session();
       if (!s) return Promise.reject(new Error('Nisi prijavljen.'));

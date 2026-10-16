@@ -48,6 +48,54 @@ Za mejlove registracije i promene lozinke (njih šalje sam Supabase):
 | Confirm signup | `Potvrdi svoj nalog — Wolfpack` | [`potvrda-naloga.html`](potvrda-naloga.html) |
 | Reset password | `Promena lozinke — Wolfpack` | [`nova-lozinka.html`](nova-lozinka.html) |
 
+### Supabase → Authentication → URL Configuration
+
+Bez ovoga link iz mejla javlja `requested path is invalid`.
+
+| Polje | Vrednost |
+|---|---|
+| **Site URL** | `https://www.wolfpack.rs/app` — ceo, sa `https://` i sa `/app` |
+
+**Redirect URLs** — svaka u svoj red:
+
+```
+https://www.wolfpack.rs/app
+https://wolfpack.rs/app
+https://www.crazywolves.rs/app
+http://localhost:4321/app
+```
+
+> `/app` je obavezno: na korenu domena stoji pokazna stranica, koja nema
+> JavaScript za obradu tokena iz linka.
+
+---
+
+## 1a. PROMENA LOZINKE — KOD, NE SAMO LINK
+
+Mejl za promenu lozinke nosi **i šestocifreni kod i dugme**.
+
+Razlog: zaštitni programi i poštanski sandučići unapred otvaraju linkove iz
+poruka da provere da nisu opasni. Time potroše jednokratni token, pa
+korisnik klikne i dobije „link je istekao“ iako ga nije ni otvorio. Kod se
+tako ne može potrošiti — mašina ga ne vidi kao adresu.
+
+Tok na sajtu:
+
+```
+#/nalog/zaboravljena
+      ↓  upiše adresu → „Pošalji kod“
+      ↓  odmah ispod se otvara: kod + nova lozinka
+      ↓  kod se menja za sesiju  (POST /auth/v1/verify, type=recovery)
+      ↓  upisuje se nova lozinka (PUT /auth/v1/user)
+   prijavljen, vraćen na #/nalog
+```
+
+Dugme iz mejla i dalje radi i vodi na `#/nalog/nova-lozinka`. Ako je taj
+link već potrošen, stranica to kaže i šalje korisnika na kod.
+
+Trajanje koda se menja u **Authentication → Providers → Email → Email OTP
+Expiration** (podrazumevano 3600 s = 60 minuta, koliko piše i u mejlu).
+
 ---
 
 ## 2. ADRESE I LINKOVI ŽIVE U BAZI

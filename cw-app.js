@@ -938,12 +938,64 @@
           /* Ista poruka i kad nalog ne postoji — inace bi se kroz ovu formu
              moglo proveravati koje adrese imaju nalog kod nas. */
           formStatus(form, 'success',
-            'Ako nalog sa tom adresom postoji, link za promenu lozinke je poslat. Važi jedan sat.');
+            'Ako nalog sa tom adresom postoji, kod je poslat. Važi jedan sat.');
           CW.toast({ type: 'success', title: 'Mejl je poslat', text: 'Proveri i neželjenu poštu.' });
+
+          /* Drugi korak se otvara tek sada i pamti adresu, da je korisnik ne
+             kuca ponovo — Supabase proverava kod uz baš tu adresu. */
+          var korak2 = document.getElementById('fp-step2');
+          if (korak2) {
+            korak2.classList.remove('hidden');
+            korak2.setAttribute('data-email', fv.values.email);
+            var kod = korak2.querySelector('[name=code]');
+            if (kod) kod.focus();
+          }
         }).catch(function (err) {
           submitting(form, false);
           formStatus(form, 'error', err.message);
         });
+        break;
+      }
+
+      /* Kod iz mejla: prvo se kod menja za sesiju, pa se tom sesijom upisuje
+         nova lozinka. Dva poziva, jedan klik za korisnika. */
+      case 'reset-code-form': {
+        ev.preventDefault();
+        var rc = validate(form, {
+          code: { required: true, min: 6, requiredMsg: 'Upiši kod iz mejla' },
+          password: { required: true, min: 6 },
+          password2: { required: true, min: 6 }
+        });
+        if (!rc.ok) break;
+
+        if (rc.values.password !== rc.values.password2) {
+          formStatus(form, 'error', 'Lozinke se ne poklapaju.');
+          break;
+        }
+
+        var adresa = form.getAttribute('data-email') ||
+          ((document.querySelector('[data-act="forgot-form"] [name=email]') || {}).value || '');
+        if (!adresa) {
+          formStatus(form, 'error', 'Prvo upiši adresu i zatraži kod.');
+          break;
+        }
+
+        submitting(form, true);
+        CW.sb.auth.verifyRecovery(adresa, rc.values.code)
+          .then(function () {
+            return CW.sb.auth.updateAuthUser({ password: rc.values.password });
+          })
+          .then(function () {
+            submitting(form, false);
+            formStatus(form, 'success', 'Lozinka je promenjena. Prijavljujemo te…');
+            CW.ui.refreshHeader();
+            CW.toast({ type: 'success', title: 'Lozinka promenjena', text: 'Ubuduće se prijavljuj novom.' });
+            setTimeout(function () { CW.router.go('/nalog'); }, 900);
+          })
+          .catch(function (err) {
+            submitting(form, false);
+            formStatus(form, 'error', err.message);
+          });
         break;
       }
 
