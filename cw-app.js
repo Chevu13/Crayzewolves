@@ -1221,7 +1221,10 @@
      ostaju neiskorišćeni u adresi. To izgleda kao da link "nigde ne vodi". */
   function consumeAuthHash() {
     var hash = window.location.hash || '';
-    if (hash.indexOf('access_token=') === -1) return null;
+    /* Supabase vraća i greške kroz isti #hash (istekao ili već iskorišćen
+       link). Dotad su tiho padale, pa je izgledalo da dugme iz mejla ne
+       vodi nigde. */
+    if (hash.indexOf('access_token=') === -1 && hash.indexOf('error=') === -1) return null;
     var raw = hash.charAt(0) === '#' ? hash.slice(1) : hash;
     var params = {};
     raw.split('&').forEach(function (pair) {
@@ -1260,6 +1263,17 @@
     document.getElementById('cookie-root').innerHTML = CW.c.cookieBanner();
 
     CW.ui.bind();
+
+    if (authParams && authParams.error) {
+      var opis = /expired/i.test(authParams.error_code || authParams.error_description || '')
+        ? 'Link iz mejla je istekao ili je već iskorišćen. Upiši šestocifreni kod iz istog mejla.'
+        : 'Link iz mejla nije prihvaćen. Upiši šestocifreni kod iz istog mejla.';
+      setTimeout(function () {
+        CW.toast({ type: 'error', title: 'Link ne važi', text: opis });
+        CW.router.go('/nalog/zaboravljena');
+      }, 300);
+      authParams = null;
+    }
 
     if (authParams && CW.sb && CW.sb.enabled) {
       CW.sb.auth.establishFromCallback(authParams).then(function (res) {

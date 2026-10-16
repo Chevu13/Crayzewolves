@@ -248,11 +248,13 @@ CW.pages.forgot = function (ctx) {
         '<div data-form-status role="status" aria-live="polite"></div>' +
       '</form>' +
 
-      /* Drugi korak stoji sakriven dok mejl ne krene — tako korisnik ne gleda
-         polja koja još nema čime da popuni. */
-      '<form class="stack stack-3 mt-4 hidden" data-act="reset-code-form" id="fp-step2" novalidate>' +
+      /* Drugi korak stoji na stranici od početka: kod ume da stigne i na
+         telefon, pa korisnik koji ga već ima ne sme da traži gde da ga
+         upiše. Prazno polje nikoga ne zbunjuje, naslov sve objašnjava. */
+      '<form class="stack stack-3 mt-4" data-act="reset-code-form" id="fp-step2" novalidate>' +
         '<div class="divider"><span class="divider__mark"></span></div>' +
-        '<p class="t-sm text-center">Kod stiže za nekoliko sekundi. Važi 60 minuta.</p>' +
+        '<h2 class="t-h4 text-center">Imaš kod iz mejla?</h2>' +
+        '<p class="t-sm text-center">Upiši ga ovde zajedno sa novom lozinkom. Kod važi 60 minuta.</p>' +
 
         '<div class="field">' +
           '<label class="field__label" for="fp-code">Kod iz mejla <span class="field__req">*</span></label>' +
