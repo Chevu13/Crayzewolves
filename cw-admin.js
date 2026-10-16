@@ -388,6 +388,10 @@ window.CW = window.CW || {};
       t.disabled = true;
       CW.api.orders.update(ord.id, { payment_status: 'paid' }).then(function () {
         CW.toast('Porudžbina je označena kao plaćena.', 'success');
+        /* Tek sada baza ima dodeljene kodove — mejl ih nosi kupcu. */
+        if (CW.sb && CW.sb.mail) {
+          CW.sb.mail({ kind: 'status', orderNumber: ord.order_number });
+        }
         CW.router.refresh();
       }).catch(function (e) {
         t.disabled = false;
@@ -414,6 +418,11 @@ window.CW = window.CW || {};
       t.disabled = true;
       CW.api.orders.update(o.id, patch).then(function () {
         CW.toast('Porudžbina je sačuvana.', 'success');
+        /* Kupcu ide mejl samo kad se status stvarno promenio — ispravka
+           broja pošiljke nije vest zbog koje se piše. */
+        if (status !== o.status && CW.sb && CW.sb.mail) {
+          CW.sb.mail({ kind: 'status', orderNumber: o.order_number });
+        }
         CW.router.refresh();
       }).catch(function (e) {
         t.disabled = false;

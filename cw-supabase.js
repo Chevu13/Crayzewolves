@@ -408,6 +408,68 @@ window.CW = window.CW || {};
   };
 
   /* -------------------------------------------------------------- skladište */
+  /* Mejlovi (potvrda porudžbine, promena statusa, dobrodošlica) idu kroz
+     jednu Edge funkciju. Šalje se token prijavljenog korisnika kad ga ima —
+     funkcija po njemu zna ko zove i šta sme. Pad mejla nikad ne ruši radnju
+     zbog koje je pozvan, pa se greška samo beleži u konzoli. */
+  sb.mail = function (body) {
+    if (!sb.enabled) return Promise.resolve(false);
+    var s = sb.session();
+    var token = (s && s.access_token) ? s.access_token : CFG.anonKey;
+
+    return fetch(CFG.url + '/functions/v1/send-order-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CFG.anonKey,
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify(body || {})
+    })
+      .then(function (r) { return r.json().catch(function () { return null; }); })
+      .then(function (d) {
+        if (d && d.sent === false && d.reason && d.reason !== 'already_sent') {
+          console.warn('[CW] Mejl nije poslat (' + (body && body.kind || 'order') + '):', d.reason);
+        }
+        return Boolean(d && d.sent);
+      })
+      .catch(function (e) {
+        console.warn('[CW] Slanje mejla nije uspelo:', e && e.message);
+        return false;
+      });
+  };
+
+  /* Mejlovi (potvrda porudžbine, promena statusa, dobrodošlica) idu kroz
+     jednu Edge funkciju. Šalje se token prijavljenog korisnika kad ga ima —
+     funkcija po njemu zna ko zove i šta sme. Pad mejla nikad ne ruši radnju
+     zbog koje je pozvan, pa se greška samo beleži u konzoli. */
+  sb.mail = function (body) {
+    if (!sb.enabled) return Promise.resolve(false);
+    var s = sb.session();
+    var token = (s && s.access_token) ? s.access_token : CFG.anonKey;
+
+    return fetch(CFG.url + '/functions/v1/send-order-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: CFG.anonKey,
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify(body || {})
+    })
+      .then(function (r) { return r.json().catch(function () { return null; }); })
+      .then(function (d) {
+        if (d && d.sent === false && d.reason && d.reason !== 'already_sent') {
+          console.warn('[CW] Mejl nije poslat (' + (body && body.kind || 'order') + '):', d.reason);
+        }
+        return Boolean(d && d.sent);
+      })
+      .catch(function (e) {
+        console.warn('[CW] Slanje mejla nije uspelo:', e && e.message);
+        return false;
+      });
+  };
+
   sb.upload = function (file, folder) {
     var s = sb.session();
     if (!s) return Promise.reject(new Error('Za otpremanje je potrebna prijava.'));

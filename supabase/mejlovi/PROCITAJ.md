@@ -1,193 +1,142 @@
-# Mejlovi — pošiljalac, šabloni i link koji radi
+# Mejlovi sajta
 
-Tri stvari, tim redom. Prva je obavezna — bez nje link iz mejla ne radi.
+Sve ide sa **office@wolfpack.rs**, preko **Resend-a**. Dva puta, jer su to
+dve različite vrste mejlova:
 
----
-
-## 1. SITE URL — zbog ovoga link javlja „requested path is invalid"
-
-Link iz mejla je vodio ovde:
-
-```
-qesosyszxnzlnmwuhbaq.supabase.co/crayzewolves.rs#access_token=...
-                                 ^^^^^^^^^^^^^^
-```
-
-Site URL je bio upisan **bez `https://`**, pa ga je Supabase shvatio kao
-putanju na svom domenu umesto kao adresu sajta. Otuda greška.
-
-**Supabase → Authentication → URL Configuration:**
-
-| Polje | Vrednost |
-|---|---|
-| **Site URL** | `https://www.wolfpack.rs/app` |
-
-Mora ceo, sa `https://`, **i sa `/app` na kraju**.
-
-Zašto `/app`: na korenu domena stoji pokazna stranica, koja nema JavaScript
-za obradu tokena. Kad Supabase nema drugu adresu, vraća korisnika baš na
-Site URL — pa ako je to koren, token stigne na stranicu koja ne ume ništa s
-njim da uradi.
-
-**Redirect URLs** — dodaj sve četiri, svaku u svoj red:
-
-```
-https://www.wolfpack.rs/app
-https://wolfpack.rs/app
-https://crayzewolves.vercel.app/app
-http://localhost:4321/app.html
-```
-
-Bez ovog spiska Supabase odbija adresu koju sajt pošalje i tiho pada nazad
-na Site URL.
-
-> Domen `wolfpack.rs` preusmerava na `www.wolfpack.rs`, zato **www**
-> verzija ide kao Site URL, a obe stoje u Redirect URLs.
+| Mejl | Ko ga šalje | Gde se menja tekst |
+|---|---|---|
+| Potvrda naloga (registracija) | Supabase Auth, preko Resend SMTP | Supabase → Authentication → Email Templates |
+| Promena lozinke | Supabase Auth, preko Resend SMTP | isto |
+| **Potvrda porudžbine** | naša Edge funkcija `send-order-email` | [`../functions/send-order-email/index.ts`](../functions/send-order-email/index.ts) |
+| **Promena statusa porudžbine** | ista funkcija (`kind: "status"`) | isto |
+| **Dobrodošlica posle prve prijave** | ista funkcija (`kind: "welcome"`) | isto |
 
 ---
 
-## 2. MEJLOVI DA STIŽU SA `info.crazywolves@gmail.com`
+## 1. ŠTA TREBA PODESITI (jednom)
 
-Sada stižu sa `noreply@mail.app.supabase.io`, jer se koristi Supabase-ov
-ugrađeni servis. On se ne može prebrendirati — mora se uključiti **svoj
-SMTP**.
+### Supabase → Edge Functions → Secrets
 
-**Supabase → Project Settings → Authentication → SMTP Settings** →
-uključi **Enable Custom SMTP**:
+| Ključ | Vrednost |
+|---|---|
+| `RESEND_API_KEY` | `re_...` — isti ključ koji stoji u Vercel-u |
+| `MAIL_FROM` | `Wolfpack <office@wolfpack.rs>` *(neobavezno)* |
+
+Ovo je jedino što funkciji treba. `SUPABASE_URL` i
+`SUPABASE_SERVICE_ROLE_KEY` Supabase dodaje sam.
+
+> Ključ iz Vercel-a ne važi ovde — Vercel i Supabase su dva odvojena
+> servera. Isti ključ, dva mesta.
+
+### Supabase → Project Settings → Authentication → SMTP
+
+Za mejlove registracije i promene lozinke (njih šalje sam Supabase):
 
 | Polje | Vrednost |
 |---|---|
-| Sender email | `info.crazywolves@gmail.com` |
+| Sender email | `office@wolfpack.rs` |
 | Sender name | `Wolfpack` |
-| Host | `smtp.gmail.com` |
+| Host | `smtp.resend.com` |
 | Port | `465` |
-| Username | `info.crazywolves@gmail.com` |
-| Password | **App Password** (16 znakova) — vidi dole |
+| Username | `resend` |
+| Password | isti `re_...` ključ |
 
-### App Password, ne obična lozinka
-
-Gmail ne prima običnu lozinku naloga sa strane servisa. Treba poseban ključ:
-
-1. Google nalog `info.crazywolves@gmail.com` → **Security**
-2. Uključi **2-Step Verification** (bez toga nema App Password)
-3. **App passwords** → Select app: *Other* → ime: `Supabase`
-4. Google ispiše 16 znakova — to ide u polje Password (bez razmaka)
-
-### Šta ovim dobijaš
-
-- mejlovi stižu sa tvoje adrese, ne sa Supabase-ove
-- nestaje ograničenje ugrađenog servisa (**2 mejla na sat**), koje je i
-  najčešći razlog zašto potvrda „ne stigne"
-
-### Ograničenje koje ostaje
-
-Gmail dozvoljava oko **500 mejlova dnevno**. Za registracije i reset lozinke
-je više nego dovoljno. Kad shop krene ozbiljno, prelazi se na svoj domen
-(`noreply@crazywolves.rs`) preko Resend-a ili sličnog — gmail.com adresa se
-kod njih ne može verifikovati, pa Gmail SMTP ostaje pravi izbor dok se to ne
-uradi.
-
----
-
-## 3. ŠABLONI NA SRPSKOM
-
-Mejlovi su sada na engleskom, Supabase-ovi podrazumevani
-(*„Confirm your email address"*, *„Reset your password"*).
-
-**Supabase → Authentication → Email Templates** — za svaki šablon promeni
-naslov i nalepi sadržaj fajla u polje **Message body**:
+### Supabase → Authentication → Email Templates
 
 | Šablon | Subject | Fajl |
 |---|---|---|
 | Confirm signup | `Potvrdi svoj nalog — Wolfpack` | [`potvrda-naloga.html`](potvrda-naloga.html) |
 | Reset password | `Promena lozinke — Wolfpack` | [`nova-lozinka.html`](nova-lozinka.html) |
 
-Šabloni su u bojama sajta, sa grbom i porukom čopora. Pisani su tabelama i
-sa stilovima u samim atributima — Outlook i Gmail brišu `<style>` iz
-zaglavlja i ne podržavaju moderan raspored.
+---
+
+## 2. ADRESE I LINKOVI ŽIVE U BAZI
+
+Funkcija ih čita iz tabele `settings`, pa se menjaju bez novog deploy-a:
+
+| Ključ | Sada | Čemu služi |
+|---|---|---|
+| `order_email_from` | `Wolfpack <office@wolfpack.rs>` | pošiljalac |
+| `order_email_to` | `office@wolfpack.rs` | skrivena kopija svake porudžbine |
+| `site_url` | `https://www.wolfpack.rs/app` | linkovi u mejlu |
+
+Promena ide kroz SQL Editor:
+
+```sql
+update public.settings set value = 'https://www.wolfpack.rs/app' where key = 'site_url';
+```
 
 ---
 
-## 4. MEJL POSLE PORUDŽBINE
-
-Ide **istim putem** — ista Gmail adresa, ista App Password. Nema drugog
-servisa i nema drugog naloga.
-
-**Supabase → Edge Functions → Deploy a new function**
-
-- ime: `send-order-email`
-- sadržaj: [`../functions/send-order-email/index.ts`](../functions/send-order-email/index.ts)
-- **isključi Verify JWT** — kupac koji poručuje nije prijavljen
-
-Pa **Edge Functions → Secrets**, dodaj:
-
-| Ključ | Vrednost |
-|---|---|
-| `SMTP_HOST` | `smtp.gmail.com` |
-| `SMTP_PORT` | `465` |
-| `SMTP_USER` | `info.crazywolves@gmail.com` |
-| `SMTP_PASS` | **ista App Password** iz odeljka 2 |
-| `SMTP_FROM` | `Wolfpack <info.crazywolves@gmail.com>` |
-
-`SUPABASE_URL` i `SUPABASE_SERVICE_ROLE_KEY` Supabase dodaje sam.
-
-### Kako radi
+## 3. KAKO RADI
 
 ```
 kupac potvrdi kasu
       ↓
-create_order upiše porudžbinu u bazu        ← ovo je gotovo i bez mejla
+create_order upiše porudžbinu u bazu        ← gotovo i bez mejla
       ↓
-sajt zove send-order-email sa brojem porudžbine
+sajt zove send-order-email  { kind: "order" }
       ↓
-funkcija pročita porudžbinu, pošalje mejl kupcu + kopiju tebi
+funkcija pročita porudžbinu, pošalje mejl kupcu + kopiju na office@
       ↓
 upiše email_sent_at
 ```
 
-**Pad mejla ne ruši prodaju.** Porudžbina je u bazi pre nego što se mejl
-uopšte pošalje; ako Gmail ne odgovori, u panelu je i dalje sve, samo
-`email_sent_at` ostane prazan.
+```
+admin u panelu menja status (ili klikne „Označi kao plaćeno")
+      ↓
+panel zove send-order-email  { kind: "status" }   sa svojim tokenom
+      ↓
+funkcija proverava da je pozivalac admin
+      ↓
+mejl kupcu: novo stanje, broj pošiljke, a kod plaćene digitalne
+porudžbine i Steam kodovi
+```
 
-**Jedan mejl po porudžbini.** Funkcija proverava `email_sent_at`, pa
-osvežavanje stranice potvrde ne šalje drugi mejl — a i štiti od toga da
-neko gađa funkciju tuđim brojevima porudžbina.
+```
+korisnik se prvi put prijavi
+      ↓
+sajt zove send-order-email  { kind: "welcome" }   sa svojim tokenom
+      ↓
+funkcija šalje pozdravni mejl i upiše customers.welcomed_at
+```
 
-**Adresa primaoca se ne prima spolja** nego čita iz same porudžbine.
+**Pad mejla ne ruši ništa.** Porudžbina je u bazi pre nego što mejl krene;
+ako Resend ne odgovori, u panelu je sve, samo `email_sent_at` ostane prazan.
 
-### Provera
+**Jedan mejl po porudžbini.** Potvrda proverava `email_sent_at`, dobrodošlica
+`welcomed_at` — osvežavanje stranice ne šalje drugi mejl.
 
-1. Naruči nešto na `https://www.wolfpack.rs/app`
-2. Mejl stigne na adresu koju si upisao na kasi, sa
-   `info.crazywolves@gmail.com`
-3. Kopija stigne na `info.crazywolves@gmail.com`
-4. U bazi: `select order_number, email_sent_at from orders order by created_at desc limit 1;`
-   — `email_sent_at` mora biti popunjen
+**Ko sme šta:**
 
-Ako `email_sent_at` ostane prazan, otvori konzolu pregledača na stranici
-potvrde — tamo piše tačan razlog (`[CW] Mejl potvrde nije poslat: ...`).
-
----
-
-## Provera da sve radi
-
-1. Otvori `https://www.wolfpack.rs/app#/nalog/zaboravljena`
-2. Upiši svoju adresu → **Pošalji link**
-3. Mejl treba da stigne **sa `info.crazywolves@gmail.com`**, na srpskom
-4. Klik na dugme otvara `.../app#/nalog/nova-lozinka` sa formom za novu
-   lozinku — **ne** Supabase grešku
-5. Upiši novu lozinku dvaput → „Lozinka je promenjena"
-6. Odjavi se i prijavi novom lozinkom
-
-Ako korak 4 i dalje javlja `requested path is invalid`, Site URL nije
-sačuvan — vrati se na odeljak 1.
+| Vrsta | Ko može da pozove |
+|---|---|
+| `order` | bilo ko, ali samo jednom po porudžbini i na adresu **iz** porudžbine |
+| `status` | samo prijavljen admin |
+| `welcome` | sam korisnik, za svoju adresu |
 
 ---
 
-## Adresa u samom sajtu
+## 4. PROVERA
 
-`info.crazywolves@gmail.com` je upisana i u sajt (podnožje pokazne stranice,
-strukturirani podaci za pretragu, podrazumevana podešavanja panela).
+1. **Registracija:** napravi nalog → stiže „Potvrdi svoj nalog" sa
+   office@wolfpack.rs. Posle prve prijave stiže i „Dobro došao u čopor".
+2. **Kupovina:** poruči nešto → stiže „Porudžbina CW-… je primljena", a
+   kopija na office@wolfpack.rs.
+3. **Status:** u panelu prebaci na Potvrđena → kupcu stiže „Porudžbina je
+   potvrđena". Kod digitalne: „Označi kao plaćeno" → mejl nosi Steam kod.
 
-Za bazu koja **već postoji** seed ne menja postojeće redove, pa pokreni
-[`../../supabase-dopuna-04.sql`](../../supabase-dopuna-04.sql).
+Ako mejl ne stigne:
+
+```sql
+select order_number, email, email_sent_at from public.orders
+ order by created_at desc limit 5;
+```
+
+- `email_sent_at` prazan → mejl nije otišao. Razlog piše u
+  **Supabase → Edge Functions → send-order-email → Logs**, i u konzoli
+  pregledača (`[CW] Mejl nije poslat: …`).
+- Najčešći razlog: `RESEND_API_KEY nije podešen` — tajna nije dodata u
+  Supabase (vidi odeljak 1).
+- `resend 403` → domen `wolfpack.rs` nije verifikovan u Resend-u, ili se
+  šalje sa adrese van tog domena.

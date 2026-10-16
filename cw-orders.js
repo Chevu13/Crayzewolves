@@ -157,29 +157,8 @@ window.CW = window.CW || {};
      * stranice potvrde, dupli klik — ne pravi drugi mejl.
      */
     sendEmail: function (orderNumber) {
-      if (!orderNumber || !CW.sb || !CW.sb.enabled) return Promise.resolve(false);
-      return fetch(CW.sb.config.url + '/functions/v1/send-order-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: CW.sb.config.anonKey,
-          Authorization: 'Bearer ' + CW.sb.config.anonKey
-        },
-        body: JSON.stringify({ orderNumber: orderNumber })
-      })
-        .then(function (r) { return r.json().catch(function () { return null; }); })
-        .then(function (d) {
-          if (d && d.sent === false && d.reason) {
-            /* Ne prikazuje se kupcu — porudzbina je prosla. Stoji u konzoli
-               da se vidi zasto mejl nije otisao. */
-            console.warn('[CW] Mejl potvrde nije poslat:', d.reason);
-          }
-          return Boolean(d && d.sent);
-        })
-        .catch(function (e) {
-          console.warn('[CW] Mejl potvrde nije poslat:', e && e.message);
-          return false;
-        });
+      if (!orderNumber || !CW.sb || !CW.sb.mail) return Promise.resolve(false);
+      return CW.sb.mail({ kind: 'order', orderNumber: orderNumber });
     }
   };
 })();

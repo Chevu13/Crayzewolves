@@ -872,6 +872,9 @@
         CW.sb.auth.signIn(lv.values.email, lv.values.password).then(function () {
           submitting(form, false);
           CW.ui.refreshHeader();
+          /* Pozdravni mejl ide jednom po nalogu — funkcija pamti kad je
+             poslat, pa ovaj poziv kod starih kupaca ništa ne radi. */
+          CW.sb.mail({ kind: 'welcome' });
           CW.toast({ type: 'success', title: 'Dobro došao nazad', text: 'Prijavljen kao ' + lv.values.email });
           CW.router.go(form.getAttribute('data-next') || '/account');
         }).catch(function (e) {
@@ -1220,6 +1223,8 @@
           CW.router.go('/nalog/nova-lozinka');
           return;
         }
+
+        CW.sb.mail({ kind: 'welcome' });
 
         CW.toast({
           type: 'success',
