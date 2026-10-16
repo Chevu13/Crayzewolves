@@ -88,11 +88,8 @@ CW.pages.home = function () {
   var merch = CW.data.products.filter(function (p) { return (p.shop || 'merch') !== 'digital'; });
   var digital = CW.data.products.filter(function (p) { return p.shop === 'digital'; });
 
-  /* Šolja ide prva među fizičkim: ona nosi brend i jedina ima svoj baner. */
-  var mug = CW.product('solja-zvanicna');
-  if (mug) {
-    merch = [mug].concat(merch.filter(function (p) { return p.id !== mug.id; }));
-  }
+  /* Redosled dolazi iz panela (polje „Redosled u shopu"), ne iz koda —
+     prodavac sam bira šta stoji na početnoj. */
   var events = CW.data.events.slice().sort(function (a, b) { return a.dayOffset - b.dayOffset; }).slice(0, 3);
 
   return '' +

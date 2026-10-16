@@ -259,6 +259,7 @@ window.CW = window.CW || {};
       categoryId: f.elements.categoryId.value,
       stockStatus: f.elements.stockStatus.value,
       kind: f.elements.kind ? f.elements.kind.value : 'MERCH',
+      sortOrder: parseInt(f.elements.sortOrder.value, 10) || 0,
       image: f.elements.image.value || null,
       isActive: f.elements.stockStatus.value !== 'COMING_SOON'
     };

@@ -482,7 +482,8 @@ CW.admin = CW.admin || {};
                 '<div class="adm-row__main">' +
                   '<div class="adm-row__title">' + CW.esc(p.name) + '</div>' +
                   '<div class="adm-row__meta">' + CW.esc(cat ? cat.name : 'Bez kategorije') +
-                    ' · ' + CW.money(p.price) + '</div>' +
+                    ' · ' + CW.money(p.price) +
+                    ' · redosled ' + (p.sortOrder || 0) + '</div>' +
                 '</div>' +
                 A.statusPill(p.stockStatus) +
               '</a>';
@@ -559,6 +560,7 @@ CW.admin = CW.admin || {};
           f.elements.stockStatus.value = p.stockStatus || 'IN_STOCK';
           f.elements.stock.value = p.stock || 0;
           f.elements.kind.value = p.kind || 'MERCH';
+          f.elements.sortOrder.value = p.sortOrder || 0;
           A._syncKind(p.id);
           CW.adm.setImage('adm-prod-image', p.image || '');
           var del = document.getElementById('adm-prod-delete');
@@ -646,6 +648,14 @@ CW.admin = CW.admin || {};
             '</div>' +
             /* Bez ovog polja proizvod „Na stanju" sa lagerom 0 na sajtu piše
                „Rasprodato" — sajt kupovinu dozvoljava po broju komada. */
+            /* Manji broj = bliže početku. Prva tri iz ovog redosleda stoje na
+               početnoj strani, u „Izdvajamo iz shopa". */
+            '<div class="field mt-3">' +
+              '<label class="field__label" for="adm-prod-order">Redosled u shopu</label>' +
+              '<input class="input" id="adm-prod-order" name="sortOrder" type="number" step="1" value="0">' +
+              '<p class="t-xs mt-1">Manji broj ide napred. Prva tri sa ovog spiska ' +
+                'stoje na početnoj, u „Izdvajamo iz shopa".</p>' +
+            '</div>' +
             '<div class="field mt-3">' +
               '<label class="field__label" for="adm-prod-qty">Komada na lageru</label>' +
               '<input class="input" id="adm-prod-qty" name="stock" type="number" min="0" step="1">' +

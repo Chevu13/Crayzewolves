@@ -92,6 +92,7 @@ window.CW = window.CW || {};
       /* Panel radi sa jednim poljem „vrsta", baza sa tri kolone. */
       kind: r.shop === 'digital' ? 'DIGITAL' : 'MERCH',
       stock: r.stock || 0,
+      sortOrder: r.sort_order || 0,
       isActive: r.is_active !== false,
       updatedAt: r.updated_at
     };
@@ -120,6 +121,7 @@ window.CW = window.CW || {};
       out.track_stock = !dig;
     }
     if (p.isActive !== undefined)     out.is_active = Boolean(p.isActive);
+    if (p.sortOrder !== undefined)    out.sort_order = p.sortOrder;
     return out;
   }
 
