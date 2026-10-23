@@ -500,6 +500,9 @@ CW.pages.news = function (ctx) {
   var skeleton = '<div class="grid grid--2">' + CW.times(4, CW.c.newsSkeleton) + '</div>';
 
   var content = function () {
+    if (!pageItems.length && featured) {
+      return '<div class="mb-4">' + CW.c.newsFeature(featured) + '</div>';
+    }
     if (!pageItems.length) {
       return CW.c.empty({
         icon: 'search',
@@ -508,7 +511,13 @@ CW.pages.news = function (ctx) {
         actions: '<a class="btn btn--secondary" href="#/vesti">Poništi filtere</a>'
       });
     }
-    return '<div class="grid grid--2">' + pageItems.map(CW.c.newsCard).join('') + '</div>' +
+    /* Istaknuta objava ide velika, na vrh, i samo na prvoj strani. Ranije je
+       bila izvučena iz spiska ali nigde iscrtana — pa je označavanje objave
+       za glavnu vest izgledalo kao da je briše sa bloga. */
+    return (featured && page === 1
+        ? '<div class="mb-4">' + CW.c.newsFeature(featured) + '</div>'
+        : '') +
+      '<div class="grid grid--2">' + pageItems.map(CW.c.newsCard).join('') + '</div>' +
       (totalPages > 1 ? '<div class="mt-5">' + CW.c.pagination(page, totalPages) + '</div>' : '');
   };
 
@@ -544,8 +553,10 @@ CW.pages.news = function (ctx) {
         '</div>' +
 
         '<div class="row row--between mb-3">' +
-          '<span class="toolbar__count">' + list.length + ' ' +
-            CW.plural(list.length, 'objava', 'objave', 'objava') + '</span>' +
+          /* I istaknuta se broji — ona je objava kao i svaka druga, samo
+             stoji izdvojeno. */
+          '<span class="toolbar__count">' + (list.length + (featured ? 1 : 0)) + ' ' +
+            CW.plural(list.length + (featured ? 1 : 0), 'objava', 'objave', 'objava') + '</span>' +
         '</div>' +
 
         '<div data-loading-key="news" aria-busy="' + (CW.loaded.news ? 'false' : 'true') + '">' +

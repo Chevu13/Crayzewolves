@@ -418,8 +418,10 @@ CW.admin = CW.admin || {};
             '</div>' +
 
             '<label class="adm-check mt-3">' +
-              '<input type="checkbox" name="isFeatured"> <span>Istaknuto na sajtu</span>' +
+              '<input type="checkbox" name="isFeatured"> <span>Glavna vest</span>' +
             '</label>' +
+            '<p class="t-xs mt-1">Stoji velika na vrhu bloga i prva na početnoj. ' +
+              'Glavna vest je samo jedna — nova skida staru.</p>' +
           '</div>' +
 
           '<div class="adm-panel mt-3">' +
