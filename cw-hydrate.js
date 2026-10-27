@@ -153,6 +153,7 @@ window.CW = window.CW || {};
             dayOffset: daysAgo(p.published_at),
             readMin: p.read_min || Math.max(1, Math.round(words(p.content) / 200)),
             featured: Boolean(p.is_featured),
+            inHero: Boolean(p.in_hero),
             trending: false,
             image: resolveImage(p.image, p.image_alt, 1200, 800),
             imageMobile: resolveImage(p.image_mobile, p.image_mobile_alt, 1080, 1920),

@@ -77,6 +77,59 @@ function shopPane(kind, list, active) {
 }
 
 /* ==========================================================================
+   GLAVNI BANER
+   --------------------------------------------------------------------------
+   Dve verzije vrha početne: slajder označenih objava kad ih ima, inače
+   statična slika sa sloganom. Traka poverenja (dostava, povraćaj) stoji
+   ispod u oba slučaja — kupca to zanima pre svega ostalog.
+   ========================================================================== */
+function heroMeta() {
+  return '<div class="home-hero__meta">' +
+    '<div class="home-hero__stat"><div class="t-stat">3–5</div>' +
+      '<div class="t-label mt-1">radnih dana</div></div>' +
+    '<div class="home-hero__stat"><div class="t-stat">' + CW.money(CW.shopConfig.freeShippingThreshold) + '</div>' +
+      '<div class="t-label mt-1">besplatna dostava preko</div></div>' +
+    '<div class="home-hero__stat"><div class="t-stat">14</div>' +
+      '<div class="t-label mt-1">dana za povraćaj</div></div>' +
+    '<div class="home-hero__stat"><div class="t-stat">850+</div>' +
+      '<div class="t-label mt-1">članova zajednice</div></div>' +
+  '</div>';
+}
+
+function heroSlajder(posts) {
+  return '<section class="hero home-hero home-hero--slider">' +
+    CW.c.postSlider(posts, { tall: true, eager: true }) +
+    '<div class="container container--wide">' + heroMeta() + '</div>' +
+  '</section>';
+}
+
+function heroStatic() {
+  return '<section class="hero home-hero">' +
+    '<div class="home-hero__bg">' +
+      CW.img('banner-nova-era', { ratio: '21 / 9', eager: true, fit: 'cover', ph: 'WOLFPACK' }) +
+      '<div class="home-hero__scrim"></div>' +
+    '</div>' +
+
+    '<div class="container container--wide home-hero__content">' +
+      '<div class="home-hero__copy">' +
+        '<div class="t-eyebrow">' + CW.esc(CW.brand.positioningSr) + '</div>' +
+        '<h1 class="home-hero__title mt-2">Lov se<br>nikad ne<br><em>završava.</em></h1>' +
+        '<p class="t-lead home-hero__lede">Zvanična Wolfpack oprema.</p>' +
+
+        /* Shop je primarno dugme; Discord ostaje, ali kao sporedno —
+           sajt prvo prodaje, pa poziva u zajednicu. */
+        '<div class="home-hero__actions">' +
+          '<a class="btn btn--primary btn--lg" href="#/shop">' + CW.icon('tag', 18) + 'U shop</a>' +
+          '<a class="btn btn--secondary btn--lg" href="' + DISCORD() + '">' + CW.icon('discord', 18) + 'Discord</a>' +
+        '</div>' +
+      '</div>' +
+
+      heroMeta() +
+    '</div>' +
+  '</section>';
+}
+
+/* ==========================================================================
    POČETNA
    ========================================================================== */
 CW.pages.home = function () {
@@ -102,50 +155,24 @@ CW.pages.home = function () {
   var merchUkupno = merch.length;
   var digitalUkupno = digital.length;
 
+  /* Glavni baner: objave koje je prodavac označio kvačicom „Na glavnom
+     baneru". Ako nijedna nije označena, ostaje stari statični hero. */
+  var heroPosts = news.filter(function (n) { return n.inHero && n.image; });
+  /* Dok nijedna nije označena, baner nosi glavnu vest — gore uvek stoji ono
+     što je prodavac izdvojio, a ne prazna stara slika. */
+  if (!heroPosts.length && featured && featured.image) heroPosts = [featured];
+
   merch = zaPocetnu(merch);
   digital = zaPocetnu(digital);
   var events = CW.data.events.slice().sort(function (a, b) { return a.dayOffset - b.dayOffset; }).slice(0, 3);
 
   return '' +
   /* ---------- HERO ----------
-     Preko cele širine: fotografija ide iza teksta, ne pored njega. Raniji
-     raspored je stavljao naslov levo, a lockup baner desno — pa se ime
-     WOLFPACK pojavljivalo dvaput, a široka slika stisnuta u pola
-     stupca ispadala sitna na monitoru. */
-  '<section class="hero home-hero">' +
-    '<div class="home-hero__bg">' +
-      CW.img('banner-nova-era', { ratio: '21 / 9', eager: true, fit: 'cover', ph: 'WOLFPACK' }) +
-      '<div class="home-hero__scrim"></div>' +
-    '</div>' +
-
-    '<div class="container container--wide home-hero__content">' +
-      '<div class="home-hero__copy">' +
-        '<div class="t-eyebrow">' + CW.esc(CW.brand.positioningSr) + '</div>' +
-        '<h1 class="home-hero__title mt-2">Lov se<br>nikad ne<br><em>završava.</em></h1>' +
-        '<p class="t-lead home-hero__lede">Zvanična Wolfpack oprema.</p>' +
-
-        /* Shop je primarno dugme; Discord ostaje, ali kao sporedno —
-           sajt prvo prodaje, pa poziva u zajednicu. */
-        '<div class="home-hero__actions">' +
-          '<a class="btn btn--primary btn--lg" href="#/shop">' + CW.icon('tag', 18) + 'U shop</a>' +
-          '<a class="btn btn--secondary btn--lg" href="' + DISCORD() + '">' + CW.icon('discord', 18) + 'Discord</a>' +
-        '</div>' +
-      '</div>' +
-
-      /* Traka poverenja umesto brojeva zajednice: kupca zanima dostava i
-         povraćaj, a ne koliko nas je na Discordu. */
-      '<div class="home-hero__meta">' +
-        '<div class="home-hero__stat"><div class="t-stat">3–5</div>' +
-          '<div class="t-label mt-1">radnih dana</div></div>' +
-        '<div class="home-hero__stat"><div class="t-stat">' + CW.money(CW.shopConfig.freeShippingThreshold) + '</div>' +
-          '<div class="t-label mt-1">besplatna dostava preko</div></div>' +
-        '<div class="home-hero__stat"><div class="t-stat">14</div>' +
-          '<div class="t-label mt-1">dana za povraćaj</div></div>' +
-        '<div class="home-hero__stat"><div class="t-stat">850+</div>' +
-          '<div class="t-label mt-1">članova zajednice</div></div>' +
-      '</div>' +
-    '</div>' +
-  '</section>' +
+     Kad ima označenih objava, vrh početne je njihov slajder: baner objave,
+     njen naslov i klik pravo na članak. Statični hero sa natpisom „Lov se
+     nikad ne završava" ostaje samo kao rezerva — preko tuđeg banera taj
+     natpis bi se sudarao sa naslovom objave. */
+  (heroPosts.length ? heroSlajder(heroPosts) : heroStatic()) +
 
   /* ---------- SHOP ----------
      Prodaja je glavni posao sajta, pa ide odmah ispod heroja. Ranije je
@@ -188,6 +215,20 @@ CW.pages.home = function () {
   /* ---------- SARADNJA ----------
      Jedan partner, pa ide u punom formatu umesto u mrežu kartica. */
   (function () {
+    /* Saradnje su obične objave u rubrici „Partneri" — njihovi baneri se
+       ovde listaju, a klik vodi na tu objavu. Statični partner ispod
+       ostaje za slučaj da takve objave još nema. */
+    var saradnje = news.filter(function (n) { return n.categoryId === 'partneri' && n.image; });
+    if (saradnje.length) {
+      return '<section class="section container container--wide">' +
+        CW.c.sectionHead({
+          title: 'Saradnja',
+          action: '<a class="btn btn--quiet" href="#/partneri">Svi partneri ' + CW.icon('arrowR', 15) + '</a>'
+        }) +
+        CW.c.postSlider(saradnje, { eyebrow: 'Saradnja' }) +
+      '</section>';
+    }
+
     var p = CW.data.partners[0];
     if (!p) return '';
     return '<section class="section container container--wide">' +

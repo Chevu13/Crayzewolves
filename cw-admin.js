@@ -179,6 +179,7 @@ window.CW = window.CW || {};
       image: f.elements.image.value || null,
       imageMobile: f.elements.imageMobile.value || null,
       isFeatured: f.elements.isFeatured.checked,
+      inHero: f.elements.inHero.checked,
       tags: f.elements.tags.value.split(',').map(function (t) { return t.trim(); }).filter(Boolean)
     };
   }

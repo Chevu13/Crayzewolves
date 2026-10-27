@@ -47,6 +47,7 @@ window.CW = window.CW || {};
       categoryId: r.category_id || '',
       status: (r.status || 'draft').toUpperCase(),
       isFeatured: Boolean(r.is_featured),
+      inHero: Boolean(r.in_hero),
       tags: r.tags || [],
       author: r.author || '',
       readMin: r.read_min || null,
@@ -68,6 +69,7 @@ window.CW = window.CW || {};
     if (p.categoryId !== undefined) out.category_id = p.categoryId || null;
     if (p.status !== undefined)     out.status = String(p.status).toLowerCase();
     if (p.isFeatured !== undefined) out.is_featured = Boolean(p.isFeatured);
+    if (p.inHero !== undefined)     out.in_hero = Boolean(p.inHero);
     if (p.tags !== undefined)       out.tags = p.tags || [];
     if (p.publishedAt !== undefined) out.published_at = p.publishedAt || null;
     return out;

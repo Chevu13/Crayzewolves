@@ -316,7 +316,7 @@ CW.admin = CW.admin || {};
       if (isNew) {
         fillForm({
           title: '', excerpt: '', content: '', image: '', imageMobile: '',
-          categoryId: '', tags: [], status: 'DRAFT', isFeatured: false
+          categoryId: '', tags: [], status: 'DRAFT', isFeatured: false, inHero: false
         });
         return;
       }
@@ -337,6 +337,7 @@ CW.admin = CW.admin || {};
       f.elements.status.value = p.status || 'DRAFT';
       f.elements.tags.value = (p.tags || []).join(', ');
       f.elements.isFeatured.checked = Boolean(p.isFeatured);
+      f.elements.inHero.checked = Boolean(p.inHero);
       CW.adm.setImage('adm-post-image', p.image || '');
       CW.adm.setImage('adm-post-image-mobile', p.imageMobile || '');
       updatePreview();
@@ -422,6 +423,12 @@ CW.admin = CW.admin || {};
             '</label>' +
             '<p class="t-xs mt-1">Stoji velika na vrhu bloga i prva na početnoj. ' +
               'Glavna vest je samo jedna — nova skida staru.</p>' +
+
+            '<label class="adm-check mt-3">' +
+              '<input type="checkbox" name="inHero"> <span>Na glavnom baneru</span>' +
+            '</label>' +
+            '<p class="t-xs mt-1">Objava ulazi u veliki slajder na vrhu početne strane — ' +
+              'vidi se njen baner, naslov i dugme ka objavi. Može ih biti više, smenjuju se.</p>' +
           '</div>' +
 
           '<div class="adm-panel mt-3">' +

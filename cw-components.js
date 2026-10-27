@@ -720,6 +720,107 @@ CW.c.newsFeature = function (n) {
   '</a>';
 };
 
+/* ==========================================================================
+   SLAJDER OBJAVA — glavni baner i saradnje
+   --------------------------------------------------------------------------
+   Iste objave koje prodavac piše u panelu, samo velike: baner objave preko
+   cele širine, naslov preko njega, klik vodi na članak. Traka se pomera
+   CSS-om (scroll-snap), pa prevlačenje prstom radi i bez JS-a — JS pali samo
+   tačkice, strelice i automatsku smenu.
+   ========================================================================== */
+CW.c.postSlider = function (posts, opts) {
+  opts = opts || {};
+  /* Bez banera nema šta da se prikaže preko cele širine. */
+  var list = (posts || []).filter(function (n) { return n && n.image; });
+  if (!list.length) return '';
+
+  var slides = list.map(function (n, i) {
+    var cat = CW.find('newsCategories', n.categoryId) || { name: '' };
+    return '<a class="hero-slide' + (opts.tall ? ' hero-slide--tall' : '') + '" ' +
+        'href="#/vesti/' + n.id + '">' +
+      '<div class="home-hero__bg">' +
+        CW.imgPost(n, { ratio: 'auto', fit: 'cover', eager: Boolean(opts.eager) && i === 0, ph: n.title }) +
+        '<div class="home-hero__scrim"></div>' +
+      '</div>' +
+      /* Naslov ide sitno, u uglu: baneri koje prodavac šalje već imaju svoj
+         natpis, pa bi veliki naslov preko njih bio isti tekst dvaput. */
+      '<div class="container container--wide hero-slide__body">' +
+        '<div class="hero-slide__card">' +
+          '<div class="t-eyebrow t-eyebrow--gold">' + CW.esc(opts.eyebrow || cat.name) + '</div>' +
+          '<h2 class="hero-slide__title mt-1">' + CW.esc(n.title) + '</h2>' +
+          '<span class="btn btn--primary mt-3">Pročitaj ' + CW.icon('arrowR', 15) + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</a>';
+  }).join('');
+
+  CW.onMount(function () { CW.qsa('[data-slider]').forEach(sliderWire); });
+
+  return '<div class="hero-slider" data-slider>' +
+    '<div class="hero-slider__track" data-slider-track>' + slides + '</div>' +
+    (list.length > 1
+      ? '<button class="hero-slider__arrow hero-slider__arrow--prev" type="button" ' +
+          'data-slider-prev aria-label="Prethodna objava">' + CW.icon('arrowL', 18) + '</button>' +
+        '<button class="hero-slider__arrow hero-slider__arrow--next" type="button" ' +
+          'data-slider-next aria-label="Sledeća objava">' + CW.icon('arrowR', 18) + '</button>' +
+        '<div class="hero-slider__dots">' +
+          list.map(function (n, i) {
+            return '<button class="hero-slider__dot' + (i ? '' : ' is-on') + '" type="button" ' +
+              'data-slider-dot aria-label="' + CW.esc(n.title) + '"></button>';
+          }).join('') +
+        '</div>'
+      : '') +
+  '</div>';
+};
+
+function sliderWire(root) {
+  /* Na početnoj stoje dva slajdera, a svaki poziva isti onMount — bez ove
+     oznake bi se drugi uvezao dvaput i dobio dva tajmera. */
+  if (root.getAttribute('data-wired')) return;
+  root.setAttribute('data-wired', '1');
+
+  var track = root.querySelector('[data-slider-track]');
+  var dots = CW.qsa('[data-slider-dot]', root);
+  var n = track ? track.children.length : 0;
+  if (!track || n < 2) return;
+
+  function idx() { return Math.round(track.scrollLeft / track.clientWidth); }
+  function go(i) {
+    track.scrollTo({ left: track.clientWidth * (((i % n) + n) % n), behavior: 'smooth' });
+  }
+
+  track.addEventListener('scroll', function () {
+    var k = idx();
+    dots.forEach(function (d, j) { d.classList.toggle('is-on', j === k); });
+  }, { passive: true });
+
+  dots.forEach(function (d, j) {
+    d.addEventListener('click', function (ev) { ev.preventDefault(); go(j); });
+  });
+  var prev = root.querySelector('[data-slider-prev]');
+  var next = root.querySelector('[data-slider-next]');
+  if (prev) prev.addEventListener('click', function () { go(idx() - 1); });
+  if (next) next.addEventListener('click', function () { go(idx() + 1); });
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  /* Smena staje dok je posetilac na baneru — da mu se slika ne izmakne
+     ispod prsta ili miša. */
+  var pauza = false;
+  ['mouseenter', 'focusin', 'touchstart'].forEach(function (ev) {
+    root.addEventListener(ev, function () { pauza = true; }, { passive: true });
+  });
+  ['mouseleave', 'focusout', 'touchend'].forEach(function (ev) {
+    root.addEventListener(ev, function () { pauza = false; }, { passive: true });
+  });
+
+  var tajmer = setInterval(function () {
+    /* Ruter menja ceo #app, pa bi tajmer inače radio nad odbačenim DOM-om. */
+    if (!document.body.contains(root)) { clearInterval(tajmer); return; }
+    if (!pauza && !document.hidden) go(idx() + 1);
+  }, 6500);
+}
+
 CW.c.newsSkeleton = function () {
   return '<div class="card"><div class="skeleton skeleton--media"></div>' +
     '<div class="card__body"><div class="skeleton skeleton--title"></div>' +
