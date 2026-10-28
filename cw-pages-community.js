@@ -158,9 +158,14 @@ CW.pages.home = function () {
   /* Glavni baner: objave koje je prodavac označio kvačicom „Na glavnom
      baneru". Ako nijedna nije označena, ostaje stari statični hero. */
   var heroPosts = news.filter(function (n) { return n.inHero && n.image; });
-  /* Dok nijedna nije označena, baner nosi glavnu vest — gore uvek stoji ono
-     što je prodavac izdvojio, a ne prazna stara slika. */
-  if (!heroPosts.length && featured && featured.image) heroPosts = [featured];
+  /* Dok nijedna nije označena, na baneru se smenjuju tri najnovije objave
+     (glavna vest prva) — tako slajder radi i pre nego što prodavac bilo šta
+     čekira, a kvačica služi da to prepiše svojim izborom. */
+  if (!heroPosts.length) {
+    heroPosts = [featured].concat(news.filter(function (n) { return n !== featured; }))
+      .filter(function (n) { return n && n.image; })
+      .slice(0, 3);
+  }
 
   merch = zaPocetnu(merch);
   digital = zaPocetnu(digital);

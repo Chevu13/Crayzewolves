@@ -93,6 +93,10 @@
   -ms-overflow-style: none;
 }
 .hero-slider__track::-webkit-scrollbar { display: none; }
+.hero-slider__track { cursor: grab; }
+/* Dok se vuče, lepljenje bi se otimalo o ruku. */
+.hero-slider__track.is-dragging { scroll-snap-type: none; cursor: grabbing; }
+.hero-slider__track.is-dragging .hero-slide { pointer-events: none; }
 
 /* Visina slajda prati oblik banera (12:5), da se slika koju je prodavac
    napravio ne seče po vrhu i dnu. */

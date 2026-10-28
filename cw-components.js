@@ -804,14 +804,25 @@ function sliderWire(root) {
   if (!track || n < 2) return;
 
   function idx() { return Math.round(track.scrollLeft / track.clientWidth); }
+  function oznaci(k) {
+    dots.forEach(function (d, j) { d.classList.toggle('is-on', j === k); });
+  }
   function go(i) {
-    track.scrollTo({ left: track.clientWidth * (((i % n) + n) % n), behavior: 'smooth' });
+    var k = ((i % n) + n) % n;
+    var cilj = track.clientWidth * k;
+    track.scrollTo({ left: cilj, behavior: 'smooth' });
+    /* Tačkica se pali odmah, ne tek kad traka stigne — i ne zavisi od toga
+       da li je pregledač uopšte poslao događaj pomeranja. */
+    oznaci(k);
+    /* Meko klizanje ponegde ne prođe (podešavanje „manje pokreta", kartica
+       u pozadini). Ako se traka za pola sekunde nije pomerila, prebaci je
+       odmah — bolje skok nego strelica koja ne radi ništa. */
+    setTimeout(function () {
+      if (Math.abs(track.scrollLeft - cilj) > 4) track.scrollLeft = cilj;
+    }, 500);
   }
 
-  track.addEventListener('scroll', function () {
-    var k = idx();
-    dots.forEach(function (d, j) { d.classList.toggle('is-on', j === k); });
-  }, { passive: true });
+  track.addEventListener('scroll', function () { oznaci(idx()); }, { passive: true });
 
   dots.forEach(function (d, j) {
     d.addEventListener('click', function (ev) { ev.preventDefault(); go(j); });
@@ -820,6 +831,63 @@ function sliderWire(root) {
   var next = root.querySelector('[data-slider-next]');
   if (prev) prev.addEventListener('click', function () { go(idx() - 1); });
   if (next) next.addEventListener('click', function () { go(idx() + 1); });
+
+  /* Prst traku pomera sam (scroll-snap), ali miš ne — na računaru bi se
+     slajder pomerao samo strelicama. Zato prevlačenje mišem hvatamo ručno
+     i na kraju dovlačimo na najbliži slajd. */
+  var vuce = false, pocetakX = 0, pocetniSkrol = 0, pomeraj = 0;
+
+  track.addEventListener('pointerdown', function (ev) {
+    if (ev.pointerType === 'touch' || ev.button) return;
+    vuce = true;
+    pomeraj = 0;
+    pocetakX = ev.clientX;
+    pocetniSkrol = track.scrollLeft;
+    track.classList.add('is-dragging');
+  });
+
+  track.addEventListener('pointermove', function (ev) {
+    if (!vuce) return;
+    pomeraj = ev.clientX - pocetakX;
+    if (Math.abs(pomeraj) > 3 && track.setPointerCapture && !track.hasPointerCapture(ev.pointerId)) {
+      /* Hvatanje pokazivača nije obavezno — ako ga pregledač odbije, vuča
+         i dalje radi, samo prestaje kad miš izađe iz trake. */
+      try { track.setPointerCapture(ev.pointerId); } catch (e) { /* nema veze */ }
+    }
+    track.scrollLeft = pocetniSkrol - pomeraj;
+    ev.preventDefault();
+  });
+
+  function pusti(ev) {
+    if (!vuce) return;
+    vuce = false;
+    if (ev && track.hasPointerCapture && track.hasPointerCapture(ev.pointerId)) {
+      try { track.releasePointerCapture(ev.pointerId); } catch (e) { /* nema veze */ }
+    }
+    /* Prevučeno preko petine širine broji se kao prelazak na susedni slajd;
+       manje od toga se vraća nazad. Računa se od mesta gde je vuča počela —
+       trenutni položaj je već pomeren, pa bi se prelazak brojao dvaput. */
+    var kol = pomeraj / track.clientWidth;
+    var cilj = Math.round(pocetniSkrol / track.clientWidth) +
+      (kol < -0.2 ? 1 : kol > 0.2 ? -1 : 0);
+
+    /* Bez animacije: traka je već pod rukom stigla skoro do cilja, a meko
+       klizanje posle ručnog pomeranja pregledač ionako otkazuje — ostajalo
+       bi na pola slajda. */
+    cilj = ((cilj % n) + n) % n;
+    track.scrollLeft = track.clientWidth * cilj;
+    track.classList.remove('is-dragging');
+    oznaci(cilj);
+  }
+  track.addEventListener('pointerup', pusti);
+  track.addEventListener('pointercancel', pusti);
+
+  /* Prevlačenje ne sme da završi kao klik na objavu, a slike ne smeju da se
+     „čupaju" iz stranice. */
+  track.addEventListener('click', function (ev) {
+    if (Math.abs(pomeraj) > 6) { ev.preventDefault(); ev.stopPropagation(); }
+  }, true);
+  track.addEventListener('dragstart', function (ev) { ev.preventDefault(); });
 
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
