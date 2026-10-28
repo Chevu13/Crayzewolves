@@ -114,6 +114,27 @@
 .hero-slide--art .home-hero__scrim {
   background: linear-gradient(to top, rgba(11, 11, 10, 0.72) 0%, rgba(11, 11, 10, 0) 38%);
 }
+
+/* Zamućena kopija iste slike ispod one cele — bez nje bi sa strane stajale
+   crne pruge. Uvećana je da zamućenje ne otkrije ivice. */
+.hero-slide__blur {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+/* Sama slika mora iznad zamućene kopije: pozicionirani element inače
+   prekrije običnu sliku iz toka, pa se vidi samo mrlja. */
+.hero-slide .home-hero__bg > picture,
+.hero-slide .home-hero__bg > img { position: relative; z-index: 1; }
+.hero-slide__blur .cw-img,
+.hero-slide__blur picture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(34px) brightness(0.6) saturate(1.2);
+  transform: scale(1.15);
+}
 .hero-slide .home-hero__bg .cw-img { object-position: 50% 45%; }
 /* Na baneru objave slika JESTE poruka, pa zastor pada samo po dnu, koliko
    treba za čitljiv naslov — bočni zastor iz statičnog heroja bi je ugasio. */
@@ -129,15 +150,7 @@
   z-index: 1;
   padding-block: var(--space-7) var(--space-6);
 }
-.hero-slide__card { max-width: 46ch; }
-.hero-slide__title {
-  font-family: var(--font-display);
-  font-size: clamp(1.1rem, 2.1vw, 1.75rem);
-  line-height: 1.06;
-  text-transform: uppercase;
-  color: var(--color-offwhite);
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.8);
-}
+
 
 /* Strelice stoje u dnu, uz tačkice — sa strane bi padale tačno preko
    naslova objave. */

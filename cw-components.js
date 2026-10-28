@@ -735,7 +735,6 @@ CW.c.postSlider = function (posts, opts) {
   if (!list.length) return '';
 
   var slides = list.map(function (n, i) {
-    var cat = CW.find('newsCategories', n.categoryId) || { name: '' };
     var opcije = { ratio: 'auto', fit: 'cover', eager: Boolean(opts.eager) && i === 0, ph: n.title };
 
     /* Objava može da ima zaseban baner (širok za PC, uspravniji za telefon).
@@ -748,7 +747,16 @@ CW.c.postSlider = function (posts, opts) {
           image: n.imageBanner || n.imageBannerMobile,
           imageMobile: n.imageBannerMobile
         }, opcije)
-      : CW.imgPost(n, opcije);
+      /* Naslovna slika je 3:2, a slajd je širok — da je razvučemo preko cele
+         širine, odsekli bismo joj vrh i dno, a baš tu objave obično imaju
+         svoj natpis. Zato ide cela, a prazninu sa strane puni ista slika
+         zamućena, pa slajd i dalje izgleda popunjeno. */
+      : '<div class="hero-slide__blur" aria-hidden="true">' +
+          CW.imgPost(n, { ratio: 'auto', fit: 'cover' }) +
+        '</div>' +
+        CW.imgPost(n, {
+          ratio: 'auto', fit: 'contain', eager: opcije.eager, ph: n.title
+        });
 
     return '<a class="hero-slide' + (opts.tall ? ' hero-slide--tall' : '') +
         (baner ? ' hero-slide--art' : '') + '" ' +
@@ -756,13 +764,11 @@ CW.c.postSlider = function (posts, opts) {
       '<div class="home-hero__bg">' + slika +
         '<div class="home-hero__scrim"></div>' +
       '</div>' +
+      /* Preko slike ide samo dugme. Naslov je po pravilu već ispisan na
+         samom baneru, pa bi ga sajt pisao drugi put — i to tačno preko
+         njega. Ime objave nosi aria-label, zbog čitača ekrana. */
       '<div class="container container--wide hero-slide__body">' +
-        '<div class="hero-slide__card">' +
-          (baner ? '' :
-            '<div class="t-eyebrow t-eyebrow--gold">' + CW.esc(opts.eyebrow || cat.name) + '</div>' +
-            '<h2 class="hero-slide__title mt-1">' + CW.esc(n.title) + '</h2>') +
-          '<span class="btn btn--primary' + (baner ? '' : ' mt-3') + '">Pročitaj ' + CW.icon('arrowR', 15) + '</span>' +
-        '</div>' +
+        '<span class="btn btn--primary">Pročitaj ' + CW.icon('arrowR', 15) + '</span>' +
       '</div>' +
     '</a>';
   }).join('');

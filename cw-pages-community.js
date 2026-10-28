@@ -225,7 +225,7 @@ CW.pages.home = function () {
           title: 'Saradnja',
           action: '<a class="btn btn--quiet" href="#/partneri">Svi partneri ' + CW.icon('arrowR', 15) + '</a>'
         }) +
-        CW.c.postSlider(saradnje, { eyebrow: 'Saradnja' }) +
+        CW.c.postSlider(saradnje) +
       '</section>';
     }
 
