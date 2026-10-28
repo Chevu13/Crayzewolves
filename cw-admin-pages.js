@@ -308,6 +308,16 @@ CW.admin = CW.admin || {};
   /* ======================================================================
      OBJAVA — editor (nova i izmena dele isti obrazac)
      ====================================================================== */
+  /* Polja za baner imaju smisla samo ako objava negde ide kao baner. */
+  A._syncBaner = function () {
+    var f = document.querySelector('[data-form="adm-post"]');
+    var wrap = document.getElementById('adm-post-banner-wrap');
+    if (!f || !wrap) return;
+    var treba = (f.elements.inHero && f.elements.inHero.checked) ||
+      (f.elements.categoryId && f.elements.categoryId.value === 'partneri');
+    wrap.classList.toggle('hidden', !treba);
+  };
+
   A.postEdit = function (ctx) {
     var id = ctx.params.id;
     var isNew = !id || id === 'nova';
@@ -316,7 +326,8 @@ CW.admin = CW.admin || {};
       if (isNew) {
         fillForm({
           title: '', excerpt: '', content: '', image: '', imageMobile: '',
-          categoryId: '', tags: [], status: 'DRAFT', isFeatured: false, inHero: false
+          categoryId: '', tags: [], status: 'DRAFT', isFeatured: false, inHero: false,
+          imageBanner: '', imageBannerMobile: ''
         });
         return;
       }
@@ -340,6 +351,9 @@ CW.admin = CW.admin || {};
       f.elements.inHero.checked = Boolean(p.inHero);
       CW.adm.setImage('adm-post-image', p.image || '');
       CW.adm.setImage('adm-post-image-mobile', p.imageMobile || '');
+      CW.adm.setImage('adm-post-image-banner', p.imageBanner || '');
+      CW.adm.setImage('adm-post-image-banner-mobile', p.imageBannerMobile || '');
+      A._syncBaner();
       updatePreview();
       var del = document.getElementById('adm-post-delete');
       if (del) del.classList.toggle('hidden', isNew);
@@ -427,8 +441,9 @@ CW.admin = CW.admin || {};
             '<label class="adm-check mt-3">' +
               '<input type="checkbox" name="inHero"> <span>Na glavnom baneru</span>' +
             '</label>' +
-            '<p class="t-xs mt-1">Objava ulazi u veliki slajder na vrhu početne strane — ' +
-              'vidi se njen baner, naslov i dugme ka objavi. Može ih biti više, smenjuju se.</p>' +
+            '<p class="t-xs mt-1">Objava ulazi u veliki slajder na vrhu početne strane. ' +
+              'Može ih biti više, smenjuju se. Za baner se otvaraju dva dodatna polja ' +
+              'za sliku — PC i mobilni.</p>' +
           '</div>' +
 
           '<div class="adm-panel mt-3">' +
@@ -452,6 +467,34 @@ CW.admin = CW.admin || {};
               ratio: '9 / 16',
               recW: 1080, recH: 1920, ratioLabel: 'odnos 9:16',
               note: 'Nije obavezno — ako je ostaviš praznu, na mobilnom se prikazuje PC slika.'
+            }) +
+          '</div>' +
+
+          /* Baner traži drugačiji izrez od naslovne slike (široko umesto 3:2),
+             pa se ova dva polja otvaraju tek kad objava ide na slajder — na
+             glavni baner ili u rubriku „Partneri". */
+          '<div class="adm-panel mt-3 hidden" id="adm-post-banner-wrap">' +
+            '<span class="field__label">Baner za slajder — PC</span>' +
+            CW.adm.imagePicker({
+              id: 'adm-post-image-banner',
+              name: 'imageBanner',
+              groups: ['blog', 'brend', 'discord'],
+              ratio: '12 / 5',
+              recW: 2400, recH: 1000, ratioLabel: 'odnos 12:5',
+              note: 'Natpis drži u sredini, bar 150 px od ivica — po dnu slike stoji ' +
+                'dugme „Pročitaj". Ako je ostaviš praznu, slajder uzima naslovnu sliku ' +
+                'i preko nje ispisuje naslov.'
+            }) +
+
+            '<span class="field__label mt-3">Baner za slajder — mobilni</span>' +
+            CW.adm.imagePicker({
+              id: 'adm-post-image-banner-mobile',
+              name: 'imageBannerMobile',
+              groups: ['blog', 'brend', 'discord'],
+              ratio: '4 / 5',
+              recW: 1080, recH: 1350, ratioLabel: 'odnos 4:5',
+              note: 'Isti baner, samo uspravniji — širok baner bi na telefonu bio tanka ' +
+                'traka. Ako je ostaviš praznu, na telefonu se seče PC baner.'
             }) +
           '</div>' +
 

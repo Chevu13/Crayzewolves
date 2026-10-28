@@ -157,6 +157,8 @@ window.CW = window.CW || {};
             trending: false,
             image: resolveImage(p.image, p.image_alt, 1200, 800),
             imageMobile: resolveImage(p.image_mobile, p.image_mobile_alt, 1080, 1920),
+            imageBanner: resolveImage(p.image_banner, p.image_banner_alt, 2400, 1000),
+            imageBannerMobile: resolveImage(p.image_banner_mobile, p.image_banner_mobile_alt, 1080, 1350),
             tags: p.tags || [],
             body: toBlocks(p.content),
             relatedIds: []

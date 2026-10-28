@@ -94,18 +94,26 @@
 }
 .hero-slider__track::-webkit-scrollbar { display: none; }
 
+/* Visina slajda prati oblik banera (12:5), da se slika koju je prodavac
+   napravio ne seče po vrhu i dnu. */
 .hero-slide {
   position: relative;
   flex: 0 0 100%;
   min-width: 100%;
-  min-height: min(52vh, 460px);
+  aspect-ratio: 12 / 5;
+  min-height: 260px;
+  max-height: 520px;
   display: flex;
   align-items: flex-end;
   scroll-snap-align: start;
   overflow: hidden;
   text-decoration: none;
 }
-.hero-slide--tall { min-height: min(74vh, 720px); }
+.hero-slide--tall { max-height: 700px; }
+/* Baner nosi svoj natpis, pa zastor samo blago potamni dno zbog dugmeta. */
+.hero-slide--art .home-hero__scrim {
+  background: linear-gradient(to top, rgba(11, 11, 10, 0.72) 0%, rgba(11, 11, 10, 0) 38%);
+}
 .hero-slide .home-hero__bg .cw-img { object-position: 50% 45%; }
 /* Na baneru objave slika JESTE poruka, pa zastor pada samo po dnu, koliko
    treba za čitljiv naslov — bočni zastor iz statičnog heroja bi je ugasio. */
@@ -171,7 +179,9 @@
 
 @media (max-width: 640px) {
   .hero-slider__arrow { display: none; }
-  .hero-slide, .hero-slide--tall { min-height: min(66vh, 540px); }
+  /* Na telefonu široki baner bio bi tanka traka, pa slajd ide uspravno i
+     uzima mobilnu verziju banera (4:5). */
+  .hero-slide, .hero-slide--tall { aspect-ratio: 4 / 5; max-height: none; }
   .hero-slide__body { padding-block: var(--space-6) var(--space-6); }
 }
 

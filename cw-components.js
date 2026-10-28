@@ -736,19 +736,32 @@ CW.c.postSlider = function (posts, opts) {
 
   var slides = list.map(function (n, i) {
     var cat = CW.find('newsCategories', n.categoryId) || { name: '' };
-    return '<a class="hero-slide' + (opts.tall ? ' hero-slide--tall' : '') + '" ' +
-        'href="#/vesti/' + n.id + '">' +
-      '<div class="home-hero__bg">' +
-        CW.imgPost(n, { ratio: 'auto', fit: 'cover', eager: Boolean(opts.eager) && i === 0, ph: n.title }) +
+    var opcije = { ratio: 'auto', fit: 'cover', eager: Boolean(opts.eager) && i === 0, ph: n.title };
+
+    /* Objava može da ima zaseban baner (širok za PC, uspravniji za telefon).
+       Kad ga ima, ide ceo i bez naslova preko njega — natpis je već deo te
+       slike. Bez banera se uzima naslovna slika, pa joj dodajemo sitan
+       naslov u uglu da se zna šta je. */
+    var baner = Boolean(n.imageBanner || n.imageBannerMobile);
+    var slika = baner
+      ? CW.imgPost({
+          image: n.imageBanner || n.imageBannerMobile,
+          imageMobile: n.imageBannerMobile
+        }, opcije)
+      : CW.imgPost(n, opcije);
+
+    return '<a class="hero-slide' + (opts.tall ? ' hero-slide--tall' : '') +
+        (baner ? ' hero-slide--art' : '') + '" ' +
+        'href="#/vesti/' + n.id + '" aria-label="' + CW.esc(n.title) + '">' +
+      '<div class="home-hero__bg">' + slika +
         '<div class="home-hero__scrim"></div>' +
       '</div>' +
-      /* Naslov ide sitno, u uglu: baneri koje prodavac šalje već imaju svoj
-         natpis, pa bi veliki naslov preko njih bio isti tekst dvaput. */
       '<div class="container container--wide hero-slide__body">' +
         '<div class="hero-slide__card">' +
-          '<div class="t-eyebrow t-eyebrow--gold">' + CW.esc(opts.eyebrow || cat.name) + '</div>' +
-          '<h2 class="hero-slide__title mt-1">' + CW.esc(n.title) + '</h2>' +
-          '<span class="btn btn--primary mt-3">Pročitaj ' + CW.icon('arrowR', 15) + '</span>' +
+          (baner ? '' :
+            '<div class="t-eyebrow t-eyebrow--gold">' + CW.esc(opts.eyebrow || cat.name) + '</div>' +
+            '<h2 class="hero-slide__title mt-1">' + CW.esc(n.title) + '</h2>') +
+          '<span class="btn btn--primary' + (baner ? '' : ' mt-3') + '">Pročitaj ' + CW.icon('arrowR', 15) + '</span>' +
         '</div>' +
       '</div>' +
     '</a>';

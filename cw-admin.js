@@ -178,6 +178,8 @@ window.CW = window.CW || {};
       status: f.elements.status.value,
       image: f.elements.image.value || null,
       imageMobile: f.elements.imageMobile.value || null,
+      imageBanner: f.elements.imageBanner.value || null,
+      imageBannerMobile: f.elements.imageBannerMobile.value || null,
       isFeatured: f.elements.isFeatured.checked,
       inHero: f.elements.inHero.checked,
       tags: f.elements.tags.value.split(',').map(function (t) { return t.trim(); }).filter(Boolean)
@@ -298,6 +300,10 @@ window.CW = window.CW || {};
     }
     if (ev.target && ev.target.name === 'featured' && CW.admin._syncFeatured) {
       CW.admin._syncFeatured();
+    }
+    if (ev.target && (ev.target.name === 'inHero' || ev.target.name === 'categoryId') &&
+        CW.admin._syncBaner) {
+      CW.admin._syncBaner();
     }
   });
 

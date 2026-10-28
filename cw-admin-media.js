@@ -33,9 +33,9 @@ CW.adm = CW.adm || {};
 (function () {
   'use strict';
 
-  /* Iznad ovoga ni jedna slika na sajtu nema svrhu — najveći slot je hero
-     baner od 1983 px. Zaokruženo naviše, da ostane prostora za retinu. */
-  var MAX_SIDE = 2000;
+  /* Iznad ovoga ni jedna slika na sajtu nema svrhu — najveći slot je baner
+     slajdera (2400 px). Preko toga se smanjuje pri otpremanju. */
+  var MAX_SIDE = 2400;
 
   /* Ulazni fajl. Deset megabajta je više nego dovoljno za fotografiju sa
      telefona; preko toga je skoro sigurno greška (RAW, skener, video). */
@@ -110,7 +110,36 @@ CW.adm = CW.adm || {};
    * veličina spuštaju u koracima dok ne stane. Bolje malo mekša slika nego
    * poruka „nema više mesta" posle deset minuta pisanja objave.
    */
-  function fileToSource(file) {
+  /**
+   * Da li slika uopšte pristaje u polje za koje je birana.
+   *
+   * Panel do sada nije gledao dimenzije, pa je u široki baner umela da ode
+   * uspravna fotografija — sajt je onda seče i natpis sa slike nestane.
+   * Oblik se gleda sa 12% tolerancije (dovoljno za 16:9 u polju 12:5 ne,
+   * ali za 2400×1010 da), a širina sme da bude do 25% manja od preporuke.
+   */
+  function proveriOblik(img, pravila) {
+    if (!pravila || !pravila.w || !pravila.h) return null;
+    var w = img.naturalWidth || img.width;
+    var h = img.naturalHeight || img.height;
+    if (!w || !h) return null;
+
+    var trazeno = pravila.w / pravila.h;
+    var dobijeno = w / h;
+    var preporuka = pravila.w + ' × ' + pravila.h + ' px';
+
+    if (Math.abs(dobijeno - trazeno) / trazeno > 0.12) {
+      return 'Slika je ' + w + '×' + h + ', a ovo polje traži oblik ' +
+        preporuka + '. Iseci je na taj odnos pa probaj ponovo.';
+    }
+    if (w < pravila.w * 0.75) {
+      return 'Slika je premala (' + w + '×' + h + '). Za ovo polje treba bar ' +
+        Math.round(pravila.w * 0.75) + ' px širine, a najbolje ' + preporuka + '.';
+    }
+    return null;
+  }
+
+  function fileToSource(file, pravila) {
     if (!ALLOWED.test(file.type || '')) {
       return Promise.reject(new Error('Dozvoljene su slike: JPG, PNG, WebP, GIF ili AVIF.'));
     }
@@ -123,6 +152,9 @@ CW.adm = CW.adm || {};
     var canUpload = Boolean(CW.sb && CW.sb.enabled && CW.sb.session());
 
     return loadImage(file).then(function (img) {
+      var greska = proveriOblik(img, pravila);
+      if (greska) throw new Error(greska);
+
       if (canUpload) {
         return encode(img, MAX_SIDE, 0.86).then(function (r) {
           var named = new File([r.blob], renameFor(file, r.blob.type), { type: r.blob.type });
@@ -175,7 +207,10 @@ CW.adm = CW.adm || {};
     var libOptions = CW.adm._imageOptions(o.groups || ['blog', 'brend']);
 
     return '' +
-    '<div class="adm-media" data-media data-ratio="' + CW.esc(o.ratio || '3 / 2') + '">' +
+    /* Preporučene dimenzije idu i u atribute — po njima se odbija slika
+       pogrešnog oblika još pre otpremanja. */
+    '<div class="adm-media" data-media data-ratio="' + CW.esc(o.ratio || '3 / 2') + '"' +
+         (o.recW ? ' data-rec-w="' + o.recW + '" data-rec-h="' + o.recH + '"' : '') + '>' +
 
       '<input type="hidden" id="' + CW.esc(o.id) + '" name="' + CW.esc(o.name) + '" value="">' +
 
@@ -300,7 +335,10 @@ CW.adm = CW.adm || {};
   function handleFile(box, file) {
     if (!file) return;
     busy(box, true);
-    fileToSource(file)
+    fileToSource(file, {
+      w: Number(box.getAttribute('data-rec-w')) || 0,
+      h: Number(box.getAttribute('data-rec-h')) || 0
+    })
       .then(function (r) {
         setValue(box, r.src);
         CW.toast(

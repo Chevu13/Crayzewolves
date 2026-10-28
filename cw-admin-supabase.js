@@ -44,6 +44,8 @@ window.CW = window.CW || {};
       imageAlt: r.image_alt || '',
       imageMobile: r.image_mobile || '',
       imageMobileAlt: r.image_mobile_alt || '',
+      imageBanner: r.image_banner || '',
+      imageBannerMobile: r.image_banner_mobile || '',
       categoryId: r.category_id || '',
       status: (r.status || 'draft').toUpperCase(),
       isFeatured: Boolean(r.is_featured),
@@ -66,6 +68,8 @@ window.CW = window.CW || {};
     if (p.imageAlt !== undefined)   out.image_alt = p.imageAlt || null;
     if (p.imageMobile !== undefined)     out.image_mobile = p.imageMobile || null;
     if (p.imageMobileAlt !== undefined)  out.image_mobile_alt = p.imageMobileAlt || null;
+    if (p.imageBanner !== undefined)        out.image_banner = p.imageBanner || null;
+    if (p.imageBannerMobile !== undefined)  out.image_banner_mobile = p.imageBannerMobile || null;
     if (p.categoryId !== undefined) out.category_id = p.categoryId || null;
     if (p.status !== undefined)     out.status = String(p.status).toLowerCase();
     if (p.isFeatured !== undefined) out.is_featured = Boolean(p.isFeatured);
