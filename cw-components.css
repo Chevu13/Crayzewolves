@@ -1741,9 +1741,11 @@ input[type='range']::-moz-range-thumb {
 /* ==========================================================================
    30. TRUST / INFO STRIP (shipping, returns, secure checkout)
    ========================================================================== */
+/* Broj stavki nije svuda isti (na proizvodu ih je manje), pa se kolone
+   same slažu umesto da ostanu prazna polja. */
 .trust-strip {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 1px;
   background: var(--color-border);
   border: var(--border);

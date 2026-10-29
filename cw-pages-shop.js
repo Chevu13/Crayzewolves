@@ -559,12 +559,10 @@ CW.pages.product = function (ctx) {
       (soldout ? '<div class="alert alert--warning">' + CW.icon('bell', 18) +
         '<span>Ovaj artikal je rasprodat. Dodaj ga na listu želja i javićemo ti mejlom kad se vrati.</span></div>' : '') +
 
-      /* ---- delivery + returns ---- */
+      /* ---- proizvođač ----
+         Uslovi dostave i povraćaja se ovde više ne navode — kupac ih vidi
+         u korpi, pre plaćanja, gde su i obavezujući. */
       '<div class="spec-list">' +
-        '<div class="spec-list__row"><span class="spec-list__k">Dostava</span>' +
-          '<span class="spec-list__v">3–5 radnih dana · besplatno preko ' + CW.money(CW.shopConfig.freeShippingThreshold) + '</span></div>' +
-        '<div class="spec-list__row"><span class="spec-list__k">Povraćaj</span>' +
-          '<span class="spec-list__v">14 dana, nenošeno sa etiketom</span></div>' +
         '<div class="spec-list__row"><span class="spec-list__k">Proizvođač</span>' +
           '<span class="spec-list__v">Terrain Apparel, in-region</span></div>' +
       '</div>' +
@@ -574,8 +572,7 @@ CW.pages.product = function (ctx) {
         [
           { q: 'Detalji proizvoda', a: p.description },
           { q: 'Materijali', a: p.materials },
-          { q: 'Održavanje', a: p.care },
-          { q: 'Dostava i povraćaj', a: 'Standardna dostava 3–5 radnih dana (' + CW.money(CW.shopConfig.defaultShipping) + '), ekspresna 1–2 radna dana. Besplatno preko ' + CW.money(CW.shopConfig.freeShippingThreshold) + '. Returns accepted within 14 days on unworn items with original tags, limited drops included.' }
+          { q: 'Održavanje', a: p.care }
         ]
         /* Opis iz panela je običan tekst, a ugrađeni podaci znaju da budu
            spisak — zato se sve svodi na tekst. Prazni odeljci se izbacuju,
@@ -652,7 +649,13 @@ CW.pages.product = function (ctx) {
       '</div>' +
     '</section>' : '') +
 
-    '<section class="section--tight container container--wide">' + CW.c.trustStrip() + '</section>' +
+    /* Ista priča: iz trake poverenja na proizvodu izlaze stavke o dostavi
+       i povraćaju, ostaju podrška i poreklo robe. */
+    '<section class="section--tight container container--wide">' +
+      CW.c.trustStrip(CW.data.shopTrust.filter(function (t) {
+        return t.icon !== 'truck' && t.icon !== 'refresh';
+      })) +
+    '</section>' +
 
     (related.length ?
     '<section class="section container container--wide">' +
@@ -790,7 +793,7 @@ CW.pages.cart = function (ctx) {
         '<div class="spec-list">' +
           '<div class="spec-list__row"><span class="spec-list__k">Cena</span><span class="spec-list__v">' + CW.money(t.subtotal) + '</span></div>' +
           (t.discount ? '<div class="spec-list__row"><span class="spec-list__k">Popust</span><span class="spec-list__v t-gold">−' + CW.money(t.discount) + '</span></div>' : '') +
-          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Free' : CW.money(t.shipping)) + '</span></div>' +
+          '<div class="spec-list__row"><span class="spec-list__k">Dostava</span><span class="spec-list__v">' + (t.shipping === 0 ? 'Besplatno' : CW.money(t.shipping)) + '</span></div>' +
           '<div class="spec-list__row spec-list__row--total"><span class="spec-list__k">Ukupno</span><span class="spec-list__v">' + CW.money(t.total) + '</span></div>' +
         '</div>' +
 
@@ -803,6 +806,13 @@ CW.pages.cart = function (ctx) {
 
         '<div class="row mt-3" style="gap:8px;justify-content:center">' +
           CW.icon('lock', 15) + '<span class="t-xs">Bezbedna kasa — podatke o kartici obrađuje procesor plaćanja</span>' +
+        '</div>' +
+
+        /* Rok za povraćaj je ranije stajao na stranici proizvoda; kupac ga
+           sada vidi ovde, pre nego što plati. */
+        '<div class="row mt-2" style="gap:8px;justify-content:center">' +
+          CW.icon('refresh', 15) + '<span class="t-xs">14 dana za povraćaj — nenošeno, sa etiketom. ' +
+            '<a class="link-underline" href="#/povracaj">Uslovi</a></span>' +
         '</div>' +
       '</aside>' +
     '</div>' +
