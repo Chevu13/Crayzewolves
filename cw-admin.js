@@ -301,10 +301,6 @@ window.CW = window.CW || {};
     if (ev.target && ev.target.name === 'featured' && CW.admin._syncFeatured) {
       CW.admin._syncFeatured();
     }
-    if (ev.target && (ev.target.name === 'inHero' || ev.target.name === 'categoryId') &&
-        CW.admin._syncBaner) {
-      CW.admin._syncBaner();
-    }
   });
 
   document.addEventListener('click', function (ev) {

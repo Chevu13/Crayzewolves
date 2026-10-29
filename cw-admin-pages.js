@@ -308,16 +308,6 @@ CW.admin = CW.admin || {};
   /* ======================================================================
      OBJAVA — editor (nova i izmena dele isti obrazac)
      ====================================================================== */
-  /* Polja za baner imaju smisla samo ako objava negde ide kao baner. */
-  A._syncBaner = function () {
-    var f = document.querySelector('[data-form="adm-post"]');
-    var wrap = document.getElementById('adm-post-banner-wrap');
-    if (!f || !wrap) return;
-    var treba = (f.elements.inHero && f.elements.inHero.checked) ||
-      (f.elements.categoryId && f.elements.categoryId.value === 'partneri');
-    wrap.classList.toggle('hidden', !treba);
-  };
-
   A.postEdit = function (ctx) {
     var id = ctx.params.id;
     var isNew = !id || id === 'nova';
@@ -337,6 +327,18 @@ CW.admin = CW.admin || {};
       });
     });
 
+    /* Dok baza nema kolone za baner, čuvanje objave puca na nerazumljivoj
+       poruci iz PostgREST-a. Bolje da piše šta nedostaje, i to ovde gde se
+       slika bira. */
+    CW.onMount(function () {
+      if (!CW.sb || !CW.sb.from) return;
+      CW.sb.from('posts').select('image_banner').limit(1).get().catch(function (e) {
+        if (String(e && e.message || e).indexOf('image_banner') < 0) return;
+        var w = document.getElementById('adm-banner-upozorenje');
+        if (w) w.classList.remove('hidden');
+      });
+    });
+
     function fillForm(p) {
       A._editing = p;
       var f = document.querySelector('[data-form="adm-post"]');
@@ -353,7 +355,6 @@ CW.admin = CW.admin || {};
       CW.adm.setImage('adm-post-image-mobile', p.imageMobile || '');
       CW.adm.setImage('adm-post-image-banner', p.imageBanner || '');
       CW.adm.setImage('adm-post-image-banner-mobile', p.imageBannerMobile || '');
-      A._syncBaner();
       updatePreview();
       var del = document.getElementById('adm-post-delete');
       if (del) del.classList.toggle('hidden', isNew);
@@ -442,8 +443,8 @@ CW.admin = CW.admin || {};
               '<input type="checkbox" name="inHero"> <span>Na glavnom baneru</span>' +
             '</label>' +
             '<p class="t-xs mt-1">Objava ulazi u veliki slajder na vrhu početne strane. ' +
-              'Može ih biti više, smenjuju se. Za baner se otvaraju dva dodatna polja ' +
-              'za sliku — PC i mobilni.</p>' +
+              'Može ih biti više, smenjuju se. Dok nijedna nije označena, na slajderu ' +
+              'stoje tri najnovije objave.</p>' +
           '</div>' +
 
           '<div class="adm-panel mt-3">' +
@@ -454,7 +455,8 @@ CW.admin = CW.admin || {};
               groups: ['blog', 'brend', 'discord'],
               ratio: '3 / 2',
               recW: 1200, recH: 800, ratioLabel: 'odnos 3:2',
-              note: 'Ako nemaš svoju sliku, uzmi jedan od šablona iz biblioteke.'
+              note: 'Kartica na blogu i vrh članka — ne i slajder, on ima svoj baner ' +
+                'niže. Ako nemaš svoju sliku, uzmi jedan od šablona iz biblioteke.'
             }) +
           '</div>' +
 
@@ -470,11 +472,24 @@ CW.admin = CW.admin || {};
             }) +
           '</div>' +
 
-          /* Baner traži drugačiji izrez od naslovne slike (široko umesto 3:2),
-             pa se ova dva polja otvaraju tek kad objava ide na slajder — na
-             glavni baner ili u rubriku „Partneri". */
-          '<div class="adm-panel mt-3 hidden" id="adm-post-banner-wrap">' +
-            '<span class="field__label">Baner za slajder — PC</span>' +
+          /* Baner traži drugačiji izrez od naslovne slike (široko umesto 3:2).
+             Polja stoje na svakoj objavi, jer na slajder ume da dođe i ona
+             koja nije označena — dok nijedna nije, idu tri najnovije. */
+          '<div class="adm-panel mt-3" id="adm-post-banner-wrap">' +
+            '<div class="adm-panel__head">' +
+              '<h2 class="t-h3">Baner za slajder</h2>' +
+            '</div>' +
+            '<p class="t-xs mt-1">Slika za veliki slajder na vrhu početne strane i za ' +
+              'sekciju „Saradnja" u dnu. Drugačijeg je oblika od naslovne — široka ' +
+              'umesto 3:2 — pa se otprema zasebno. Bez nje slajder prikazuje naslovnu ' +
+              'sliku celu, sa zamućenim trakama sa strane.</p>' +
+
+            '<div class="alert alert--warning mt-2 hidden" id="adm-banner-upozorenje">' +
+              '<span>Baza još nema polja za baner — pusti <b>supabase-dopuna-13.sql</b> ' +
+              'u Supabase → SQL Editor. Dotle čuvanje objave neće proći.</span>' +
+            '</div>' +
+
+            '<span class="field__label mt-3">Baner — PC</span>' +
             CW.adm.imagePicker({
               id: 'adm-post-image-banner',
               name: 'imageBanner',
@@ -482,11 +497,10 @@ CW.admin = CW.admin || {};
               ratio: '12 / 5',
               recW: 2400, recH: 1000, ratioLabel: 'odnos 12:5',
               note: 'Natpis drži u sredini, bar 150 px od ivica — po dnu slike stoji ' +
-                'dugme „Pročitaj". Ako je ostaviš praznu, slajder uzima naslovnu sliku ' +
-                'i preko nje ispisuje naslov.'
+                'dugme „Pročitaj".'
             }) +
 
-            '<span class="field__label mt-3">Baner za slajder — mobilni</span>' +
+            '<span class="field__label mt-3">Baner — mobilni</span>' +
             CW.adm.imagePicker({
               id: 'adm-post-image-banner-mobile',
               name: 'imageBannerMobile',
