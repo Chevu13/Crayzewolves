@@ -39,15 +39,17 @@ CW.pages.shop = function () {
         '<div>' +
           CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Shop', path: '/shop' }]) +
           '<div class="t-eyebrow mt-3">Official Merchandise</div>' +
-          '<h1 class="t-hero mt-2">Nosi<br><span class="t-gold">grb.</span></h1>' +
-          '<p class="t-lead mt-3">Duksevi, majice i dresovi sa zvaničnim grbom. Šije se u regionu, po našoj specifikaciji.</p>' +
+          '<h1 class="t-hero mt-2">Wolfpack<br><span class="t-gold">Gear</span></h1>' +
+          '<p class="t-lead mt-3">Kreiran za igrače, za udobnost kroz svaki meč i stil koji prati tvoj način igre.</p>' +
           '<div class="row row--wrap mt-4" style="gap:12px">' +
             '<a class="btn btn--primary btn--lg" href="#/shop/all">Svi proizvodi</a>' +
             '<a class="btn btn--secondary btn--lg" href="#/shop/all?collection=limited">Limitirana izdanja</a>' +
           '</div>' +
         '</div>' +
-        '<div class="brackets" style="border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
-          CW.img('product-mug', { ratio: '4 / 3', ph: 'IZDVOJENA KOLEKCIJA' }) + '</div>' +
+        /* Slika u zaglavlju vodi u shop — do sada je stajala kao ukras. */
+        '<a class="brackets" href="#/shop/all" aria-label="Svi proizvodi" ' +
+          'style="display:block;border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
+          CW.img('product-mug', { ratio: '4 / 3', ph: 'IZDVOJENA KOLEKCIJA' }) + '</a>' +
       '</div>' +
     '</div>' +
   '</section>' +
