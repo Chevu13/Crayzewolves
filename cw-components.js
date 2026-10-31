@@ -835,24 +835,36 @@ function sliderWire(root) {
   /* Prst traku pomera sam (scroll-snap), ali miš ne — na računaru bi se
      slajder pomerao samo strelicama. Zato prevlačenje mišem hvatamo ručno
      i na kraju dovlačimo na najbliži slajd. */
-  var vuce = false, pocetakX = 0, pocetniSkrol = 0, pomeraj = 0;
+  /* Ruka pri kliku uvek malo odluta, pa se vuča broji tek preko ovog praga.
+     Ispod njega je klik i traka se ne dira — inače bi se baner i na običan
+     klik malo pomerio, a sam klik bio progutan kao prevlačenje. */
+  var PRAG = 10;
+  var vuce = false, povuceno = false, pocetakX = 0, pocetniSkrol = 0, pomeraj = 0;
 
   track.addEventListener('pointerdown', function (ev) {
     if (ev.pointerType === 'touch' || ev.button) return;
     vuce = true;
+    povuceno = false;
     pomeraj = 0;
     pocetakX = ev.clientX;
     pocetniSkrol = track.scrollLeft;
-    track.classList.add('is-dragging');
   });
 
   track.addEventListener('pointermove', function (ev) {
     if (!vuce) return;
     pomeraj = ev.clientX - pocetakX;
-    if (Math.abs(pomeraj) > 3 && track.setPointerCapture && !track.hasPointerCapture(ev.pointerId)) {
-      /* Hvatanje pokazivača nije obavezno — ako ga pregledač odbije, vuča
-         i dalje radi, samo prestaje kad miš izađe iz trake. */
-      try { track.setPointerCapture(ev.pointerId); } catch (e) { /* nema veze */ }
+    if (!povuceno) {
+      if (Math.abs(pomeraj) < PRAG) return;
+      povuceno = true;
+      /* Oznaka isključuje pokazivač nad slajdovima, pa se slika ne hvata kao
+         link. Zato ide tek sada: dok je stajala od pritiska tastera, klik na
+         baner uopšte nije stizao do objave. */
+      track.classList.add('is-dragging');
+      if (track.setPointerCapture) {
+        /* Hvatanje pokazivača nije obavezno — ako ga pregledač odbije, vuča
+           i dalje radi, samo prestaje kad miš izađe iz trake. */
+        try { track.setPointerCapture(ev.pointerId); } catch (e) { /* nema veze */ }
+      }
     }
     track.scrollLeft = pocetniSkrol - pomeraj;
     ev.preventDefault();
@@ -861,6 +873,7 @@ function sliderWire(root) {
   function pusti(ev) {
     if (!vuce) return;
     vuce = false;
+    if (!povuceno) return;   /* bio je klik, nema šta da se dovlači */
     if (ev && track.hasPointerCapture && track.hasPointerCapture(ev.pointerId)) {
       try { track.releasePointerCapture(ev.pointerId); } catch (e) { /* nema veze */ }
     }
@@ -885,7 +898,7 @@ function sliderWire(root) {
   /* Prevlačenje ne sme da završi kao klik na objavu, a slike ne smeju da se
      „čupaju" iz stranice. */
   track.addEventListener('click', function (ev) {
-    if (Math.abs(pomeraj) > 6) { ev.preventDefault(); ev.stopPropagation(); }
+    if (povuceno) { ev.preventDefault(); ev.stopPropagation(); }
   }, true);
   track.addEventListener('dragstart', function (ev) { ev.preventDefault(); });
 
