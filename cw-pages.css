@@ -838,7 +838,6 @@
   .player-hero__nick { font-size: clamp(2.25rem, 11vw, 3rem); }
 
   /* --- Header --- */
-  .announce { font-size: 10px; letter-spacing: 0.1em; padding-block: 6px; }
   .logo__word { font-size: 1.0625rem; }
   .logo__sub { display: none; }
   .header__actions { gap: 0; }

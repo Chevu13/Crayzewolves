@@ -1476,20 +1476,6 @@ input[type='range']::-moz-range-thumb {
 }
 .header.is-scrolled { box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
 
-/* Announcement bar */
-.announce {
-  background: var(--color-charcoal);
-  border-bottom: var(--border);
-  text-align: center;
-  padding: 7px var(--space-3);
-  font-family: var(--font-condensed);
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-body);
-}
-.announce a { color: var(--color-gold); text-decoration: underline; text-underline-offset: 3px; }
-
 .header__inner {
   height: var(--header-h);
   display: flex; align-items: center; gap: var(--space-3);

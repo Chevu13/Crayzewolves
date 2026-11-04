@@ -92,11 +92,6 @@ CW.c.header = function () {
   }).join('');
 
   return '' +
-  '<div class="announce">' +
-    'Sajt je u izradi — Discord i Instagram su aktivni. ' +
-    '<a href="' + CW.data.socials[0].url + '">Uđi u čopor</a>' +
-  '</div>' +
-
   '<header class="header" id="site-header">' +
     '<div class="container container--wide">' +
       '<div class="header__inner">' +

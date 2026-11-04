@@ -51,8 +51,7 @@ CW.brand = {
   positioningEn: 'The Home of Balkan Gamers',
   website: 'wolfpack.rs',
   discord: 'discord.gg/wolfpackrs',
-  instagram: '@wolfpack.rs',
-  status: 'Sajt je u izradi — Discord i Instagram su aktivni.'
+  instagram: '@wolfpack.rs'
 };
 
 /* ==========================================================================
@@ -506,7 +505,7 @@ CW.data.about = {
   /* Dugoročna vizija — kompletan gaming ekosistem */
   ecosystem: [
     { icon: 'discord',  name: 'Discord zajednica', status: 'active',  note: 'Preko 850 članova, šest igara.' },
-    { icon: 'monitor',  name: 'Web sajt',          status: 'wip',     note: 'U izradi — ovo što gledaš.' },
+    { icon: 'monitor',  name: 'Web sajt',          status: 'active',  note: 'Otvoren — ovo što gledaš.' },
     { icon: 'cart',     name: 'Gaming shop',       status: 'active',  note: 'Prvi proizvodi u ponudi.' },
     { icon: 'instagram',name: 'Instagram',         status: 'active',  note: '34k pratilaca na brendu, 1.719 na webshopu.' },
     { icon: 'tiktok',   name: 'TikTok',            status: 'active',  note: 'Kratki sadržaj i klipovi.' },
