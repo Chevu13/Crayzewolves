@@ -20,6 +20,12 @@ CW.pages.shop = function () {
   var essentials = CW.data.products.filter(function (p) { return p.collectionId === 'essential'; });
   var recents = CW.store.recentlyViewed().map(CW.product).filter(Boolean);
 
+  /* Slika u zaglavlju: prvi proizvod koji prodavac istakne u panelu, pa
+     ostali redom. Pre je ovde stajala ugrađena slika šolje — kad je šolja
+     izbačena iz ponude, u zaglavlju je i dalje stajala, sa starim grbom. */
+  var uZaglavlju = CW.data.products.filter(function (p) { return p.image; })
+    .sort(function (a, b) { return (a.featuredSlot || 99) - (b.featuredSlot || 99); })[0];
+
   function rail(title, eyebrow, items, href, desc) {
     if (!items.length) return '';
     return '<section class="section container container--wide">' +
@@ -46,10 +52,12 @@ CW.pages.shop = function () {
             '<a class="btn btn--secondary btn--lg" href="#/shop/all?collection=limited">Limitirana izdanja</a>' +
           '</div>' +
         '</div>' +
-        /* Slika u zaglavlju vodi u shop — do sada je stajala kao ukras. */
-        '<a class="brackets" href="#/shop/all" aria-label="Svi proizvodi" ' +
-          'style="display:block;border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
-          CW.img('product-mug', { ratio: '4 / 3', ph: 'IZDVOJENA KOLEKCIJA' }) + '</a>' +
+        (uZaglavlju
+          ? '<a class="brackets" href="#/proizvod/' + uZaglavlju.id + '" ' +
+              'aria-label="' + CW.esc(uZaglavlju.name) + '" ' +
+              'style="display:block;border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
+              CW.img(uZaglavlju.image, { ratio: '4 / 3', ph: uZaglavlju.name }) + '</a>'
+          : '') +
       '</div>' +
     '</div>' +
   '</section>' +
