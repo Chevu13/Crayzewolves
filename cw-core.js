@@ -789,18 +789,11 @@ CW.router = (function () {
     setNotFound: function (view) { notFound = view; return this; },
     start: function () {
       window.addEventListener('hashchange', render);
-      if (!window.location.hash) {
-        /* Postavljanje hash-a NE okida hashchange pouzdano — ni na svim
-           browserima, ni na file:// protokolu. Ranije se prvo crtanje
-           oslanjalo na taj događaj, pa je <main> ostajao prazan pri
-           otvaranju bez #hash-a. Zato hash upisujemo tiho, kroz
-           replaceState (bez novog unosa u istoriji), i crtamo sami. */
-        try {
-          window.history.replaceState(null, '', window.location.pathname + window.location.search + '#/');
-        } catch (e) {
-          window.location.hash = '#/';   /* file:// ume da zabrani replaceState */
-        }
-      }
+      /* Prazan hash je početna — isto što i '#/'. Ranije se '#/' upisivalo u
+         adresu da bi se prvo crtanje pokrenulo, pa je posetiocu koji ukuca
+         samo domen u traci odmah iskakalo '/#/'. Crtanje se ovde poziva
+         direktno, pa upis nije ni potreban: adresa ostaje čista dok
+         posetilac sam ne ode negde. */
       render();
     },
     go: function (path) {
