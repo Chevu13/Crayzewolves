@@ -13,7 +13,7 @@ posle predaje. Sve se prenosi — ništa se ne pravi iznova.
 | **Vercel** | Objavljivanje sajta (svaki `git push` = novo izdanje) | projekat povezan sa tim repozitorijumom |
 | **Supabase** | Baza: objave, proizvodi, porudžbine, nalozi kupaca, slike | projekat `qesosyszxnzlnmwuhbaq` |
 | **Domen** | `crazywolves.rs` (prelazi na `wolfpack.rs`) | registrar `.rs` domena |
-| **Gmail** | `info.crazywolves@gmail.com` — šalje mejlove sajta | Google nalog |
+| **Gmail** | `office@wolfpack.rs` — šalje mejlove sajta | Google nalog |
 | **Google Cloud** | Prijava preko Google-a | OAuth klijent |
 
 Sajt stoji na `/app`, na korenu domena je pokazna stranica „u izradi".
@@ -51,7 +51,7 @@ Kod registrara zatraži **authorization code** i prosledi mu ga; on domen
 prebacuje na svoj nalog. Sme i da ostane kod tebe dok traje saradnja.
 
 ### Korak 5 — Mejl
-`info.crazywolves@gmail.com` se ne „prenosi" — to je Gmail nalog. Ili mu
+`office@wolfpack.rs` se ne „prenosi" — to je Gmail nalog. Ili mu
 predaš lozinku, ili on napravi svoj, pa se menja na tri mesta:
 
 1. **Supabase → Project Settings → Authentication → SMTP Settings**

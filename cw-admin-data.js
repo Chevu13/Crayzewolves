@@ -227,7 +227,7 @@ window.CW = window.CW || {};
         tagline: 'The hunt never ends.',
         discord: 'https://discord.gg/wolfpackrs',
         instagram: 'https://www.instagram.com/wolfpack.rs/',
-        email: 'info.crazywolves@gmail.com',
+        email: 'office@wolfpack.rs',
         shippingFlat: 390,
         freeShippingOver: 6000
       };
