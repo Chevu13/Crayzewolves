@@ -37,39 +37,38 @@ Invalid request: should NOT have additional property `//`. Please remove it.
 
 Zato objašnjenja stoje u ovom fajlu, a `vercel.json` ostaje čist.
 
-## Režim „sajt u izradi"
+## Sajt je na korenu
 
-**Početna stranica JESTE pokazna stranica.** `index.html` je fajl sa banerom
-i dugmetom za Discord — nije preusmerenje, nije pravilo, nego sam fajl na
-korenu.
+`index.html` je ljuska sajta. Nema preusmerenja ni pravila na putu do
+početne — fajl stoji na korenu, pa radi isto na Vercelu, na Netlify-u, na
+običnom serveru i pri otvaranju foldera duplim klikom.
 
 | Adresa | Šta servira |
 |---|---|
-| `/` | `index.html` — pokazna stranica |
-| `/app` | `app.html` — pun sajt |
-| `/app#/admin` | admin panel |
-| bilo šta drugo | `index.html` — pokazna stranica |
+| `/` | `index.html` — sajt |
+| `/app` | isto, preko `rewrites` — stara adresa iz mejlova i Supabase podešavanja |
+| `/#/admin` | admin panel |
+| `/najava` | `najava.html` — povučena pokazna stranica |
+| bilo šta drugo | `index.html` — hash ruter pokaže 404 ekran |
 
-### Zašto fajl, a ne pravilo
+### Kako je bilo pre
 
-Prvo je ovde stajalo pravilo `{ "source": "/", "destination": "/uskoro.html" }`.
-**Nije radilo, i nije moglo da radi.** Na Vercelu se `rewrites` primenjuju tek
-ako na toj adresi NE postoji fajl — a na `/` je stajao `index.html`, pa se
-pravilo nikad nije izvršilo. Provereno na živom sajtu: koren je vraćao pun
-sajt, ne pokaznu stranicu.
+Dok je trajao režim „sajt u izradi", na korenu je stajala pokazna stranica, a
+sajt je bio u `app.html`, na adresi `/app`. Razlog što je pokazna stranica
+bila *fajl*, a ne pravilo: na Vercelu se `rewrites` primenjuju tek ako na toj
+adresi NE postoji fajl, pa pravilo `{ "source": "/", ... }` nikad nije moglo
+da se izvrši dok god `index.html` stoji na korenu.
 
-Zato je sada obrnuto: fajl na korenu je pokazna stranica, a sajt je pomeren u
-`app.html`. Nema pravila koje može da zakaže, i radi isto na Vercelu, na
-Netlify-u, na običnom serveru i pri otvaranju foldera duplim klikom.
-
-### Kad se sajt pušta uživo
+Na dan lansiranja je zato urađeno `git mv`, ne menjanje pravila:
 
 ```bash
-git rm index.html
+git mv index.html najava.html
 git mv app.html index.html
 ```
 
-Pa u `vercel.json` obriši oba pravila iz `rewrites` — više ne trebaju.
+`/app` je ostao da radi namerno — na njega pokazuju linkovi iz već poslatih
+mejlova i **Site URL / Redirect URLs** u Supabase podešavanjima. Kad se tamo
+sve prebaci na koren, to pravilo može da se obriše.
 
 ## Keširanje
 

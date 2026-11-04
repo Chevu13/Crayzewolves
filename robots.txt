@@ -1,15 +1,15 @@
 User-agent: *
 Allow: /
 
-# Pun sajt jos nije pusten. Dok traje rezim "sajt u izradi", na korenu stoji
-# pokazna stranica, a sajt radi na /app. Da se /app indeksira, Google bi imao
-# adresu koja sutra prestaje da postoji — a i danas nosi isti sadrzaj kao ono
-# sto ce koren posle prikazivati.
+# Sajt stoji na korenu. /app je stara adresa koja i dalje radi zbog linkova iz
+# mejlova, a /najava je povucena pokazna stranica — oboje nosi isti ili zastareo
+# sadrzaj, pa nemaju sta da traze u pretrazi.
 Disallow: /app
-Disallow: /app.html
+Disallow: /najava
+Disallow: /najava.html
 
 # Admin panel nema sta da trazi u pretrazi. Ovo je molba pretrazivacima, a NE
 # zastita — pravu zastitu radi RLS u bazi.
-Disallow: /app#/admin
+Disallow: /#/admin
 
 Sitemap: https://wolfpack.rs/sitemap.xml

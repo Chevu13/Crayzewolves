@@ -406,7 +406,7 @@ Deno.serve(async (req) => {
     const kind = String(body.kind || 'order');
     console.log('[mail] zahtev', kind, body.orderNumber || '');
     const s = await podesavanja();
-    const sajt = s.site_url || 'https://www.wolfpack.rs/app';
+    const sajt = s.site_url || 'https://www.wolfpack.rs/';
     const from = MAIL_FROM || s.order_email_from || 'Wolfpack <office@wolfpack.rs>';
     const kopija = s.order_email_to || null;
 
