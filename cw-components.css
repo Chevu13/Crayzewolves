@@ -675,6 +675,12 @@ a.news-card:hover .news-card__title { color: var(--color-gold); }
   color: var(--color-gold-num, var(--color-gold));
   font-variant-numeric: tabular-nums;
 }
+/* Pločica sa nazivom umesto broja: naslovni font na 40 px bi iz nje izašao. */
+.stat-cell__num--text {
+  font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+  line-height: 1.2;
+  text-wrap: balance;
+}
 .stat-cell__lbl {
   font-family: var(--font-condensed);
   font-size: var(--fs-label);

@@ -571,7 +571,8 @@ CW.c.statGrid = function (stats, cols) {
   return '<div class="stat-grid" data-cols="' + (cols || stats.length) + '">' +
     stats.map(function (s) {
       return '<div class="stat-cell">' +
-        '<div class="stat-cell__num">' + CW.esc(s.value) + '</div>' +
+        '<div class="stat-cell__num' + (s.text ? ' stat-cell__num--text' : '') + '">' +
+          CW.esc(s.value) + '</div>' +
         '<div class="stat-cell__lbl">' + CW.esc(s.label) + '</div>' +
       '</div>';
     }).join('') + '</div>';

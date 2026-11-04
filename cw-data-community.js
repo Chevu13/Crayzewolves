@@ -205,12 +205,13 @@ CW.data.partnerBenefits = [
 /* ==========================================================================
    STATISTIKA ZAJEDNICE — stvarni brojevi
    ========================================================================== */
+/* „text: true“ je pločica koja nosi naziv umesto broja — ispisuje se sitnije,
+   jer bi naslovni font na punoj veličini izašao iz ćelije. */
 CW.data.communityStats = [
   { id: 'discord',   value: '850+',   label: 'Članova na Discordu' },
-  { id: 'instagram', value: '1.719',  label: 'Webshop pratilaca na Instagramu' },
+  { id: 'gta',       value: 'GTA VI', label: 'Projekat Leonida3tv', text: true },
   { id: 'games',     value: '6',      label: 'Igara sa svojim kanalima' },
-  /* Brend nalog, ne webshop — dva različita Instagram naloga, zato oba stoje. */
-  { id: 'brand',     value: '34k',    label: 'Pratilaca na Instagram brendu' },
+  { id: 'magija',    value: 'Gospodari magije', label: 'Društvena igra', text: true },
   { id: 'services',  value: '7',      label: 'Usluga u ponudi' },
   { id: 'active',    value: '24/7',   label: 'Aktivna zajednica' }
 ];
