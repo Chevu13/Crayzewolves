@@ -170,8 +170,8 @@ function emailHtml(order: any, items: any[], hasDigital: boolean) {
     <tr><td style="padding-top:24px;text-align:center">
       <p style="color:#9C927E;font-size:12px;line-height:1.7;margin:0">
         Pitanja? Odgovori na ovaj mejl ili nam piši na Discordu.<br>
-        <a href="https://discord.gg/crazywolves" style="color:#D4A24E;text-decoration:none">
-          discord.gg/crazywolves</a>
+        <a href="https://discord.gg/wolfpackrs" style="color:#D4A24E;text-decoration:none">
+          discord.gg/wolfpackrs</a>
       </p>
       <p style="color:#6B5A38;font-size:11px;margin:16px 0 0">
         CrazyWolves Community · Beograd, Srbija

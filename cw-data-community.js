@@ -4,7 +4,7 @@
    SVE ISPOD JE STVARNO. Ranija verzija ovog fajla sadržala je izmišljene
    igrače, trofeje, turnire i sponzore — to je uklonjeno.
 
-   Izvor istine: brand guide v1.0 + zvanični Discord, Instagram (@crazywolves.rs)
+   Izvor istine: brand guide v1.0 + zvanični Discord, Instagram (@wolfpack.rs)
    i objavljeni materijali brenda.
 
    Sve kolekcije su oblikovane kao API odgovori:
@@ -50,8 +50,8 @@ CW.brand = {
   positioningSr: 'Dom balkanskih gejmera',
   positioningEn: 'The Home of Balkan Gamers',
   website: 'wolfpack.rs',
-  discord: 'discord.gg/crazywolves',
-  instagram: '@crazywolves.rs',
+  discord: 'discord.gg/wolfpackrs',
+  instagram: '@wolfpack.rs',
   status: 'Sajt je u izradi — Discord i Instagram su aktivni.'
 };
 
@@ -555,8 +555,8 @@ CW.data.communityWays = [
    DRUŠTVENE MREŽE — stvarni nalozi
    ========================================================================== */
 CW.data.socials = [
-  { id: 'discord',   name: 'Discord',   handle: 'discord.gg/crazywolves', url: 'https://discord.gg/crazywolves' },
-  { id: 'instagram', name: 'Instagram', handle: '@crazywolves.rs',        url: '#' },
+  { id: 'discord',   name: 'Discord',   handle: 'discord.gg/wolfpackrs', url: 'https://discord.gg/wolfpackrs' },
+  { id: 'instagram', name: 'Instagram', handle: '@wolfpack.rs',   url: 'https://www.instagram.com/wolfpack.rs/' },
   { id: 'tiktok',    name: 'TikTok',    handle: '@crazywolves.rs',        url: '#' },
   { id: 'youtube',   name: 'YouTube',   handle: 'Wolfpack',            url: '#' },
   { id: 'twitch',    name: 'Twitch',    handle: 'Wolfpack',            url: '#' }

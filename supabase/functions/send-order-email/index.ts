@@ -348,7 +348,7 @@ function mejlDobrodoslice(ime: string, sajt: string) {
 
     ${kutija('Prvo mesto gde sve ide',
       'Najave, drops i giveaway-i idu prvo na Discord, pa tek onda svuda drugde. ' +
-      '<a href="https://discord.gg/crazywolves" style="color:#8A5714;">Uđi u čopor</a>.')}
+      '<a href="https://discord.gg/wolfpackrs" style="color:#8A5714;">Uđi u čopor</a>.')}
 
     ${dugme('Otvori shop', `${sajt}#/shop/all`)}
 
