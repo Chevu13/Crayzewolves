@@ -732,6 +732,9 @@
 @media (max-width: 1200px) {
   .catalog { grid-template-columns: 232px minmax(0, 1fr); gap: var(--space-4); }
   .product-grid--4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Šest pločica na ovoj širini postaje preusko za pločicu sa nazivom —
+     naziv se prelomi, pa joj natpis padne ispod linije ostalih. */
+  .stat-grid[data-cols] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .footer__grid { grid-template-columns: 1.4fr repeat(3, 1fr); }
   .footer__grid > *:nth-child(5) { grid-column: span 3; }
   .dropdown__panel--wide { min-width: 460px; }
@@ -792,7 +795,6 @@
   .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trust-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .next-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .stat-grid[data-cols] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
   .news-feature { grid-template-columns: minmax(0, 1fr); }
   .news-feature .card__media { min-height: 0; aspect-ratio: 16 / 9; }

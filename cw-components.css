@@ -675,10 +675,16 @@ a.news-card:hover .news-card__title { color: var(--color-gold); }
   color: var(--color-gold-num, var(--color-gold));
   font-variant-numeric: tabular-nums;
 }
-/* Pločica sa nazivom umesto broja: naslovni font na 40 px bi iz nje izašao. */
+/* Pločica sa nazivom umesto broja: naslovni font na 40 px bi iz nje izašao.
+   Zato je sitniji, ali zauzima istu visinu kao broj — da natpisi ispod svih
+   pločica stoje u istoj liniji. */
 .stat-cell__num--text {
-  font-size: clamp(0.95rem, 1.5vw, 1.25rem);
-  line-height: 1.2;
+  font-size: clamp(1.05rem, 1.65vw, 1.4rem);
+  line-height: 1.15;
+  min-height: clamp(1.75rem, 3.4vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-wrap: balance;
 }
 .stat-cell__lbl {
