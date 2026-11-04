@@ -269,7 +269,7 @@ CW.pages.home = function () {
   '<section class="section--tight container container--wide">' +
     '<div class="cta-band text-center">' +
       '<div class="t-eyebrow t-eyebrow--gold">Zvanična oprema</div>' +
-      '<h2 class="t-h1 mt-2">Nosi grb.</h2>' +
+      '<h2 class="t-h1 mt-2">Wolfpack Gear</h2>' +
       '<div class="row mt-4" style="justify-content:center;gap:12px;flex-wrap:wrap">' +
         '<a class="btn btn--primary btn--lg" href="#/shop">U shop</a>' +
         '<a class="btn btn--secondary btn--lg" href="' + DISCORD() + '">' + CW.icon('discord', 18) + 'Discord</a>' +
