@@ -119,7 +119,9 @@ function heroStatic() {
         /* Shop je primarno dugme; Discord ostaje, ali kao sporedno —
            sajt prvo prodaje, pa poziva u zajednicu. */
         '<div class="home-hero__actions">' +
-          '<a class="btn btn--primary btn--lg" href="#/shop">' + CW.icon('tag', 18) + 'U shop</a>' +
+          /* Pravo na spisak robe, ne na naslovnu shopa — ko klikne „U shop“
+             traži proizvode, a ne još jedno zaglavlje. */
+          '<a class="btn btn--primary btn--lg" href="#/shop/all">' + CW.icon('tag', 18) + 'U shop</a>' +
           '<a class="btn btn--secondary btn--lg" href="' + DISCORD() + '">' + CW.icon('discord', 18) + 'Discord</a>' +
         '</div>' +
       '</div>' +
@@ -271,7 +273,7 @@ CW.pages.home = function () {
       '<div class="t-eyebrow t-eyebrow--gold">Zvanična oprema</div>' +
       '<h2 class="t-h1 mt-2">Wolfpack Gear</h2>' +
       '<div class="row mt-4" style="justify-content:center;gap:12px;flex-wrap:wrap">' +
-        '<a class="btn btn--primary btn--lg" href="#/shop">U shop</a>' +
+        '<a class="btn btn--primary btn--lg" href="#/shop/all">U shop</a>' +
         '<a class="btn btn--secondary btn--lg" href="' + DISCORD() + '">' + CW.icon('discord', 18) + 'Discord</a>' +
       '</div>' +
     '</div>' +
