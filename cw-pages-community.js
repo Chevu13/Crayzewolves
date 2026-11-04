@@ -479,7 +479,7 @@ CW.pages.community = function () {
         '<div class="alert alert--gold mt-4">' + CW.icon('shield', 18) +
           '<span>Staff tim je prisutan. Prijave se rešavaju istog dana.</span></div>' +
         '<div class="mt-4" style="border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
-          CW.img('banner-server-guide', { ph: 'SERVER GUIDE' }) +
+          CW.img('banner-server-guide', { ph: 'VODIČ KROZ SERVER' }) +
         '</div>' +
       '</div>' +
       '<div class="rules-list">' +
@@ -631,7 +631,7 @@ CW.pages.news = function (ctx) {
           '<h3 class="t-h3 mt-1">Jedan mejl nedeljno</h3>' +
           '<p class="t-sm mt-1">Najave, drops i događaji. Ništa više.</p>' +
           '<form class="stack stack-1 mt-3" data-act="newsletter" novalidate>' +
-            '<label class="visually-hidden" for="rail-nl">Email adresa</label>' +
+            '<label class="visually-hidden" for="rail-nl">Imejl adresa</label>' +
             '<input class="input" id="rail-nl" name="email" type="email" placeholder="ti@primer.rs" required>' +
             '<button class="btn btn--primary btn--full" type="submit">Prijavi se</button>' +
           '</form>' +
@@ -1015,7 +1015,7 @@ CW.pages.contact = function (ctx) {
                 '<div class="field__error hidden" data-error-for="c-name"></div>' +
               '</div>' +
               '<div class="field">' +
-                '<label class="field__label" for="c-email">Email <span class="field__req">*</span></label>' +
+                '<label class="field__label" for="c-email">Imejl <span class="field__req">*</span></label>' +
                 '<input class="input" id="c-email" name="email" type="email" autocomplete="email" required>' +
                 '<div class="field__error hidden" data-error-for="c-email"></div>' +
               '</div>' +

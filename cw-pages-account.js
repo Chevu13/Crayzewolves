@@ -24,7 +24,7 @@ CW.pages._accountShell = function (activePath, title, body) {
   return '' +
   '<section class="page-hero">' +
     '<div class="container container--wide page-hero__inner">' +
-      CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Account', path: '/account' }, { label: title, path: '' }]) +
+      CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Nalog', path: '/account' }, { label: title, path: '' }]) +
       '<div class="row row--between row--wrap mt-3" style="gap:var(--space-3)">' +
         '<div>' +
           '<h1 class="t-h1">' + CW.esc(title) + '</h1>' +
@@ -39,7 +39,7 @@ CW.pages._accountShell = function (activePath, title, body) {
 
   '<section class="section container container--wide">' +
     '<div class="account">' +
-      '<nav class="account-nav" aria-label="Account">' +
+      '<nav class="account-nav" aria-label="Nalog">' +
         links.map(function (l) {
           return '<a class="account-nav__link' + (activePath === l.path ? ' is-active' : '') + '" href="#' + l.path + '"' +
             (activePath === l.path ? ' aria-current="page"' : '') + '>' +
@@ -49,7 +49,7 @@ CW.pages._accountShell = function (activePath, title, body) {
         }).join('') +
         '<hr class="divider-line" style="margin-block:var(--space-2)">' +
         '<button class="account-nav__link" type="button" data-act="sign-out" style="text-align:left">' +
-          CW.icon('logout', 17) + '<span>Log out</span></button>' +
+          CW.icon('logout', 17) + '<span>Odjava</span></button>' +
       '</nav>' +
       '<div>' + body + '</div>' +
     '</div>' +
@@ -107,8 +107,8 @@ CW.pages.login = function (ctx) {
 
         '<div class="field">' +
           '<div class="row row--between">' +
-            '<label class="field__label" for="li-pass">Password <span class="field__req">*</span></label>' +
-            '<a class="t-xs link-underline" href="#/nalog/zaboravljena">Forgot?</a>' +
+            '<label class="field__label" for="li-pass">Lozinka <span class="field__req">*</span></label>' +
+            '<a class="t-xs link-underline" href="#/nalog/zaboravljena">Zaboravljena?</a>' +
           '</div>' +
           '<input class="input" id="li-pass" name="password" type="password" autocomplete="current-password" required>' +
           '<div class="field__error hidden" data-error-for="li-pass"></div>' +
@@ -126,7 +126,7 @@ CW.pages.login = function (ctx) {
 
       '<div class="divider mt-3"><span class="divider__mark"></span></div>' +
 
-      '<p class="t-sm text-center">New here? <a class="link-underline" href="#/nalog/registracija">Napravi nalog</a></p>' +
+      '<p class="t-sm text-center">Nemaš nalog? <a class="link-underline" href="#/nalog/registracija">Napravi nalog</a></p>' +
       '<p class="t-xs text-center mt-2">Nalog nije obavezan za kupovinu, ali olakšava praćenje porudžbina.</p>' +
     '</div>' +
   '</section>';
@@ -610,15 +610,15 @@ CW.pages.accountAddresses = function () {
   var body =
     '<div class="stack stack-3">' +
       '<div class="row row--between">' +
-        '<h2 class="t-h3">Saved addresses</h2>' +
-        '<button class="btn btn--secondary" type="button" data-act="add-address">' + CW.icon('plus', 16) + 'Add address</button>' +
+        '<h2 class="t-h3">Sačuvane adrese</h2>' +
+        '<button class="btn btn--secondary" type="button" data-act="add-address">' + CW.icon('plus', 16) + 'Dodaj adresu</button>' +
       '</div>' +
 
       (addrs.length
         ? '<div class="grid grid--2">' + addrs.map(function (a) {
             return '<div class="card' + (a.isDefault ? ' card--featured' : '') + '"><div class="card__body">' +
               '<div class="row row--between">' +
-                '<span class="badge ' + (a.isDefault ? 'badge--gold' : 'badge--neutral') + '">' + CW.esc(a.label) + (a.isDefault ? ' · Default' : '') + '</span>' +
+                '<span class="badge ' + (a.isDefault ? 'badge--gold' : 'badge--neutral') + '">' + CW.esc(a.label) + (a.isDefault ? ' · podrazumevana' : '') + '</span>' +
               '</div>' +
               '<div class="t-sm mt-2">' +
                 '<div class="t-offwhite" style="font-weight:600">' + CW.esc(a.name) + '</div>' +
@@ -629,16 +629,16 @@ CW.pages.accountAddresses = function () {
                 '<div class="mt-1">' + CW.esc(a.phone) + '</div>' +
               '</div>' +
               '<div class="row mt-3" style="gap:8px">' +
-                '<button class="btn btn--quiet btn--sm" type="button" data-act="edit-address">Edit</button>' +
-                (a.isDefault ? '' : '<button class="btn btn--ghost btn--sm" type="button" data-act="set-default-address">Set as default</button>') +
-                (a.isDefault ? '' : '<button class="btn btn--ghost btn--sm" type="button" data-act="delete-address" style="color:var(--color-error)">Delete</button>') +
+                '<button class="btn btn--quiet btn--sm" type="button" data-act="edit-address">Izmeni</button>' +
+                (a.isDefault ? '' : '<button class="btn btn--ghost btn--sm" type="button" data-act="set-default-address">Postavi kao podrazumevanu</button>') +
+                (a.isDefault ? '' : '<button class="btn btn--ghost btn--sm" type="button" data-act="delete-address" style="color:var(--color-error)">Obriši</button>') +
               '</div>' +
             '</div></div>';
           }).join('') + '</div>'
         : CW.c.empty({
-            icon: 'pin', title: 'No saved addresses',
-            text: 'Save an address and checkout gets a lot faster next time.',
-            actions: '<button class="btn btn--primary" type="button" data-act="add-address">Add your first address</button>'
+            icon: 'pin', title: 'Nema sačuvanih adresa',
+            text: 'Sačuvaj adresu i sledeći put na kasi ide mnogo brže.',
+            actions: '<button class="btn btn--primary" type="button" data-act="add-address">Dodaj prvu adresu</button>'
           })) +
     '</div>';
 
@@ -845,8 +845,8 @@ CW.pages.wishlist = function () {
   var body = items.length
     ? '<div class="stack stack-3">' +
         '<div class="row row--between row--wrap" style="gap:12px">' +
-          '<span class="toolbar__count">' + items.length + ' saved item' + (items.length === 1 ? '' : 's') + '</span>' +
-          '<a class="btn btn--quiet btn--sm" href="#/shop">Continue shopping</a>' +
+          '<span class="toolbar__count">' + items.length + ' ' + brojArtikala(items.length) + '</span>' +
+          '<a class="btn btn--quiet btn--sm" href="#/shop">Nastavi kupovinu</a>' +
         '</div>' +
         '<div class="product-grid">' + items.map(CW.c.productCard).join('') + '</div>' +
       '</div>'
@@ -863,7 +863,7 @@ CW.pages.wishlist = function () {
       '<section class="page-hero"><div class="container container--wide page-hero__inner">' +
         CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Lista želja', path: '/account/wishlist' }]) +
         '<h1 class="t-h1 mt-2">Lista želja</h1>' +
-        '<p class="t-lead mt-2">Saved on this device. <a class="link-underline" href="#/nalog/registracija">Napravi nalog</a> to keep it across devices.</p>' +
+        '<p class="t-lead mt-2">Sačuvana je na ovom uređaju. <a class="link-underline" href="#/nalog/registracija">Napravi nalog</a> da ti ostane i na drugim uređajima.</p>' +
       '</div></section>' +
       '<section class="section container container--wide">' + body + '</section>';
   }
@@ -890,14 +890,14 @@ CW.pages.faq = function (ctx) {
   return '' +
   '<section class="page-hero">' +
     '<div class="container container--wide page-hero__inner">' +
-      CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Help & FAQ', path: '/faq' }]) +
-      '<h1 class="t-h1 mt-2">Help &amp; FAQ</h1>' +
-      '<p class="t-lead mt-2">Orders, sizing, returns and how the community works. If it is not here, the Discord answers faster than email.</p>' +
+      CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Pomoć i česta pitanja', path: '/faq' }]) +
+      '<h1 class="t-h1 mt-2">Pomoć i česta pitanja</h1>' +
+      '<p class="t-lead mt-2">Porudžbine, veličine, povraćaj i kako zajednica radi. Ako odgovora nema ovde, na Discordu stiže brže nego mejlom.</p>' +
 
       '<form class="input-wrap mt-4" data-act="faq-search" style="max-width:460px">' +
         CW.icon('search', 18) +
-        '<label class="visually-hidden" for="faq-q">Search help articles</label>' +
-        '<input class="input" id="faq-q" name="q" type="search" placeholder="Search for an answer…" value="' + CW.esc(ctx.query.q || '') + '">' +
+        '<label class="visually-hidden" for="faq-q">Pretraga pomoći</label>' +
+        '<input class="input" id="faq-q" name="q" type="search" placeholder="Potraži odgovor…" value="' + CW.esc(ctx.query.q || '') + '">' +
       '</form>' +
     '</div>' +
   '</section>' +
@@ -905,9 +905,9 @@ CW.pages.faq = function (ctx) {
   '<section class="section container container--wide">' +
     '<div class="faq-layout">' +
       '<aside class="legal-toc">' +
-        '<div class="t-eyebrow t-eyebrow--gold mb-2">Categories</div>' +
+        '<div class="t-eyebrow t-eyebrow--gold mb-2">Rubrike</div>' +
         '<a class="legal-toc__link' + (catF === 'all' ? ' is-active' : '') + '" href="#/faq"' +
-          (catF === 'all' ? ' style="color:var(--color-gold);border-color:var(--color-gold)"' : '') + '>All questions</a>' +
+          (catF === 'all' ? ' style="color:var(--color-gold);border-color:var(--color-gold)"' : '') + '>Sva pitanja</a>' +
         CW.data.faqCategories.map(function (c) {
           var on = catF === c.id;
           return '<a class="legal-toc__link" href="#/faq?category=' + c.id + '"' +
@@ -915,18 +915,18 @@ CW.pages.faq = function (ctx) {
         }).join('') +
 
         '<div class="card mt-4"><div class="card__body">' +
-          '<div class="t-eyebrow t-eyebrow--gold">Still stuck?</div>' +
-          '<p class="t-sm mt-2">Two working days by email, minutes in the Discord.</p>' +
-          '<a class="btn btn--secondary btn--full mt-2" href="#/kontakt">Contact us</a>' +
+          '<div class="t-eyebrow t-eyebrow--gold">I dalje zapelo?</div>' +
+          '<p class="t-sm mt-2">Mejlom za dva radna dana, na Discordu za nekoliko minuta.</p>' +
+          '<a class="btn btn--secondary btn--full mt-2" href="#/kontakt">Piši nam</a>' +
         '</div></div>' +
       '</aside>' +
 
       '<div>' +
         (!list.length
           ? CW.c.empty({
-              icon: 'search', title: 'No answers found',
-              text: 'Nothing matches “' + (ctx.query.q || '') + '”. Try a different word, or ask us directly.',
-              actions: '<a class="btn btn--secondary" href="#/faq">Clear search</a><a class="btn btn--primary" href="#/kontakt">Contact us</a>'
+              icon: 'search', title: 'Nema odgovora',
+              text: 'Ništa ne odgovara upitu „' + (ctx.query.q || '') + '“. Probaj drugu reč ili nas pitaj direktno.',
+              actions: '<a class="btn btn--secondary" href="#/faq">Poništi pretragu</a><a class="btn btn--primary" href="#/kontakt">Piši nam</a>'
             })
           : Object.keys(byCat).map(function (cid) {
               var c = CW.find('faqCategories', cid) || { name: '' };
@@ -937,7 +937,7 @@ CW.pages.faq = function (ctx) {
             }).join('')) +
 
         '<div class="mt-5">' +
-          '<h2 class="t-h2 mb-3">Size guides</h2>' +
+          '<h2 class="t-h2 mb-3">Tabele veličina</h2>' +
           Object.keys(CW.data.sizeGuides).map(function (key) {
             var g = CW.data.sizeGuides[key];
             return '<div class="mb-4">' +
@@ -974,8 +974,8 @@ CW.pages.policy = function (key) {
         '<h1 class="t-h1 mt-2">' + CW.esc(p.title) + '</h1>' +
         '<p class="t-lead mt-2">' + CW.esc(p.intro) + '</p>' +
         '<div class="row row--wrap mt-3" style="gap:10px">' +
-          '<span class="badge badge--neutral">Last updated ' + CW.fmtDate(p.updated, 'short') + '</span>' +
-          (p.needsReview ? '<span class="review-flag">' + CW.icon('alert', 14) + 'Requires legal review before launch</span>' : '') +
+          '<span class="badge badge--neutral">Poslednja izmena ' + CW.fmtDate(p.updated, 'short') + '</span>' +
+          (p.needsReview ? '<span class="review-flag">' + CW.icon('alert', 14) + 'Pravnik treba da pregleda pre objave</span>' : '') +
         '</div>' +
       '</div>' +
     '</section>' +
@@ -983,7 +983,7 @@ CW.pages.policy = function (key) {
     '<section class="section container container--wide">' +
       '<div class="legal-layout">' +
         '<aside class="legal-toc">' +
-          '<div class="t-eyebrow t-eyebrow--gold mb-2">On this page</div>' +
+          '<div class="t-eyebrow t-eyebrow--gold mb-2">Na ovoj strani</div>' +
           /* Buttons rather than anchors: an in-page #hash would be captured
              by the hash router and navigate away from this page. */
           p.sections.map(function (s) {
@@ -992,16 +992,16 @@ CW.pages.policy = function (key) {
           }).join('') +
 
           '<div class="card mt-4"><div class="card__body">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Questions?</div>' +
-            '<p class="t-sm mt-2">If anything here is unclear, ask — we would rather explain it than have you guess.</p>' +
-            '<a class="btn btn--secondary btn--full mt-2" href="#/kontakt">Contact us</a>' +
+            '<div class="t-eyebrow t-eyebrow--gold">Imaš pitanje?</div>' +
+            '<p class="t-sm mt-2">Ako ti nešto nije jasno, pitaj — bolje da objasnimo nego da nagađaš.</p>' +
+            '<a class="btn btn--secondary btn--full mt-2" href="#/kontakt">Piši nam</a>' +
           '</div></div>' +
         '</aside>' +
 
         '<div>' +
           (p.needsReview ?
           '<div class="alert alert--warning mb-4">' + CW.icon('alert', 18) +
-            '<div><b>Placeholder content — legal review required.</b>' +
+            '<div><b>Tekst je privremen — čeka pravni pregled.</b>' +
             '<div class="mt-1">' + CW.esc(p.reviewNote) + '</div></div></div>' : '') +
 
           '<div class="prose">' +
@@ -1010,7 +1010,7 @@ CW.pages.policy = function (key) {
                 s.body.map(function (b) {
                   var isPlaceholder = b.indexOf('PLACEHOLDER') === 0;
                   return isPlaceholder
-                    ? '<p><span class="review-flag">' + CW.icon('alert', 13) + 'To be completed</span> ' +
+                    ? '<p><span class="review-flag">' + CW.icon('alert', 13) + 'Za dopunu</span> ' +
                       CW.esc(b.replace(/^PLACEHOLDER:\s*/, '')) + '</p>'
                     : '<p>' + CW.esc(b) + '</p>';
                 }).join('');
@@ -1020,13 +1020,13 @@ CW.pages.policy = function (key) {
           '<div class="mt-5">' +
             '<div class="grid grid--2">' +
               '<a class="card card--link" href="#/faq"><div class="card__body">' +
-                '<div class="t-eyebrow t-eyebrow--gold">Related</div>' +
-                '<h3 class="t-h3">Help &amp; FAQ</h3>' +
-                '<p class="t-sm">Most questions are answered there first.</p></div></a>' +
+                '<div class="t-eyebrow t-eyebrow--gold">Povezano</div>' +
+                '<h3 class="t-h3">Pomoć i česta pitanja</h3>' +
+                '<p class="t-sm">Većina pitanja tu već ima odgovor.</p></div></a>' +
               '<a class="card card--link" href="#/kontakt"><div class="card__body">' +
-                '<div class="t-eyebrow t-eyebrow--gold">Related</div>' +
-                '<h3 class="t-h3">Contact us</h3>' +
-                '<p class="t-sm">Two working days by email.</p></div></a>' +
+                '<div class="t-eyebrow t-eyebrow--gold">Povezano</div>' +
+                '<h3 class="t-h3">Piši nam</h3>' +
+                '<p class="t-sm">Mejlom odgovaramo za dva radna dana.</p></div></a>' +
             '</div>' +
           '</div>' +
         '</div>' +

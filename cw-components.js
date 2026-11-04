@@ -279,7 +279,7 @@ CW.c.footer = function () {
             '<p class="t-sm mt-1">Bez spama. Odjava jednim klikom.</p>' +
           '</div>' +
           '<form class="newsletter" data-act="newsletter" novalidate>' +
-            '<label class="visually-hidden" for="nl-email">Email adresa</label>' +
+            '<label class="visually-hidden" for="nl-email">Imejl adresa</label>' +
             '<input class="input" id="nl-email" name="email" type="email" placeholder="ti@primer.rs" autocomplete="email" required>' +
             '<button class="btn btn--primary" type="submit">Prijavi se</button>' +
           '</form>' +
@@ -1274,7 +1274,7 @@ CW.ui.bind = function () {
       var input = form.querySelector('input[type=email]');
       var val = (input.value || '').trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) {
-        CW.toast({ type: 'error', title: 'Proveri email adresu', text: 'Ovo ne izgleda kao ispravna adresa.' });
+        CW.toast({ type: 'error', title: 'Proveri imejl adresu', text: 'Ovo ne izgleda kao ispravna adresa.' });
         input.focus();
         return;
       }

@@ -31,7 +31,7 @@ CW.pages.shop = function () {
     return '<section class="section container container--wide">' +
       CW.c.sectionHead({
         eyebrow: eyebrow, title: title, desc: desc,
-        action: '<a class="btn btn--quiet" href="' + href + '">View all ' + CW.icon('arrowR', 15) + '</a>'
+        action: '<a class="btn btn--quiet" href="' + href + '">Pogledaj sve ' + CW.icon('arrowR', 15) + '</a>'
       }) +
       '<div class="product-grid product-grid--4">' + items.slice(0, 4).map(CW.c.productCard).join('') + '</div>' +
     '</section>';
@@ -82,9 +82,9 @@ CW.pages.shop = function () {
     '<div class="drop-banner brackets">' +
       '<div>' +
         '<div class="row row--wrap" style="gap:8px">' +
-          '<span class="badge badge--limited">Limited Drop</span>' +
-          '<span class="badge badge--low">' + drop.dropInfo.remaining + ' of ' + drop.dropInfo.total + ' left</span>' +
-          '<span class="badge badge--neutral">Ends in ' + drop.dropInfo.endsInDays + ' days</span>' +
+          '<span class="badge badge--limited">Limitirano izdanje</span>' +
+          '<span class="badge badge--low">' + drop.dropInfo.remaining + ' od ' + drop.dropInfo.total + ' preostalo</span>' +
+          '<span class="badge badge--neutral">Ističe za ' + drop.dropInfo.endsInDays + ' dana</span>' +
         '</div>' +
         '<h2 class="t-h1 mt-2">' + CW.esc(drop.name) + '</h2>' +
         '<p class="t-lead mt-2">' + CW.esc(drop.shortDesc) + '</p>' +
@@ -119,7 +119,7 @@ CW.pages.shop = function () {
               '<div class="t-label" style="color:var(--color-gold)">' + CW.esc(c.tagline) + '</div>' +
               '<h3 class="collection-tile__title mt-1">' + CW.esc(c.name) + '</h3>' +
               '<p class="t-sm mt-2 clamp-3">' + CW.esc(c.blurb) + '</p>' +
-              '<span class="link-arrow mt-2">Shop the line ' + CW.icon('arrowR', 15) + '</span>' +
+              '<span class="link-arrow mt-2">Pogledaj kolekciju ' + CW.icon('arrowR', 15) + '</span>' +
             '</div>' +
           '</a>';
         }).join('') +
@@ -163,8 +163,8 @@ CW.pages.shop = function () {
       '<div class="mt-5 cta-band">' +
         '<div class="cta-band__inner">' +
           '<div class="cta-band__text">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Drop alerts</div>' +
-            '<h2 class="t-h2 mt-1">Know before it sells out</h2>' +
+            '<div class="t-eyebrow t-eyebrow--gold">Najave izdanja</div>' +
+            '<h2 class="t-h2 mt-1">Saznaj pre nego što se rasproda</h2>' +
             '<p class="t-lead mt-2">Limitirana izdanja se prvo najavljuju na Discordu.</p>' +
           '</div>' +
           '<form class="newsletter" data-act="newsletter" style="min-width:300px" novalidate>' +
@@ -290,9 +290,9 @@ CW.pages.catalog = function (ctx) {
       return CW.c.empty({
         icon: 'search',
         title: 'Nijedan proizvod ne odgovara filterima',
-        text: 'Nothing in this category fits every filter you have applied. Try removing one, or browse everything.',
+        text: 'Nijedan proizvod iz ove rubrike ne prolazi kroz sve izabrane filtere. Skloni neki ili pogledaj celu ponudu.',
         actions: '<button class="btn btn--secondary" type="button" data-act="clear-filters">Poništi filtere</button>' +
-                 '<a class="btn btn--quiet" href="#/shop/all">Browse all products</a>'
+                 '<a class="btn btn--quiet" href="#/shop/all">Pogledaj sve proizvode</a>'
       });
     }
     return '<div class="product-grid">' + pageItems.map(CW.c.productCard).join('') + '</div>' +
@@ -315,7 +315,7 @@ CW.pages.catalog = function (ctx) {
   '<section class="section container container--wide">' +
     '<div class="catalog">' +
 
-      '<aside class="catalog__filters" aria-label="Product filters">' + filterPanel + '</aside>' +
+      '<aside class="catalog__filters" aria-label="Filteri proizvoda">' + filterPanel + '</aside>' +
 
       '<div>' +
         '<div class="toolbar">' +
@@ -486,7 +486,7 @@ CW.pages.product = function (ctx) {
       '<div>' +
         '<div class="row row--wrap" style="gap:8px">' +
           CW.c.badges(p) +
-          (soldout ? '<span class="badge badge--soldout">Sold Out</span>' : '') +
+          (soldout ? '<span class="badge badge--soldout">Rasprodato</span>' : '') +
           (low ? '<span class="badge badge--low">Još samo ' + stock + '</span>' : '') +
         '</div>' +
         '<div class="t-eyebrow mt-2">' + CW.esc(cat.name) + (col ? ' · ' + CW.esc(col.name) : '') + '</div>' +
@@ -496,7 +496,7 @@ CW.pages.product = function (ctx) {
       '<div class="pdp__price-row">' +
         '<span class="t-price' + (p.compareAt ? ' t-price--sale' : '') + '" style="font-size:2rem">' + CW.money(p.price) + '</span>' +
         (p.compareAt ? '<span class="t-price--was" style="font-size:1.25rem">' + CW.money(p.compareAt) + '</span>' +
-          '<span class="badge badge--sale">Save ' + CW.money(p.compareAt - p.price) + '</span>' : '') +
+          '<span class="badge badge--sale">Ušteda ' + CW.money(p.compareAt - p.price) + '</span>' : '') +
         '<span class="t-xs">Sa PDV-om</span>' +
       '</div>' +
 
@@ -504,7 +504,7 @@ CW.pages.product = function (ctx) {
 
       (p.dropInfo ?
       '<div class="alert alert--gold">' + CW.icon('flame', 18) +
-        '<span><b>' + p.dropInfo.remaining + ' of ' + p.dropInfo.total + ' remaining</b> — this colourway will not be restocked. Drop closes in ' + p.dropInfo.endsInDays + ' days.</span></div>' : '') +
+        '<span><b>Preostalo ' + p.dropInfo.remaining + ' od ' + p.dropInfo.total + '</b> — ova boja se neće dopunjavati. Izdanje se zatvara za ' + p.dropInfo.endsInDays + ' dana.</span></div>' : '') +
 
       /* ---- colour ---- */
       (colors.length > 1 ?
@@ -521,14 +521,14 @@ CW.pages.product = function (ctx) {
               (avail ? '' : ' disabled title="Rasprodato"') + '></button>';
           }).join('') +
         '</div>' +
-        '<div class="field__error hidden" data-error="color">' + CW.icon('alert', 14) + ' Please choose a colour</div>' +
+        '<div class="field__error hidden" data-error="color">' + CW.icon('alert', 14) + ' Izaberi boju</div>' +
       '</div>' : '<div data-variant-group="color" data-single-color="' + colors[0] + '"></div>') +
 
       /* ---- size ---- */
       (!showSizePicker ? '<div data-variant-group="size" data-single-size="' + CW.esc(sizes[0] || 'Standard') + '"></div>' :
       '<div class="variant-group" data-variant-group="size">' +
         '<div class="variant-head">' +
-          '<span class="field__label">Size: <span class="t-offwhite" data-size-label>Izaberi veličinu</span></span>' +
+          '<span class="field__label">Veličina: <span class="t-offwhite" data-size-label>Izaberi veličinu</span></span>' +
           (guide ? '<button class="link-arrow" type="button" data-act="size-guide" data-guide="' + p.sizeGuide + '">' +
             CW.icon('sliders', 14) + ' Tabela veličina</button>' : '') +
         '</div>' +
@@ -537,14 +537,14 @@ CW.pages.product = function (ctx) {
             return '<button class="variant-btn" type="button" data-act="pick-size" data-size="' + CW.esc(s) + '" aria-pressed="false">' + CW.esc(s) + '</button>';
           }).join('') +
         '</div>' +
-        '<div class="field__error hidden" data-error="size">' + CW.icon('alert', 14) + ' Please choose a size</div>' +
+        '<div class="field__error hidden" data-error="size">' + CW.icon('alert', 14) + ' Izaberi veličinu</div>' +
       '</div>') +
 
       /* ---- stock line ---- */
       '<div data-stock-line>' +
         (soldout
-          ? '<div class="status status--offline"><span class="status__dot"></span>Out of stock</div>'
-          : '<div class="status status--live"><span class="status__dot"></span>In stock</div>') +
+          ? '<div class="status status--offline"><span class="status__dot"></span>Nema na stanju</div>'
+          : '<div class="status status--live"><span class="status__dot"></span>Ima na stanju</div>') +
       '</div>' +
 
       /* ---- qty + actions ---- */
@@ -699,8 +699,8 @@ CW.c.sizeGuideModal = function (key) {
   if (!g) return '';
   return '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="sg-title">' +
     '<div class="modal__head">' +
-      '<h2 class="modal__title" id="sg-title">Size Guide</h2>' +
-      '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Close size guide">' + CW.icon('x', 22) + '</button>' +
+      '<h2 class="modal__title" id="sg-title">Tabela veličina</h2>' +
+      '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Zatvori tabelu veličina">' + CW.icon('x', 22) + '</button>' +
     '</div>' +
     '<div class="modal__body">' +
       '<p class="t-sm mb-3">' + CW.esc(g.label) + '</p>' +

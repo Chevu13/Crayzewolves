@@ -304,7 +304,7 @@ CW.data.policies = {
         'PROVERI: da li se šalje u region i pod kojim uslovima. Ako se šalje, ovde ide rok, cena i ko snosi carinske troškove.'
       ] },
       { id: 'pracenje', title: 'Praćenje pošiljke', body: [
-        'Broj za praćenje stiže na email čim pošiljka napusti magacin. Ako imaš nalog, vidiš ga i na stranici porudžbine.'
+        'Broj za praćenje stiže na mejl čim pošiljka napusti magacin. Ako imaš nalog, vidiš ga i na stranici porudžbine.'
       ] },
       { id: 'problemi', title: 'Izgubljene ili oštećene pošiljke', body: [
         'Ako kurir potvrdi da je pošiljka izgubljena, šaljemo zamenu ili vraćamo novac — po tvom izboru.',
@@ -351,7 +351,7 @@ CW.data.policies = {
         'PROVERI: pun naziv pravnog lica, adresa sedišta i matični broj moraju se upisati pre puštanja uživo.'
       ] },
       { id: 'sta', title: 'Šta prikupljamo', body: [
-        'Podaci naloga — ime, email adresa, lozinka u kriptovanom obliku i adrese za dostavu koje sačuvaš.',
+        'Podaci naloga — ime, imejl adresa, lozinka u kriptovanom obliku i adrese za dostavu koje sačuvaš.',
         'Podaci porudžbine — šta si naručio, adresa dostave, iznos i status plaćanja. Podatke platne kartice ne vidimo niti čuvamo.',
         'Komunikacija — poruke poslate preko kontakt forme i prepiska sa podrškom.',
         'Tehnički podaci — IP adresa, tip pregledača i posećene stranice, radi održavanja sajta.'
@@ -363,7 +363,7 @@ CW.data.policies = {
       ] },
       { id: 'kome', title: 'Kome prosleđujemo', body: [
         'Kurirskoj službi, isključivo radi isporuke.',
-        'Pružaocu usluge slanja email-a, ako si prijavljen na newsletter.',
+        'Pružaocu usluge slanja mejlova, ako si prijavljen na newsletter.',
         'Podatke ne prodajemo.',
         'PROVERI: pun spisak obrađivača i lokacija obrade mora se objaviti pre puštanja uživo.'
       ] },

@@ -164,13 +164,13 @@
 
       var message = null;
       if (rule.required && (input.type === 'checkbox' ? !value : !value)) {
-        message = rule.requiredMsg || 'This field is required';
+        message = rule.requiredMsg || 'Ovo polje je obavezno';
       } else if (value && rule.email && !EMAIL_RE.test(value)) {
-        message = 'Enter a valid email address';
+        message = 'Upiši ispravnu imejl adresu';
       } else if (value && rule.min && String(value).length < rule.min) {
-        message = 'Must be at least ' + rule.min + ' characters';
+        message = 'Najmanje ' + rule.min + ' znakova';
       } else if (rule.match && value !== (form.querySelector('[name="' + rule.match + '"]') || {}).value) {
-        message = 'Passwords do not match';
+        message = 'Lozinke se ne poklapaju';
       }
 
       if (message) {
@@ -671,10 +671,10 @@
           .replace(/id="([^"]+)"/g, 'id="m-$1"')
           .replace(/for="([^"]+)"/g, 'for="m-$1"') : '';
         CW.ui.openOverlay(
-          '<div class="drawer drawer--left" role="dialog" aria-modal="true" aria-label="Filters">' +
+          '<div class="drawer drawer--left" role="dialog" aria-modal="true" aria-label="Filteri">' +
             '<div class="drawer__head">' +
-              '<span class="drawer__title">Filters</span>' +
-              '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Close filters">' + CW.icon('x', 22) + '</button>' +
+              '<span class="drawer__title">Filteri</span>' +
+              '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Zatvori filtere">' + CW.icon('x', 22) + '</button>' +
             '</div>' +
             '<div class="drawer__body">' + markup + '</div>' +
           '</div>');
@@ -710,7 +710,7 @@
         var rcForm = document.querySelector('[data-act="checkout-form"]');
         if (rcForm) pendingRestore = snapshotForm(rcForm);
         CW.store.removeCoupon();
-        CW.toast({ type: 'info', title: 'Discount removed' });
+        CW.toast({ type: 'info', title: 'Popust je uklonjen' });
         CW.router.refresh();
         break;
       }
@@ -742,17 +742,17 @@
       case 'add-address':
       case 'edit-address':
         ev.preventDefault();
-        CW.toast({ type: 'info', title: 'Address editor', text: 'Address management connects to the customer API in the next phase.' });
+        CW.toast({ type: 'info', title: 'Uređivanje adresa', text: 'Adrese se povezuju sa nalogom u sledećoj fazi.' });
         break;
 
       case 'set-default-address':
         ev.preventDefault();
-        CW.toast({ type: 'success', title: 'Default address updated' });
+        CW.toast({ type: 'success', title: 'Podrazumevana adresa je promenjena' });
         break;
 
       case 'delete-address':
         ev.preventDefault();
-        CW.toast({ type: 'info', title: 'Address removed' });
+        CW.toast({ type: 'info', title: 'Adresa je uklonjena' });
         break;
 
       case 'delete-account':
@@ -760,17 +760,17 @@
         CW.ui.openOverlay(
           '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="del-t">' +
             '<div class="modal__head">' +
-              '<h2 class="modal__title" id="del-t">Delete your account?</h2>' +
-              '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Close">' + CW.icon('x', 22) + '</button>' +
+              '<h2 class="modal__title" id="del-t">Obrisati nalog?</h2>' +
+              '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Zatvori">' + CW.icon('x', 22) + '</button>' +
             '</div>' +
             '<div class="modal__body">' +
               '<div class="alert alert--error">' + CW.icon('alert', 18) +
-                '<span>This removes your saved addresses and wishlist immediately and cannot be undone.</span></div>' +
-              '<p class="t-sm mt-3">Order records are retained for the period required by tax and accounting law, as described in the Privacy Policy.</p>' +
+                '<span>Time se odmah brišu sačuvane adrese i lista želja, i to ne može da se vrati.</span></div>' +
+              '<p class="t-sm mt-3">Podaci o porudžbinama čuvaju se onoliko koliko traže poreski i računovodstveni propisi, kako piše u Politici privatnosti.</p>' +
             '</div>' +
             '<div class="modal__foot">' +
-              '<button class="btn btn--quiet" type="button" data-act="close-overlays">Keep my account</button>' +
-              '<button class="btn btn--danger" type="button" data-act="close-overlays">Delete account</button>' +
+              '<button class="btn btn--quiet" type="button" data-act="close-overlays">Zadrži nalog</button>' +
+              '<button class="btn btn--danger" type="button" data-act="close-overlays">Obriši nalog</button>' +
             '</div>' +
           '</div>');
         break;
@@ -819,14 +819,14 @@
         if (res.ok) {
           var cpForm = document.querySelector('[data-act="checkout-form"]');
           if (cpForm) pendingRestore = snapshotForm(cpForm);
-          CW.toast({ type: 'success', title: 'Discount applied', text: res.coupon.label });
+          CW.toast({ type: 'success', title: 'Popust je primenjen', text: res.coupon.label });
           CW.router.refresh();
         } else {
-          var msg = res.reason === 'empty' ? 'Enter a discount code first.'
-            : res.reason === 'min-spend' ? 'This code needs a minimum spend of ' + CW.money(res.min) + '.'
-            : 'That code is not valid or has expired.';
+          var msg = res.reason === 'empty' ? 'Prvo upiši kod za popust.'
+            : res.reason === 'min-spend' ? 'Ovaj kod važi tek za porudžbinu preko ' + CW.money(res.min) + '.'
+            : 'Kod nije ispravan ili je istekao.';
           setError(input, msg);
-          CW.toast({ type: 'error', title: 'Code not applied', text: msg });
+          CW.toast({ type: 'error', title: 'Kod nije primenjen', text: msg });
         }
         break;
       }
@@ -835,23 +835,23 @@
       case 'contact-form': {
         ev.preventDefault();
         var v = validate(form, {
-          name:    { required: true, requiredMsg: 'Tell us who you are' },
+          name:    { required: true, requiredMsg: 'Upiši svoje ime' },
           email:   { required: true, email: true },
-          message: { required: true, min: 10, requiredMsg: 'A message helps us help you' },
-          consent: { required: true, requiredMsg: 'We need your consent to reply' }
+          message: { required: true, min: 10, requiredMsg: 'Napiši poruku, da znamo o čemu je reč' },
+          consent: { required: true, requiredMsg: 'Bez saglasnosti ne možemo da odgovorimo' }
         });
         if (!v.ok) {
-          formStatus(form, 'error', 'Please correct the highlighted fields and try again.');
+          formStatus(form, 'error', 'Ispravi označena polja pa probaj ponovo.');
           if (v.firstInvalid) v.firstInvalid.focus();
-          CW.toast({ type: 'error', title: 'Check the form', text: 'Some required fields need attention.' });
+          CW.toast({ type: 'error', title: 'Proveri formu', text: 'Neka obavezna polja nisu popunjena.' });
           break;
         }
         submitting(form, true);
         setTimeout(function () {
           submitting(form, false);
           form.reset();
-          formStatus(form, 'success', 'Message sent. We reply within two working days — partnership enquiries usually get a same-day acknowledgement.');
-          CW.toast({ type: 'success', title: 'Message sent', text: 'We will be in touch shortly.' });
+          formStatus(form, 'success', 'Poruka je poslata. Odgovaramo u roku od dva radna dana — na upite za saradnju javljamo se obično istog dana.');
+          CW.toast({ type: 'success', title: 'Poruka je poslata', text: 'Javljamo se uskoro.' });
         }, 800);
         break;
       }
@@ -861,10 +861,10 @@
         ev.preventDefault();
         var lv = validate(form, {
           email:    { required: true, email: true },
-          password: { required: true, min: 6, requiredMsg: 'Enter your password' }
+          password: { required: true, min: 6, requiredMsg: 'Upiši lozinku' }
         });
         if (!lv.ok) {
-          formStatus(form, 'error', 'Check your email address and password.');
+          formStatus(form, 'error', 'Proveri imejl adresu i lozinku.');
           if (lv.firstInvalid) lv.firstInvalid.focus();
           break;
         }
@@ -1126,7 +1126,7 @@
         if (pay && pay.value === 'card') {
           var num = form.querySelector('[name=cardNumber]');
           if (num && num.value.replace(/\s/g, '').length < 12) {
-            setError(num, 'Enter a valid card number');
+            setError(num, 'Upiši ispravan broj kartice');
             cv.ok = false;
             if (!cv.firstInvalid) cv.firstInvalid = num;
           }
@@ -1249,7 +1249,7 @@
     /* The skip link is a button, not an anchor: an href="#main" would be
        swallowed by the hash router and navigate away. */
     root.innerHTML =
-      '<button class="skip-link" type="button" data-act="skip-to-content">Skip to main content</button>' +
+      '<button class="skip-link" type="button" data-act="skip-to-content">Pređi na sadržaj</button>' +
       '<div class="route-progress" id="route-progress" style="width:0;opacity:0"></div>' +
       '<div id="header-root"></div>' +
       '<main id="app" tabindex="-1"></main>' +

@@ -761,7 +761,7 @@ CW.router = (function () {
     CW.pendingMount = [];
     outlet.innerHTML = view(ctx);
     outlet.className = hit && hit.route.bodyClass ? hit.route.bodyClass : '';
-    document.title = (hit && hit.route.title ? hit.route.title(ctx) : 'Page Not Found') + ' — Wolfpack';
+    document.title = (hit && hit.route.title ? hit.route.title(ctx) : 'Stranica nije pronađena') + ' — Wolfpack';
     syncMeta(hit, ctx);
 
     CW.pendingMount.forEach(function (fn) { try { fn(); } catch (e) { console.error(e); } });
