@@ -12,4 +12,4 @@ Disallow: /najava.html
 # zastita — pravu zastitu radi RLS u bazi.
 Disallow: /#/admin
 
-Sitemap: https://wolfpack.rs/sitemap.xml
+Sitemap: https://www.wolfpack.rs/sitemap.xml
