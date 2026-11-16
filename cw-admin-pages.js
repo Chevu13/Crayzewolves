@@ -149,6 +149,9 @@ CW.admin = CW.admin || {};
               '<p class="field__error" data-error-for="password"></p>' +
             '</div>' +
             '<button class="btn btn--primary btn--lg full" type="submit">Prijavi se</button>' +
+            /* Bez ovoga je ekran za prijavu slepa ulica: ko ne zna lozinku,
+               odavde nema kuda. Reset zivi na javnom delu sajta. */
+            '<p class="t-xs text-center"><a class="link-underline" href="#/nalog/zaboravljena">Zaboravljena lozinka?</a></p>' +
           '</form>' +
 
         '</div>' +

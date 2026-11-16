@@ -147,7 +147,15 @@ window.CW = window.CW || {};
   function fieldError(f, field, message) {
     var box = f.querySelector('[data-error-for="' + field + '"]');
     var input = f.elements[field];
-    if (box) box.textContent = message || '';
+    if (box) {
+      box.textContent = message || '';
+      /* Globalni validator sa sajta (cw-app.js, clearError) sakriva ovu
+         poruku klasom `hidden` cim korisnik pocne da kuca. Greska iz panela
+         stize tek posle odgovora servera, pa klasu moramo skinuti sami --
+         inace tekst sedi u DOM-u, a na ekranu se ne vidi nista i prijava
+         izgleda kao da ne reaguje. */
+      box.classList.toggle('hidden', !message);
+    }
     if (input) {
       input.classList.toggle('is-invalid', Boolean(message));
       input.setAttribute('aria-invalid', message ? 'true' : 'false');
