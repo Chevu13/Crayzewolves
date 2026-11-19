@@ -211,6 +211,19 @@ a.adm-row:hover .adm-row__title { color: var(--color-gold); }
   transition: color var(--dur-fast) var(--ease-out);
 }
 .adm-row__meta { font-size: var(--fs-xs); color: var(--color-muted); margin-top: 2px; }
+
+/* Grupa dugmadi na desnoj strani reda (kategorije, redosled proizvoda).
+   Na uskom ekranu pada u nov red ispod naziva, da se dugmad ne stisnu u
+   nedodirljive kvadratiće. */
+.adm-row__acts { display: flex; align-items: center; gap: 4px; flex: none; margin-left: auto; }
+.adm-row__acts .btn[disabled] { opacity: 0.35; pointer-events: none; }
+
+@media (max-width: 720px) {
+  .adm-row__acts { margin-left: 46px; margin-top: 8px; flex-wrap: wrap; }
+}
+
+/* Red dugmadi ispod forme — glavna radnja i izlaz iz izmene. */
+.adm-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
 .adm-star { color: var(--color-gold); vertical-align: middle; }
 
 /* ---------- OZNAKA STANJA ----------

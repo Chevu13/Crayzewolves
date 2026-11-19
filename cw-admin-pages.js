@@ -572,9 +572,37 @@ CW.admin = CW.admin || {};
   /* Digitalni proizvod nema lager u komadima — zaliha mu je broj slobodnih
      kodova. Polje tada postaje prikaz, ne unos: pokazuje pravo stanje i vodi
      na ekran gde se kodovi dosipaju. */
+  /* Ponuda kategorija prati vrstu proizvoda. Baza (`products_shop_matches_
+     fulfillment`) ne dozvoljava digitalan proizvod u merch kategoriji, pa
+     nema svrhe nuditi izbor koji će upis odbiti. */
+  A._syncCats = function () {
+    var f = document.querySelector('[data-form="adm-product"]');
+    var sel = document.getElementById('adm-prod-cat');
+    if (!f || !sel || !A._cats) return;
+
+    var kind = f.elements.kind ? f.elements.kind.value : 'MERCH';
+    /* Pri izmeni se vrednost upisuje u polje PRE nego što ovaj spisak
+       postoji, pa prazan select tu vrednost tiho proguta. Zato se traženi
+       id cita i iz proizvoda koji se uređuje. */
+    var zeljeno = sel.value || (A._editing && A._editing.categoryId) || '';
+    var red = A._cats.filter(function (c) { return c.kind === kind && c.isActive; });
+
+    sel.innerHTML = red.length
+      ? red.map(function (c) {
+          return '<option value="' + CW.esc(c.id) + '">' + CW.esc(c.name) + '</option>';
+        }).join('')
+      : '<option value="">Nema kategorija za ovu vrstu</option>';
+
+    /* Ako je proizvod bio u kategoriji druge prodavnice, izbor pada na prvu
+       ponuđenu -- to je i jedina vrednost koju će baza primiti. */
+    var ima = red.some(function (c) { return c.id === zeljeno; });
+    if (ima) sel.value = zeljeno;
+  };
+
   A._syncKind = function (productId) {
     var f = document.querySelector('[data-form="adm-product"]');
     if (!f || !f.elements.kind) return;
+    A._syncCats();
     var digitalno = f.elements.kind.value === 'DIGITAL';
     var polje = f.elements.stock;
     var hint = document.getElementById('adm-prod-qty-hint');
@@ -614,13 +642,8 @@ CW.admin = CW.admin || {};
     var isNew = !id || id === 'novi';
 
     CW.onMount(function () {
-      var catSel = document.getElementById('adm-prod-cat');
       CW.api.categories.all().then(function (cats) {
-        if (catSel) {
-          catSel.innerHTML = cats.map(function (c) {
-            return '<option value="' + CW.esc(c.id) + '">' + CW.esc(c.name) + '</option>';
-          }).join('');
-        }
+        A._cats = cats;
         if (isNew) { A._editing = null; A._syncKind(null); A._syncFeatured(); return; }
         CW.api.products.get(id).then(function (p) {
           A._editing = p;
@@ -1004,35 +1027,148 @@ CW.admin = CW.admin || {};
   /* ======================================================================
      KATEGORIJE
      ====================================================================== */
+  /* Ikonice koje imaju smisla za policu u prodavnici. Lista je kratka
+     namerno — urednik bira iz ponuđenog, pa ne može da upiše ime
+     ikonice koja ne postoji i dobije prazan kvadrat u shopu. */
+  var CAT_IKONE = ['tag', 'shirt', 'cap', 'mouse', 'monitor', 'mug', 'sticker',
+                   'gift', 'card', 'zap', 'package', 'trophy', 'flame', 'star', 'book'];
+
   A.categories = function () {
-    CW.onMount(function () {
-      Promise.all([CW.api.categories.all(), CW.api.products.all()]).then(function (r) {
-        var cats = r[0], prods = r[1];
-        var host = document.getElementById('adm-cat-list');
-        if (!host) return;
-        host.innerHTML = cats.length
-          ? cats.map(function (c) {
-              var n = prods.filter(function (p) { return p.categoryId === c.id; }).length;
-              return '<div class="adm-row adm-row--static">' +
-                '<div class="adm-row__icon">' + CW.icon(c.icon || 'folder', 15) + '</div>' +
-                '<div class="adm-row__main">' +
-                  '<div class="adm-row__title">' + CW.esc(c.name) + '</div>' +
-                  '<div class="adm-row__meta">' + n + ' ' +
-                    CW.plural(n, 'proizvod', 'proizvoda', 'proizvoda') + '</div>' +
-                '</div>' +
-                '<button class="btn btn--ghost btn--sm" type="button" ' +
-                  'data-act="adm-cat-rename" data-id="' + CW.esc(c.id) + '">Preimenuj</button>' +
-              '</div>';
-            }).join('')
-          : empty('folder', 'Nema kategorija.');
-      });
-    });
+    CW.onMount(function () { A._reloadCats(); });
+
+    function ikonOpcije() {
+      return CAT_IKONE.map(function (i) {
+        return '<option value="' + i + '">' + i + '</option>';
+      }).join('');
+    }
 
     return A.shell('/admin/kategorije', 'Kategorije',
-      '<div class="adm-panel"><div id="adm-cat-list">' + skeletonRows(4) + '</div></div>' +
-      '<p class="t-sm mt-3">Kategorije se koriste i u shopu i u filterima. ' +
-        'Brisanje kategorije sa proizvodima nije dozvoljeno.</p>'
+      '<form class="adm-panel" data-form="adm-cat" novalidate>' +
+        '<h2 class="t-h3" id="adm-cat-naslov">Nova kategorija</h2>' +
+        '<input type="hidden" name="id" id="adm-cat-id" value="">' +
+
+        '<div class="adm-cols mt-3">' +
+          '<div class="field">' +
+            '<label class="field__label" for="adm-cat-kind">Prodavnica *</label>' +
+            '<select class="select" id="adm-cat-kind" name="kind">' +
+              '<option value="MERCH">Merch — fizički proizvodi</option>' +
+              '<option value="DIGITAL">Digitalna — kodovi, gift kartice, pretplate</option>' +
+            '</select>' +
+            '<p class="t-xs mt-1">Digitalni proizvodi mogu da stoje samo u digitalnim ' +
+              'kategorijama — tako traži baza.</p>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label class="field__label" for="adm-cat-name">Naziv *</label>' +
+            '<input class="input" id="adm-cat-name" name="name" required ' +
+              'placeholder="npr. Slušalice">' +
+            '<p class="field__error hidden" data-error-for="name"></p>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="adm-cols mt-3">' +
+          '<div class="field">' +
+            '<label class="field__label" for="adm-cat-icon">Ikonica</label>' +
+            '<select class="select" id="adm-cat-icon" name="icon">' + ikonOpcije() + '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label class="field__label" for="adm-cat-blurb">Kratak opis</label>' +
+            '<input class="input" id="adm-cat-blurb" name="blurb" ' +
+              'placeholder="Stoji ispod naziva u prodavnici.">' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="adm-actions mt-3">' +
+          '<button class="btn btn--primary" type="submit" id="adm-cat-submit">Dodaj kategoriju</button>' +
+          '<button class="btn btn--ghost hidden" type="button" id="adm-cat-cancel" ' +
+            'data-act="adm-cat-cancel">Otkaži</button>' +
+        '</div>' +
+      '</form>' +
+
+      '<div class="adm-panel mt-3"><div id="adm-cat-list">' + skeletonRows(4) + '</div></div>' +
+
+      '<p class="t-sm mt-3">Strelicama nameštaš redosled kojim police stoje u ' +
+        'prodavnici. Kategorija sa proizvodima ne može da se obriše — prvo premesti ' +
+        'proizvode.</p>'
     );
+  };
+
+  /* Spisak se crta iz dva izvora (kategorije + brojač proizvoda), pa je
+     izdvojen: posle svakog dodavanja, brisanja i pomeranja osvežava se
+     samo on, bez ponovnog učitavanja cele strane. */
+  A._reloadCats = function () {
+    var host = document.getElementById('adm-cat-list');
+    if (!host) return;
+
+    Promise.all([CW.api.categories.all(), CW.api.products.all()]).then(function (r) {
+      var cats = r[0], prods = r[1];
+      host = document.getElementById('adm-cat-list');
+      if (!host) return;
+
+      if (!cats.length) { host.innerHTML = empty('folder', 'Nema kategorija.'); return; }
+
+      function grupa(kind, naslov) {
+        var red = cats.filter(function (c) { return c.kind === kind; })
+                      .sort(function (a, b) { return a.sortOrder - b.sortOrder; });
+        if (!red.length) return '';
+
+        return '<h3 class="t-h4 mt-3">' + naslov + '</h3>' +
+          red.map(function (c, i) {
+            var n = prods.filter(function (p) { return p.categoryId === c.id; }).length;
+            return '<div class="adm-row adm-row--static">' +
+              '<div class="adm-row__icon">' + CW.icon(c.icon || 'tag', 15) + '</div>' +
+              '<div class="adm-row__main">' +
+                '<div class="adm-row__title">' + CW.esc(c.name) +
+                  (c.isActive ? '' : ' <span class="adm-pill adm-pill--neutral">skrivena</span>') +
+                '</div>' +
+                '<div class="adm-row__meta">' + n + ' ' +
+                  CW.plural(n, 'proizvod', 'proizvoda', 'proizvoda') +
+                  (c.blurb ? ' · ' + CW.esc(c.blurb) : '') + '</div>' +
+              '</div>' +
+              '<div class="adm-row__acts">' +
+                '<button class="btn btn--ghost btn--sm" type="button" title="Gore" ' +
+                  'data-act="adm-cat-up" data-id="' + CW.esc(c.id) + '"' +
+                  (i === 0 ? ' disabled' : '') + '>' + CW.icon('chevronU', 14) + '</button>' +
+                '<button class="btn btn--ghost btn--sm" type="button" title="Dole" ' +
+                  'data-act="adm-cat-down" data-id="' + CW.esc(c.id) + '"' +
+                  (i === red.length - 1 ? ' disabled' : '') + '>' + CW.icon('chevronD', 14) + '</button>' +
+                '<button class="btn btn--ghost btn--sm" type="button" ' +
+                  'data-act="adm-cat-edit" data-id="' + CW.esc(c.id) + '">Izmeni</button>' +
+                '<button class="btn btn--ghost btn--sm" type="button" ' +
+                  'data-act="adm-cat-toggle" data-id="' + CW.esc(c.id) + '">' +
+                  (c.isActive ? 'Sakrij' : 'Prikaži') + '</button>' +
+                '<button class="btn btn--ghost btn--sm" type="button" ' +
+                  'data-act="adm-cat-del" data-id="' + CW.esc(c.id) + '">Obriši</button>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+      }
+
+      host.innerHTML = grupa('MERCH', 'Merch prodavnica') +
+                       grupa('DIGITAL', 'Digitalna prodavnica');
+    }).catch(function (e) {
+      var h = document.getElementById('adm-cat-list');
+      if (h) h.innerHTML = empty('alert', e.message || 'Učitavanje nije uspelo.');
+    });
+  };
+
+  /* Jedna forma radi i dodavanje i izmenu — dve forme sa istim poljima bi
+     se razišle prvom sledećom izmenom. */
+  A._catForm = function (c) {
+    var f = document.querySelector('[data-form="adm-cat"]');
+    if (!f) return;
+    f.elements.id.value = c ? c.id : '';
+    f.elements.name.value = c ? c.name : '';
+    f.elements.kind.value = c ? c.kind : 'MERCH';
+    f.elements.icon.value = c ? (c.icon || 'tag') : 'tag';
+    f.elements.blurb.value = c ? (c.blurb || '') : '';
+
+    var naslov = document.getElementById('adm-cat-naslov');
+    var dugme = document.getElementById('adm-cat-submit');
+    var otkazi = document.getElementById('adm-cat-cancel');
+    if (naslov) naslov.textContent = c ? ('Izmena: ' + c.name) : 'Nova kategorija';
+    if (dugme) dugme.textContent = c ? 'Sačuvaj izmene' : 'Dodaj kategoriju';
+    if (otkazi) otkazi.classList.toggle('hidden', !c);
+    if (c) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   /* ======================================================================

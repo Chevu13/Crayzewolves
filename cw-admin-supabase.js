@@ -208,27 +208,132 @@ window.CW = window.CW || {};
   api.posts = collection('posts', postFromDb, postToDb, 'published_at', true);
   api.products = collection('products', productFromDb, productToDb, 'sort_order', false);
 
+  /* Kategorija pripada JEDNOJ prodavnici. To nije ukras nego uslov iz baze:
+     `products_shop_matches_fulfillment` ne da da digitalan proizvod sedne u
+     merch kategoriju. Zato panel prvo pita koja je prodavnica, pa onda naziv. */
+  function catFromDb(r) {
+    return {
+      id: r.id, name: r.name, slug: r.slug,
+      shop: r.shop,
+      kind: r.shop === 'digital' ? 'DIGITAL' : 'MERCH',
+      icon: r.icon || '', blurb: r.blurb || '',
+      sortOrder: r.sort_order || 0,
+      isActive: r.is_active !== false
+    };
+  }
+
+  function catToDb(c) {
+    var out = {};
+    if (c.name !== undefined)      out.name = c.name;
+    if (c.slug !== undefined)      out.slug = c.slug;
+    if (c.icon !== undefined)      out.icon = c.icon || null;
+    if (c.blurb !== undefined)     out.blurb = c.blurb || null;
+    if (c.sortOrder !== undefined) out.sort_order = c.sortOrder;
+    if (c.isActive !== undefined)  out.is_active = c.isActive;
+    if (c.kind !== undefined)      out.shop = c.kind === 'DIGITAL' ? 'digital' : 'merch';
+    if (c.shop !== undefined)      out.shop = c.shop;
+    out.updated_at = new Date().toISOString();
+    return out;
+  }
+
   api.categories = {
     all: function () {
       return CW.sb.from('shop_categories').select('*').order('sort_order').get()
-        .then(function (rows) {
-          return (rows || []).map(function (r) {
-            return { id: r.id, name: r.name, slug: r.slug, icon: r.icon, blurb: r.blurb };
-          });
-        });
+        .then(function (rows) { return (rows || []).map(catFromDb); });
     },
+
     get: function (id) {
       return CW.sb.from('shop_categories').select('*').eq('id', id).limit(1).get()
         .then(function (rows) {
           if (!rows || !rows.length) throw new Error('Kategorija nije pronađena.');
-          return rows[0];
+          return catFromDb(rows[0]);
         });
     },
+
     update: function (id, patch) {
-      return CW.sb.from('shop_categories').eq('id', id).update(patch);
+      return CW.sb.from('shop_categories').eq('id', id).update(catToDb(patch))
+        .then(function (row) {
+          if (!row) throw new Error('Izmena nije sačuvana — ovaj nalog nema prava administratora.');
+          return row;
+        });
     },
-    create: function () { return Promise.reject(new Error('Kategorije se dodaju kroz Supabase.')); },
-    remove: function () { return Promise.reject(new Error('Kategorije se brišu kroz Supabase.')); },
+
+    /* `id` i `slug` se izvode iz naziva, jer su u bazi tekst bez podrazumevane
+       vrednosti. Oba su jedinstvena, pa ako naziv već postoji dodajemo broj —
+       inače bi baza odbila upis porukom koju urednik ne ume da protumači. */
+    create: function (data) {
+      var naziv = String(data && data.name || '').trim();
+      if (!naziv) return Promise.reject(new Error('Kategorija mora imati naziv.'));
+      var kind = data.kind === 'DIGITAL' ? 'DIGITAL' : 'MERCH';
+
+      return api.categories.all().then(function (sve) {
+        var zauzeto = {};
+        sve.forEach(function (c) { zauzeto[c.id] = true; zauzeto[c.slug] = true; });
+
+        var osnova = CW.slug(naziv) || 'kategorija';
+        var kljuc = osnova, n = 2;
+        while (zauzeto[kljuc]) { kljuc = osnova + '-' + n; n++; }
+
+        /* Nova kategorija ide na kraj SVOJE prodavnice, ne na kraj svega. */
+        var uIstoj = sve.filter(function (c) { return c.kind === kind; });
+        var poslednji = uIstoj.reduce(function (m, c) { return Math.max(m, c.sortOrder); }, -1);
+
+        var red = catToDb({
+          name: naziv, kind: kind,
+          icon: data.icon || '', blurb: data.blurb || '',
+          sortOrder: poslednji + 1, isActive: true
+        });
+        red.id = kljuc;
+        red.slug = kljuc;
+
+        return CW.sb.from('shop_categories').insert(red).then(function (row) {
+          if (!row) throw new Error('Kategorija nije napravljena — ovaj nalog nema prava administratora.');
+          return catFromDb(row);
+        });
+      });
+    },
+
+    /* Strani ključ je ON DELETE SET NULL: baza bi brisanje propustila, a
+       proizvodi bi tiho ostali bez kategorije i ispali iz filtera. Zato se
+       pitanje postavlja ovde, dok se još ima šta reći korisniku. */
+    remove: function (id) {
+      return api.products.all().then(function (prods) {
+        var koliko = prods.filter(function (p) { return p.categoryId === id; }).length;
+        if (koliko) {
+          throw new Error('U kategoriji je ' + koliko + ' ' +
+            CW.plural(koliko, 'proizvod', 'proizvoda', 'proizvoda') +
+            '. Prvo ih premesti, pa onda briši kategoriju.');
+        }
+        return CW.sb.from('shop_categories').eq('id', id).remove();
+      });
+    },
+
+    /* Pomeranje za jedno mesto gore/dole unutar svoje prodavnice. Umesto
+       zamene dva broja, ceo niz se prenumeriše od nule i upisuju se samo
+       redovi kojima se broj stvarno promenio — tako se iz nasleđenih
+       vrednosti (0, 1, 2, 10, 11, 12, 13) izlazi bez sudara. */
+    reorder: function (id, smer) {
+      return api.categories.all().then(function (sve) {
+        var meta = null;
+        sve.forEach(function (c) { if (c.id === id) meta = c; });
+        if (!meta) throw new Error('Kategorija nije pronađena.');
+
+        var red = sve.filter(function (c) { return c.kind === meta.kind; })
+                     .sort(function (a, b) { return a.sortOrder - b.sortOrder; });
+        var i = -1;
+        red.forEach(function (c, idx) { if (c.id === id) i = idx; });
+        var j = smer < 0 ? i - 1 : i + 1;
+        if (j < 0 || j >= red.length) return null;
+
+        red.splice(j, 0, red.splice(i, 1)[0]);
+
+        return Promise.all(red.map(function (c, idx) {
+          if (c.sortOrder === idx) return null;
+          return CW.sb.from('shop_categories').eq('id', c.id).update({ sort_order: idx });
+        }).filter(Boolean));
+      });
+    },
+
     reset: function () { return Promise.reject(new Error('Nije dostupno kada je sadržaj u bazi.')); }
   };
 

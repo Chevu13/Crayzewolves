@@ -373,17 +373,55 @@ window.CW = window.CW || {};
       return;
     }
 
-    if (act === 'adm-cat-rename') {
+    if (act === 'adm-cat-edit') {
       ev.preventDefault();
-      var id = t.getAttribute('data-id');
-      CW.api.categories.get(id).then(function (c) {
-        var name = window.prompt('Novi naziv kategorije:', c.name);
-        if (!name || !name.trim() || name === c.name) return;
-        CW.api.categories.update(id, { name: name.trim() }).then(function () {
-          CW.toast('Preimenovano.', 'success');
-          CW.router.refresh();
+      CW.api.categories.get(t.getAttribute('data-id')).then(function (c) {
+        CW.admin._catForm(c);
+      }).catch(function (e) { CW.toast(e.message || 'Ne mogu da učitam kategoriju.', 'error'); });
+      return;
+    }
+
+    if (act === 'adm-cat-cancel') {
+      ev.preventDefault();
+      CW.admin._catForm(null);
+      return;
+    }
+
+    if (act === 'adm-cat-up' || act === 'adm-cat-down') {
+      ev.preventDefault();
+      t.disabled = true;
+      CW.api.categories.reorder(t.getAttribute('data-id'), act === 'adm-cat-up' ? -1 : 1)
+        .then(function () { CW.admin._reloadCats(); })
+        .catch(function (e) {
+          t.disabled = false;
+          CW.toast(e.message || 'Pomeranje nije uspelo.', 'error');
         });
-      });
+      return;
+    }
+
+    if (act === 'adm-cat-toggle') {
+      ev.preventDefault();
+      var catId = t.getAttribute('data-id');
+      CW.api.categories.get(catId).then(function (c) {
+        return CW.api.categories.update(catId, { isActive: !c.isActive }).then(function () {
+          CW.toast(c.isActive ? 'Kategorija je skrivena.' : 'Kategorija je vidljiva.', 'success');
+          CW.admin._reloadCats();
+        });
+      }).catch(function (e) { CW.toast(e.message || 'Izmena nije uspela.', 'error'); });
+      return;
+    }
+
+    if (act === 'adm-cat-del') {
+      ev.preventDefault();
+      var delId = t.getAttribute('data-id');
+      CW.api.categories.get(delId).then(function (c) {
+        if (!window.confirm('Obrisati kategoriju „' + c.name + '“?')) return null;
+        return CW.api.categories.remove(delId).then(function () {
+          CW.toast('Kategorija je obrisana.', 'success');
+          CW.admin._catForm(null);
+          CW.admin._reloadCats();
+        });
+      }).catch(function (e) { CW.toast(e.message || 'Brisanje nije uspelo.', 'error'); });
       return;
     }
 
@@ -533,6 +571,44 @@ window.CW = window.CW || {};
         CW.router.refresh();
       }).catch(function (e) {
         fieldError(f, 'password', e.message);
+      });
+      return;
+    }
+
+    if (f.matches('[data-form="adm-cat"]')) {
+      ev.preventDefault();
+      var catData = {
+        name: f.elements.name.value.trim(),
+        kind: f.elements.kind.value,
+        icon: f.elements.icon.value,
+        blurb: f.elements.blurb.value.trim()
+      };
+      if (!fieldError(f, 'name', catData.name ? '' : 'Unesi naziv kategorije.')) {
+        f.elements.name.focus();
+        return;
+      }
+
+      var postojeci = f.elements.id.value;
+      var btn = document.getElementById('adm-cat-submit');
+      if (btn) btn.disabled = true;
+
+      /* Prodavnica se kod IZMENE ne dira. Prebacivanje postojeće kategorije iz
+         merch-a u digitalnu ostavilo bi u njoj proizvode koje baza tu ne pušta
+         (`products_shop_matches_fulfillment`), pa bi prvi sledeći upis pukao. */
+      var posao = postojeci
+        ? CW.api.categories.update(postojeci, {
+            name: catData.name, icon: catData.icon, blurb: catData.blurb
+          })
+        : CW.api.categories.create(catData);
+
+      posao.then(function () {
+        CW.toast(postojeci ? 'Kategorija je sačuvana.' : 'Kategorija je dodata.', 'success');
+        CW.admin._catForm(null);
+        CW.admin._reloadCats();
+      }).catch(function (e) {
+        fieldError(f, 'name', e.message || 'Snimanje nije uspelo.');
+      }).then(function () {
+        if (btn) btn.disabled = false;
       });
       return;
     }
