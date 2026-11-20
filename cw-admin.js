@@ -299,6 +299,55 @@ window.CW = window.CW || {};
     }).catch(function (e) { CW.toast(e.message || 'Čuvanje nije uspelo.', 'error'); });
   }
 
+  /* Proba i pravo slanje dele sav posao osim jedne rečenice potvrde. Razlika
+     je samo u tome kome ide — pa je i kod jedan, da proba zaista pokazuje šta
+     će ljudi dobiti. */
+  function posaljiNewsletter(jeProba) {
+    var f = form('adm-news');
+    if (!f) return;
+
+    var naslov = f.elements.subject.value.trim();
+    var telo = f.elements.body.value.trim();
+
+    var ok = fieldError(f, 'subject', naslov ? '' : 'Unesi naslov mejla.');
+    ok = fieldError(f, 'body', telo ? '' : 'Unesi tekst mejla.') && ok;
+    if (!ok) { var bad = f.querySelector('.is-invalid'); if (bad) bad.focus(); return; }
+
+    var naKoga = jeProba ? (f.elements.testTo.value.trim() || '') : '';
+
+    /* Slanje svima je jedino dugme u panelu koje nešto šalje ljudima izvan
+       firme, i ne može da se povuče. Zato pita, i to sa brojem. */
+    if (!jeProba) {
+      var potvrda = window.confirm(
+        'Mejl ide SVIMA koji su potvrdili prijavu.\n\n' +
+        'Naslov: ' + naslov + '\n\nPoslato se ne može povući. Nastaviti?'
+      );
+      if (!potvrda) return;
+    }
+
+    var dugmad = f.querySelectorAll('button');
+    [].forEach.call(dugmad, function (b) { b.disabled = true; });
+
+    CW.api.newsletter.send(naslov, telo, jeProba, naKoga).then(function (d) {
+      if (!d || d.sent === false) {
+        CW.toast((d && d.reason) || 'Slanje nije uspelo.', 'error');
+        return;
+      }
+      if (jeProba) {
+        CW.toast('Proba je poslata. Proveri sanduče.', 'success');
+      } else {
+        CW.toast(d.poslato + ' od ' + d.ukupno + ' mejlova je poslato.', 'success');
+        f.reset();
+      }
+      if (d.greske && d.greske.length) console.warn('[CW] Newsletter greške:', d.greske);
+      CW.admin._reloadNews();
+    }).catch(function (e) {
+      CW.toast(e.message || 'Slanje nije uspelo.', 'error');
+    }).then(function () {
+      [].forEach.call(dugmad, function (b) { b.disabled = false; });
+    });
+  }
+
   /* ---- delegirani događaji ---- */
   /* Vrsta proizvoda se menja u letu: čim se prebaci na digitalni, polje za
      lager prestaje da bude unos. */
@@ -393,6 +442,12 @@ window.CW = window.CW || {};
         CW.toast('Proizvod je obrisan.', 'success');
         window.location.hash = '#/admin/proizvodi';
       });
+      return;
+    }
+
+    if (act === 'adm-news-test') {
+      ev.preventDefault();
+      posaljiNewsletter(true);
       return;
     }
 
@@ -607,6 +662,12 @@ window.CW = window.CW || {};
       }).catch(function (e) {
         fieldError(f, 'password', e.message);
       });
+      return;
+    }
+
+    if (f.matches('[data-form="adm-news"]')) {
+      ev.preventDefault();
+      posaljiNewsletter(false);
       return;
     }
 

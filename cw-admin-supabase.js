@@ -381,6 +381,32 @@ window.CW = window.CW || {};
     reset: function () { return Promise.reject(new Error('Nije dostupno kada je sadržaj u bazi.')); }
   };
 
+  /* Newsletter. Spisak pretplatnika čita samo admin (RLS), a slanje ide kroz
+     Edge funkciju `send-newsletter` — pregledač nema čime da pošalje mejl. */
+  api.newsletter = {
+    all: function () {
+      return CW.sb.from('newsletter_subscribers')
+        .select('email,status,source,created_at,confirmed_at')
+        .order('created_at', true).get()
+        .then(function (rows) { return rows || []; });
+    },
+
+    /* Proba ide na jednu adresu, pravo slanje svima koji su potvrdili.
+       Oba prolaze kroz isti šablon, pa proba zaista pokazuje šta ljudi
+       dobijaju. */
+    /* `jeProba` je svoj argument, ne izvedeno iz toga da li je adresa upisana.
+       Da se zaključuje iz adrese, proba sa praznim poljem (= pošalji meni)
+       pretvorila bi se u slanje SVIMA — greška koja se ne može povući. */
+    send: function (naslov, telo, jeProba, probaNa) {
+      return CW.sb.mail({
+        kind: jeProba ? 'test' : 'send',
+        subject: naslov,
+        body: telo,
+        testTo: (jeProba && probaNa) ? probaNa : null
+      }, 'send-newsletter', true);
+    }
+  };
+
   /* Rubrike bloga — panel ih do sada nije čitao iz baze. */
   api.postCategories = {
     all: function () {

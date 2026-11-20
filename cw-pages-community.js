@@ -630,7 +630,7 @@ CW.pages.news = function (ctx) {
           '<div class="t-eyebrow t-eyebrow--gold">Newsletter</div>' +
           '<h3 class="t-h3 mt-1">Jedan mejl nedeljno</h3>' +
           '<p class="t-sm mt-1">Najave, drops i događaji. Ništa više.</p>' +
-          '<form class="stack stack-1 mt-3" data-act="newsletter" novalidate>' +
+          '<form class="stack stack-1 mt-3" data-act="newsletter" data-source="zajednica" novalidate>' +
             '<label class="visually-hidden" for="rail-nl">Imejl adresa</label>' +
             '<input class="input" id="rail-nl" name="email" type="email" placeholder="ti@primer.rs" required>' +
             '<button class="btn btn--primary btn--full" type="submit">Prijavi se</button>' +
@@ -880,6 +880,77 @@ CW.pages.partners = function () {
 /* ==========================================================================
    O NAMA
    ========================================================================== */
+/* ==========================================================================
+   NEWSLETTER — POTVRDA I ODJAVA
+   --------------------------------------------------------------------------
+   Obe stranice rade isti posao: uzmu token iz adrese, pozovu svoju funkciju
+   u bazi i jave ishod. Token je kljuc od JEDNOG reda u spisku pretplatnika,
+   ne od naloga, pa ni potvrda ni odjava ne traze prijavu na sajt — covek
+   klikne iz mejla i gotovo.
+
+   Zajednicka funkcija, jer je razlika samo u pozivu i tri recenice teksta.
+   ========================================================================== */
+function newsletterIshod(ctx, vrsta) {
+  var token = (ctx && ctx.query && ctx.query.token) || '';
+
+  var tekst = vrsta === 'potvrda'
+    ? {
+        naslov: 'Potvrda prijave',
+        radi: 'Potvrđujemo prijavu…',
+        uspeh: 'Upisan si.',
+        uspehLede: 'Jedan mejl nedeljno — najave, drops i događaji. Odjava je u dnu svakog mejla.',
+        pad: 'Link nije ispravan ili je već iskorišćen.',
+        padLede: 'Prijavi se ponovo u dnu stranice pa ti šaljemo nov link.'
+      }
+    : {
+        naslov: 'Odjava',
+        radi: 'Odjavljujemo te…',
+        uspeh: 'Odjavljen si.',
+        uspehLede: 'Više ti ne šaljemo newsletter. Ako se predomisliš, prijava je u dnu stranice.',
+        pad: 'Link nije ispravan.',
+        padLede: 'Možda je adresa već odjavljena. Ako i dalje dobijaš mejlove, piši nam na office@wolfpack.rs.'
+      };
+
+  CW.onMount(function () {
+    var host = document.getElementById('nl-ishod');
+    if (!host) return;
+
+    function ispisi(ikona, naslov, lede) {
+      host.innerHTML =
+        '<div class="benefit__icon mx-auto">' + CW.icon(ikona, 22) + '</div>' +
+        '<h1 class="t-h1 mt-3">' + CW.esc(naslov) + '</h1>' +
+        '<p class="t-lead mx-auto mt-3" style="max-width:46ch">' + CW.esc(lede) + '</p>' +
+        '<div class="notfound__links">' +
+          '<a class="btn btn--primary btn--lg" href="#/">Nazad na početnu</a>' +
+          '<a class="btn btn--secondary btn--lg" href="#/shop">Otvori shop</a>' +
+        '</div>';
+    }
+
+    if (!token) { ispisi('alert', tekst.pad, tekst.padLede); return; }
+
+    var posao = vrsta === 'potvrda'
+      ? CW.sb.newsletter.confirm(token)
+      : CW.sb.newsletter.unsubscribe(token);
+
+    posao.then(function () {
+      ispisi(vrsta === 'potvrda' ? 'check' : 'info', tekst.uspeh, tekst.uspehLede);
+    }).catch(function () {
+      ispisi('alert', tekst.pad, tekst.padLede);
+    });
+  });
+
+  return '' +
+  '<section class="container container--wide">' +
+    '<div class="notfound" id="nl-ishod">' +
+      '<div class="t-eyebrow t-eyebrow--gold">' + CW.esc(tekst.naslov) + '</div>' +
+      '<h1 class="t-h1 mt-2">' + CW.esc(tekst.radi) + '</h1>' +
+    '</div>' +
+  '</section>';
+}
+
+CW.pages.newsletterConfirm = function (ctx) { return newsletterIshod(ctx, 'potvrda'); };
+CW.pages.newsletterUnsubscribe = function (ctx) { return newsletterIshod(ctx, 'odjava'); };
+
 CW.pages.about = function () {
   var a = CW.data.about;
   var statusMap = {

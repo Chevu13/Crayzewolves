@@ -29,6 +29,7 @@ CW.admin = CW.admin || {};
     { path: '/admin/kodovi',     icon: 'zap',      label: 'Steam kodovi' },
     { path: '/admin/nalozi',     icon: 'user',     label: 'Nalozi' },
     { path: '/admin/kategorije', icon: 'folder',   label: 'Kategorije' },
+    { path: '/admin/newsletter', icon: 'mail',     label: 'Newsletter' },
     { path: '/admin/podesavanja',icon: 'settings', label: 'Podešavanja' }
   ];
 
@@ -1249,6 +1250,98 @@ CW.admin = CW.admin || {};
     if (dugme) dugme.textContent = c ? 'Sačuvaj izmene' : 'Dodaj kategoriju';
     if (otkazi) otkazi.classList.toggle('hidden', !c);
     if (c) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  /* ======================================================================
+     NEWSLETTER
+     ====================================================================== */
+  A.newsletter = function () {
+    CW.onMount(function () { A._reloadNews(); });
+
+    return A.shell('/admin/newsletter', 'Newsletter',
+      '<div class="adm-panel" id="adm-news-broj">' + skeletonRows(1) + '</div>' +
+
+      '<form class="adm-panel mt-3" data-form="adm-news" novalidate>' +
+        '<h2 class="t-h3">Nov mejl</h2>' +
+
+        '<div class="field mt-3">' +
+          '<label class="field__label" for="adm-news-subject">Naslov *</label>' +
+          '<input class="input input--lg" id="adm-news-subject" name="subject" required ' +
+            'placeholder="To vidi čovek u sandučetu, pre nego što otvori.">' +
+          '<p class="field__error hidden" data-error-for="subject"></p>' +
+        '</div>' +
+
+        '<div class="field mt-3">' +
+          '<label class="field__label" for="adm-news-body">Tekst *</label>' +
+          '<textarea class="input" id="adm-news-body" name="body" rows="10" required ' +
+            'placeholder="Piši običan tekst. Prazan red pravi nov pasus."></textarea>' +
+          '<p class="field__error hidden" data-error-for="body"></p>' +
+          '<p class="t-xs mt-1">Bez HTML-a — sve se ispisuje kao tekst. ' +
+            'Dugme „Otvori shop" i link za odjavu sajt dodaje sam.</p>' +
+        '</div>' +
+
+        '<div class="field mt-3">' +
+          '<label class="field__label" for="adm-news-test">Proba na adresu</label>' +
+          '<input class="input" id="adm-news-test" name="testTo" type="email" ' +
+            'placeholder="ostavi prazno pa ide na tvoju adresu">' +
+        '</div>' +
+
+        '<div class="adm-actions mt-3">' +
+          '<button class="btn btn--secondary" type="button" data-act="adm-news-test">' +
+            'Pošalji probu sebi</button>' +
+          '<button class="btn btn--primary" type="submit">Pošalji svima</button>' +
+        '</div>' +
+      '</form>' +
+
+      '<div class="adm-panel mt-3">' +
+        '<h2 class="t-h3">Pretplatnici</h2>' +
+        '<div id="adm-news-list" class="mt-3">' + skeletonRows(4) + '</div>' +
+      '</div>' +
+
+      '<p class="t-sm mt-3">Mejl ide samo onima koji su potvrdili prijavu iz svog ' +
+        'sandučeta. Prijavljeni bez potvrde se ne broje — tako spisak ostaje čist i ' +
+        'mejlovi ne završavaju u spamu.</p>'
+    );
+  };
+
+  A._reloadNews = function () {
+    CW.api.newsletter.all().then(function (red) {
+      var potvrdjeni = red.filter(function (r) { return r.status === 'confirmed'; });
+      var cekaju = red.filter(function (r) { return r.status === 'pending'; });
+      var odjavljeni = red.filter(function (r) { return r.status === 'unsubscribed'; });
+
+      var broj = document.getElementById('adm-news-broj');
+      if (broj) {
+        broj.innerHTML = '<div class="adm-grid adm-grid--stats">' +
+          statCard('Potvrđenih', potvrdjeni.length, 'njima ide slanje', potvrdjeni.length ? 'ok' : '') +
+          statCard('Čekaju potvrdu', cekaju.length, cekaju.length ? 'nisu kliknuli link' : 'nema takvih') +
+          statCard('Odjavljenih', odjavljeni.length, 'više ne primaju') +
+        '</div>';
+      }
+
+      var host = document.getElementById('adm-news-list');
+      if (!host) return;
+
+      host.innerHTML = red.length
+        ? red.map(function (r) {
+            var pill = r.status === 'confirmed' ? 'ok' : (r.status === 'pending' ? 'warn' : 'neutral');
+            var rec = r.status === 'confirmed' ? 'potvrđen'
+                    : (r.status === 'pending' ? 'čeka potvrdu' : 'odjavljen');
+            return '<div class="adm-row adm-row--static">' +
+              '<div class="adm-row__icon">' + CW.icon('mail', 15) + '</div>' +
+              '<div class="adm-row__main">' +
+                '<div class="adm-row__title">' + CW.esc(r.email) + '</div>' +
+                '<div class="adm-row__meta">' + CW.fmtDate(r.created_at) +
+                  (r.source ? ' · ' + CW.esc(r.source) : '') + '</div>' +
+              '</div>' +
+              '<span class="adm-pill adm-pill--' + pill + '">' + rec + '</span>' +
+            '</div>';
+          }).join('')
+        : empty('mail', 'Još nema nijedne prijave.');
+    }).catch(function (e) {
+      var host = document.getElementById('adm-news-list');
+      if (host) host.innerHTML = empty('alert', e.message || 'Učitavanje nije uspelo.');
+    });
   };
 
   /* ======================================================================

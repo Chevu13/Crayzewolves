@@ -444,8 +444,14 @@ window.CW = window.CW || {};
      jednu Edge funkciju. Šalje se token prijavljenog korisnika kad ga ima —
      funkcija po njemu zna ko zove i šta sme. Pad mejla nikad ne ruši radnju
      zbog koje je pozvan, pa se greška samo beleži u konzoli. */
-  sb.mail = function (body) {
-    if (!sb.enabled) return Promise.resolve(false);
+  /* `fn` bira koju Edge funkciju zovemo: podrazumevano mejlovi porudžbine,
+     a newsletter ima svoju (`send-newsletter`), da izmena teksta newslettera
+     ne traži ponovni deploy koda kroz koji idu potvrde kupovine.
+
+     `vratiSve` vraća ceo odgovor umesto samo „da/ne". Panelu treba broj
+     poslatih i spisak grešaka; sajtu i dalje treba samo da li je prošlo. */
+  sb.mail = function (body, fn, vratiSve) {
+    if (!sb.enabled) return Promise.resolve(vratiSve ? null : false);
 
     /* Istekao token znači da funkcija ne zna ko zove, pa mejl o statusu
        odbija kao da pozivalac nije admin. Zato se prvo osvežava, isto kao
@@ -460,7 +466,7 @@ window.CW = window.CW || {};
       var se = sb.session();
       var token = (se && se.access_token) ? se.access_token : CFG.anonKey;
 
-      return fetch(CFG.url + '/functions/v1/send-order-email', {
+      return fetch(CFG.url + '/functions/v1/' + (fn || 'send-order-email'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -474,13 +480,34 @@ window.CW = window.CW || {};
           if (d && d.sent === false && d.reason && d.reason !== 'already_sent') {
             console.warn('[CW] Mejl nije poslat (' + (body && body.kind || 'order') + '):', d.reason);
           }
-          return Boolean(d && d.sent);
+          return vratiSve ? d : Boolean(d && d.sent);
         })
         .catch(function (e) {
           console.warn('[CW] Slanje mejla nije uspelo:', e && e.message);
-          return false;
+          return vratiSve ? { sent: false, reason: e && e.message } : false;
         });
     }
+  };
+
+  /* ------------------------------------------------------------ newsletter */
+  /* Tabela pretplatnika se sa sajta ne čita i ne piše — spisak adresa nije
+     nešto što sme da se povuče iz pregledača. Sve ide kroz tri funkcije u
+     bazi (dopuna 14), koje diraju tačno jedan red.
+
+     Token potvrde NE stiže do pregledača: prijava samo upiše red, a Edge
+     funkcija ga pročita servisnim ključem i pošalje na samu adresu. Zato
+     upis tuđe adrese nikome ništa ne donosi. */
+  sb.newsletter = {
+    signup: function (email, odakle) {
+      return sb.rpc('newsletter_signup', { p_email: email, p_source: odakle || null })
+        .then(function () {
+          /* Mejl potvrde je drugi korak i sme da padne bez posledica po upis:
+             red u bazi već postoji, a potvrda se traži ponovo sledeći put. */
+          return sb.mail({ kind: 'confirm', email: email }, 'send-newsletter');
+        });
+    },
+    confirm: function (token) { return sb.rpc('newsletter_confirm', { p_token: token }); },
+    unsubscribe: function (token) { return sb.rpc('newsletter_unsubscribe', { p_token: token }); }
   };
 
   sb.upload = function (file, folder) {

@@ -167,7 +167,7 @@ CW.pages.shop = function () {
             '<h2 class="t-h2 mt-1">Saznaj pre nego što se rasproda</h2>' +
             '<p class="t-lead mt-2">Limitirana izdanja se prvo najavljuju na Discordu.</p>' +
           '</div>' +
-          '<form class="newsletter" data-act="newsletter" style="min-width:300px" novalidate>' +
+          '<form class="newsletter" data-act="newsletter" data-source="shop" style="min-width:300px" novalidate>' +
             '<label class="visually-hidden" for="shop-nl">Imejl adresa</label>' +
             '<input class="input" id="shop-nl" name="email" type="email" placeholder="ime@primer.com" required>' +
             '<button class="btn btn--primary" type="submit">Notify me</button>' +

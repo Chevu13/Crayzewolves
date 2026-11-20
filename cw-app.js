@@ -26,6 +26,11 @@
     })
     .add('kontakt',             CW.pages.contact,   { title: function () { return 'Kontakt'; } })
 
+    /* Newsletter potvrda i odjava — obe se otvaraju iz mejla, sa tokenom u
+       adresi, i ne traže prijavu na sajt. */
+    .add('newsletter/potvrda',  CW.pages.newsletterConfirm,     { title: function () { return 'Potvrda prijave'; } })
+    .add('newsletter/odjava',   CW.pages.newsletterUnsubscribe, { title: function () { return 'Odjava'; } })
+
     /* --- shop --- */
     .add('shop',                CW.pages.shop,         {
       title: function () { return 'Zvanični shop'; },
@@ -76,6 +81,7 @@
     .add('admin/kodovi/:id',       CW.admin.guard(CW.admin.keysDetail), { title: function () { return 'Admin — kodovi proizvoda'; } })
     .add('admin/nalozi',           CW.admin.guard(CW.admin.accounts),   { title: function () { return 'Admin — nalozi'; } })
     .add('admin/kategorije',       CW.admin.guard(CW.admin.categories), { title: function () { return 'Admin — kategorije'; } })
+    .add('admin/newsletter',       CW.admin.guard(CW.admin.newsletter),  { title: function () { return 'Admin — newsletter'; } })
     .add('admin/podesavanja',      CW.admin.guard(CW.admin.settings),   { title: function () { return 'Admin — podešavanja'; } })
 
     .setNotFound(CW.pages.notFound);

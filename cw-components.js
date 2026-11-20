@@ -273,7 +273,7 @@ CW.c.footer = function () {
             '<h3 class="t-h3 mt-1">Najave, drops i događaji — jedan mejl nedeljno</h3>' +
             '<p class="t-sm mt-1">Bez spama. Odjava jednim klikom.</p>' +
           '</div>' +
-          '<form class="newsletter" data-act="newsletter" novalidate>' +
+          '<form class="newsletter" data-act="newsletter" data-source="podnozje" novalidate>' +
             '<label class="visually-hidden" for="nl-email">Imejl adresa</label>' +
             '<input class="input" id="nl-email" name="email" type="email" placeholder="ti@primer.rs" autocomplete="email" required>' +
             '<button class="btn btn--primary" type="submit">Prijavi se</button>' +
@@ -1275,11 +1275,32 @@ CW.ui.bind = function () {
       }
       var btn = form.querySelector('button[type=submit]');
       btn.classList.add('is-loading');
-      setTimeout(function () {
-        btn.classList.remove('is-loading');
+
+      /* Do dopune 14 ovde je stajao setTimeout od 700 ms i poruka „Prijavljen
+         si" — nijedna adresa nije nigde odlazila. Sada ide pravi upis, pa
+         mejl sa potvrdom.
+
+         Poruka je ISTA bez obzira na ishod upisa (nova adresa, ponovljena,
+         već potvrđena). Da se razlikuje, forma bi postala provera da li neka
+         adresa ima pretplatu kod nas. */
+      var odakle = form.getAttribute('data-source') || 'sajt';
+
+      CW.sb.newsletter.signup(val, odakle).then(function () {
         form.reset();
-        CW.toast({ type: 'success', title: 'Prijavljen si', text: 'Jedan mejl nedeljno. Odjava u svakom trenutku.' });
-      }, 700);
+        CW.toast({
+          type: 'success',
+          title: 'Proveri mejl',
+          text: 'Poslali smo ti link za potvrdu. Dok ga ne klikneš, adresa se ne koristi.'
+        });
+      }).catch(function (e) {
+        CW.toast({
+          type: 'error',
+          title: 'Prijava nije uspela',
+          text: (e && e.message) || 'Pokušaj ponovo za koji trenutak.'
+        });
+      }).then(function () {
+        btn.classList.remove('is-loading');
+      });
     }
   });
 
