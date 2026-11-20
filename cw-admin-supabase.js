@@ -261,6 +261,7 @@ window.CW = window.CW || {};
       shop: r.shop,
       kind: r.shop === 'digital' ? 'DIGITAL' : 'MERCH',
       icon: r.icon || '', blurb: r.blurb || '',
+      parentId: r.parent_id || '',
       sortOrder: r.sort_order || 0,
       isActive: r.is_active !== false
     };
@@ -276,6 +277,7 @@ window.CW = window.CW || {};
     if (c.isActive !== undefined)  out.is_active = c.isActive;
     if (c.kind !== undefined)      out.shop = c.kind === 'DIGITAL' ? 'digital' : 'merch';
     if (c.shop !== undefined)      out.shop = c.shop;
+    if (c.parentId !== undefined)  out.parent_id = c.parentId || null;
     out.updated_at = new Date().toISOString();
     return out;
   }
@@ -318,13 +320,19 @@ window.CW = window.CW || {};
         var kljuc = osnova, n = 2;
         while (zauzeto[kljuc]) { kljuc = osnova + '-' + n; n++; }
 
-        /* Nova kategorija ide na kraj SVOJE prodavnice, ne na kraj svega. */
-        var uIstoj = sve.filter(function (c) { return c.kind === kind; });
+        /* Nova kategorija ide na kraj svoje grupe: podkategorija na kraj
+           svog roditelja, nadkategorija na kraj svoje prodavnice. Brojevi
+           iz dve različite grupe se ne porede. */
+        var roditelj = data.parentId || '';
+        var uIstoj = sve.filter(function (c) {
+          return roditelj ? c.parentId === roditelj : (!c.parentId && c.kind === kind);
+        });
         var poslednji = uIstoj.reduce(function (m, c) { return Math.max(m, c.sortOrder); }, -1);
 
         var red = catToDb({
           name: naziv, kind: kind,
           icon: data.icon || '', blurb: data.blurb || '',
+          parentId: roditelj,
           sortOrder: poslednji + 1, isActive: true
         });
         red.id = kljuc;
@@ -341,7 +349,18 @@ window.CW = window.CW || {};
        proizvodi bi tiho ostali bez kategorije i ispali iz filtera. Zato se
        pitanje postavlja ovde, dok se još ima šta reći korisniku. */
     remove: function (id) {
-      return api.products.all().then(function (prods) {
+      return Promise.all([api.products.all(), api.categories.all()]).then(function (r) {
+        var prods = r[0], sve = r[1];
+
+        /* Nadkategorija sa policama se ne briše: strani ključ je ON DELETE
+           SET NULL, pa bi joj podkategorije ostale da vise u vazduhu. */
+        var dece = sve.filter(function (c) { return c.parentId === id; }).length;
+        if (dece) {
+          throw new Error('U kategoriji je ' + dece + ' ' +
+            CW.plural(dece, 'podkategorija', 'podkategorije', 'podkategorija') +
+            '. Prvo njih skloni, pa onda ovu.');
+        }
+
         var koliko = prods.filter(function (p) { return p.categoryId === id; }).length;
         if (koliko) {
           throw new Error('U kategoriji je ' + koliko + ' ' +
@@ -362,8 +381,14 @@ window.CW = window.CW || {};
         sve.forEach(function (c) { if (c.id === id) meta = c; });
         if (!meta) throw new Error('Kategorija nije pronađena.');
 
-        var red = sve.filter(function (c) { return c.kind === meta.kind; })
-                     .sort(function (a, b) { return a.sortOrder - b.sortOrder; });
+        /* Susedi su one kategorije koje stoje na istom mestu u stablu:
+           podkategorije istog roditelja, ili nadkategorije iste prodavnice.
+           Bez te podele bi strelica u jednoj polici pomerala tuđe brojeve. */
+        var red = sve.filter(function (c) {
+          return meta.parentId
+            ? c.parentId === meta.parentId
+            : (!c.parentId && c.kind === meta.kind);
+        }).sort(function (a, b) { return a.sortOrder - b.sortOrder; });
         var i = -1;
         red.forEach(function (c, idx) { if (c.id === id) i = idx; });
         var j = smer < 0 ? i - 1 : i + 1;

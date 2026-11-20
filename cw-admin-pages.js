@@ -573,13 +573,25 @@ CW.admin = CW.admin || {};
       var prods = r[0], cats = r[1];
       A._cats = cats;
 
+      /* Proizvod stoji u podkategoriji, pa se nude samo police bez svoje dece.
+         Uz naziv ide i nadkategorija, jer „Konzole“ i „Kontroleri“ sami za
+         sebe ne govore gde su u meniju. */
+      var imaDece = {};
+      cats.forEach(function (c) { if (c.parentId) imaDece[c.parentId] = true; });
+      var listovi = cats.filter(function (c) { return !imaDece[c.id]; });
+
+      function putanja(c) {
+        var r = c.parentId && cats.filter(function (x) { return x.id === c.parentId; })[0];
+        return (r ? r.name + ' › ' : '') + c.name;
+      }
+
       var filter = document.getElementById('adm-prod-filter');
       if (filter) {
         var izabrano = A._prodFilter || '';
         filter.innerHTML = '<option value="">Sve kategorije</option>' +
           cats.map(function (c) {
             return '<option value="' + CW.esc(c.id) + '">' +
-              (c.kind === 'DIGITAL' ? 'Digitalna: ' : 'Merch: ') + CW.esc(c.name) + '</option>';
+              (c.kind === 'DIGITAL' ? 'Digitalna: ' : 'Merch: ') + CW.esc(putanja(c)) + '</option>';
           }).join('') +
           '<option value="__bez">Bez kategorije</option>';
         filter.value = izabrano;
@@ -592,10 +604,10 @@ CW.admin = CW.admin || {};
       /* Opcije za premeštanje — iste za svaki red, pa se prave jednom. */
       function catOpcije(trenutna, kind) {
         return '<option value="">Bez kategorije</option>' +
-          cats.filter(function (c) { return c.kind === kind; })
+          listovi.filter(function (c) { return c.kind === kind; })
               .map(function (c) {
                 return '<option value="' + CW.esc(c.id) + '"' +
-                  (c.id === trenutna ? ' selected' : '') + '>' + CW.esc(c.name) + '</option>';
+                  (c.id === trenutna ? ' selected' : '') + '>' + CW.esc(putanja(c)) + '</option>';
               }).join('');
       }
 
@@ -611,7 +623,7 @@ CW.admin = CW.admin || {};
         if (A._prodFilter && A._prodFilter !== '__bez' && (!cat || cat.id !== A._prodFilter)) return '';
 
         var naslov = cat
-          ? CW.esc(cat.name) + ' <span class="adm-pill adm-pill--neutral">' +
+          ? CW.esc(putanja(cat)) + ' <span class="adm-pill adm-pill--neutral">' +
             (cat.kind === 'DIGITAL' ? 'digitalna' : 'merch') + '</span>'
           : 'Bez kategorije';
 
@@ -670,7 +682,14 @@ CW.admin = CW.admin || {};
        postoji, pa prazan select tu vrednost tiho proguta. Zato se traženi
        id cita i iz proizvoda koji se uređuje. */
     var zeljeno = sel.value || (A._editing && A._editing.categoryId) || '';
-    var red = A._cats.filter(function (c) { return c.kind === kind && c.isActive; });
+    /* Nude se samo police bez svoje dece. Proizvod u nadkategoriji bi se na
+       sajtu pojavio pored njenih podkategorija, ali ni u jednoj — pa bi u
+       filteru po podkategoriji nestao. */
+    var imaDece = {};
+    A._cats.forEach(function (c) { if (c.parentId) imaDece[c.parentId] = true; });
+    var red = A._cats.filter(function (c) {
+      return c.kind === kind && c.isActive && !imaDece[c.id];
+    });
 
     sel.innerHTML = red.length
       ? red.map(function (c) {
@@ -1150,6 +1169,16 @@ CW.admin = CW.admin || {};
           '</div>' +
         '</div>' +
 
+        '<div class="field mt-3">' +
+          '<label class="field__label" for="adm-cat-parent">Nadkategorija</label>' +
+          '<select class="select" id="adm-cat-parent" name="parentId">' +
+            '<option value="">— glavna kategorija —</option>' +
+          '</select>' +
+          '<p class="t-xs mt-1">Ostavi prazno za glavnu policu u meniju. Izaberi ' +
+            'nadkategoriju da ova stane pod nju — proizvodi se vežu za ' +
+            'podkategorije, a nadkategorija ih pokupi sama.</p>' +
+        '</div>' +
+
         '<div class="adm-cols mt-3">' +
           '<div class="field">' +
             '<label class="field__label" for="adm-cat-icon">Ikonica</label>' +
@@ -1186,48 +1215,86 @@ CW.admin = CW.admin || {};
 
     Promise.all([CW.api.categories.all(), CW.api.products.all()]).then(function (r) {
       var cats = r[0], prods = r[1];
+      A._cats = cats;
+
+      /* Ponuda nadkategorija u formi: samo one koje same nemaju roditelja.
+         Tako se drugi nivo ne moze ulancati u treci, a padajuci spisak ostaje
+         kratak i citljiv. */
+      var izbor = document.getElementById('adm-cat-parent');
+      if (izbor) {
+        var trenutno = izbor.value;
+        izbor.innerHTML = '<option value="">— glavna kategorija —</option>' +
+          cats.filter(function (c) { return !c.parentId; })
+              .sort(function (a, b) { return a.sortOrder - b.sortOrder; })
+              .map(function (c) {
+                return '<option value="' + CW.esc(c.id) + '">' +
+                  (c.kind === 'DIGITAL' ? 'Digitalna: ' : 'Merch: ') + CW.esc(c.name) +
+                '</option>';
+              }).join('');
+        izbor.value = trenutno;
+      }
+
       host = document.getElementById('adm-cat-list');
       if (!host) return;
-
       if (!cats.length) { host.innerHTML = empty('folder', 'Nema kategorija.'); return; }
 
+      /* Proizvodi se broje po celoj grani: nadkategorija pokazuje zbir svojih
+         polica, jer na sajtu pokazuje bas te proizvode. */
+      function broj(c) {
+        var svoji = prods.filter(function (p) { return p.categoryId === c.id; }).length;
+        if (c.parentId) return svoji;
+        return svoji + cats.filter(function (d) { return d.parentId === c.id; })
+          .reduce(function (zbir, d) {
+            return zbir + prods.filter(function (p) { return p.categoryId === d.id; }).length;
+          }, 0);
+      }
+
+      function red(c, jePod, prvi, poslednji) {
+        var n = broj(c);
+        return '<div class="adm-row adm-row--static' + (jePod ? ' adm-row--pod' : '') + '">' +
+          '<div class="adm-row__icon">' + CW.icon(c.icon || 'tag', 15) + '</div>' +
+          '<div class="adm-row__main">' +
+            '<div class="adm-row__title">' + CW.esc(c.name) +
+              (c.isActive ? '' : ' <span class="adm-pill adm-pill--neutral">skrivena</span>') +
+            '</div>' +
+            '<div class="adm-row__meta">' + n + ' ' +
+              CW.plural(n, 'proizvod', 'proizvoda', 'proizvoda') +
+              (c.blurb ? ' · ' + CW.esc(c.blurb) : '') + '</div>' +
+          '</div>' +
+          '<div class="adm-row__acts">' +
+            '<button class="btn btn--ghost btn--sm" type="button" title="Gore" ' +
+              'data-act="adm-cat-up" data-id="' + CW.esc(c.id) + '"' +
+              (prvi ? ' disabled' : '') + '>' + CW.icon('chevronU', 14) + '</button>' +
+            '<button class="btn btn--ghost btn--sm" type="button" title="Dole" ' +
+              'data-act="adm-cat-down" data-id="' + CW.esc(c.id) + '"' +
+              (poslednji ? ' disabled' : '') + '>' + CW.icon('chevronD', 14) + '</button>' +
+            '<a class="btn btn--ghost btn--sm" ' +
+              'href="#/admin/proizvodi?cat=' + encodeURIComponent(c.id) + '">' +
+              (n ? 'Poređaj (' + n + ')' : 'Proizvodi') + '</a>' +
+            '<button class="btn btn--ghost btn--sm" type="button" ' +
+              'data-act="adm-cat-edit" data-id="' + CW.esc(c.id) + '">Izmeni</button>' +
+            '<button class="btn btn--ghost btn--sm" type="button" ' +
+              'data-act="adm-cat-toggle" data-id="' + CW.esc(c.id) + '">' +
+              (c.isActive ? 'Sakrij' : 'Prikaži') + '</button>' +
+            '<button class="btn btn--ghost btn--sm" type="button" ' +
+              'data-act="adm-cat-del" data-id="' + CW.esc(c.id) + '">Obriši</button>' +
+          '</div>' +
+        '</div>';
+      }
+
       function grupa(kind, naslov) {
-        var red = cats.filter(function (c) { return c.kind === kind; })
-                      .sort(function (a, b) { return a.sortOrder - b.sortOrder; });
-        if (!red.length) return '';
+        var glavne = cats.filter(function (c) { return !c.parentId && c.kind === kind; })
+                         .sort(function (a, b) { return a.sortOrder - b.sortOrder; });
+        if (!glavne.length) return '';
 
         return '<h3 class="t-h4 mt-3">' + naslov + '</h3>' +
-          red.map(function (c, i) {
-            var n = prods.filter(function (p) { return p.categoryId === c.id; }).length;
-            return '<div class="adm-row adm-row--static">' +
-              '<div class="adm-row__icon">' + CW.icon(c.icon || 'tag', 15) + '</div>' +
-              '<div class="adm-row__main">' +
-                '<div class="adm-row__title">' + CW.esc(c.name) +
-                  (c.isActive ? '' : ' <span class="adm-pill adm-pill--neutral">skrivena</span>') +
-                '</div>' +
-                '<div class="adm-row__meta">' + n + ' ' +
-                  CW.plural(n, 'proizvod', 'proizvoda', 'proizvoda') +
-                  (c.blurb ? ' · ' + CW.esc(c.blurb) : '') + '</div>' +
-              '</div>' +
-              '<div class="adm-row__acts">' +
-                '<button class="btn btn--ghost btn--sm" type="button" title="Gore" ' +
-                  'data-act="adm-cat-up" data-id="' + CW.esc(c.id) + '"' +
-                  (i === 0 ? ' disabled' : '') + '>' + CW.icon('chevronU', 14) + '</button>' +
-                '<button class="btn btn--ghost btn--sm" type="button" title="Dole" ' +
-                  'data-act="adm-cat-down" data-id="' + CW.esc(c.id) + '"' +
-                  (i === red.length - 1 ? ' disabled' : '') + '>' + CW.icon('chevronD', 14) + '</button>' +
-                '<a class="btn btn--ghost btn--sm" ' +
-                  'href="#/admin/proizvodi?cat=' + encodeURIComponent(c.id) + '">' +
-                  (n ? 'Poređaj (' + n + ')' : 'Proizvodi') + '</a>' +
-                '<button class="btn btn--ghost btn--sm" type="button" ' +
-                  'data-act="adm-cat-edit" data-id="' + CW.esc(c.id) + '">Izmeni</button>' +
-                '<button class="btn btn--ghost btn--sm" type="button" ' +
-                  'data-act="adm-cat-toggle" data-id="' + CW.esc(c.id) + '">' +
-                  (c.isActive ? 'Sakrij' : 'Prikaži') + '</button>' +
-                '<button class="btn btn--ghost btn--sm" type="button" ' +
-                  'data-act="adm-cat-del" data-id="' + CW.esc(c.id) + '">Obriši</button>' +
-              '</div>' +
-            '</div>';
+          glavne.map(function (c, i) {
+            var deca = cats.filter(function (d) { return d.parentId === c.id; })
+                           .sort(function (a, b) { return a.sortOrder - b.sortOrder; });
+            return red(c, false, i === 0, i === glavne.length - 1) +
+              deca.map(function (d, j) {
+                return red(d, true, j === 0, j === deca.length - 1);
+              }).join('');
           }).join('');
       }
 
@@ -1249,6 +1316,7 @@ CW.admin = CW.admin || {};
     f.elements.kind.value = c ? c.kind : 'MERCH';
     f.elements.icon.value = c ? (c.icon || 'tag') : 'tag';
     f.elements.blurb.value = c ? (c.blurb || '') : '';
+    if (f.elements.parentId) f.elements.parentId.value = c ? (c.parentId || '') : '';
 
     var naslov = document.getElementById('adm-cat-naslov');
     var dugme = document.getElementById('adm-cat-submit');

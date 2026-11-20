@@ -573,6 +573,11 @@
 
    Zato ovde nema ni četiri pravila za četiri širine ekrana: jedna mera
    (150px najmanje po pločici) pokriva sve, od telefona do monitora. */
+/* Podkategorija u levom meniju: uvucena i sitnija od svoje nadkategorije.
+   Bez te razlike je spisak od trideset polica ravan zid. */
+.check--pod { margin-left: var(--space-3); }
+.check--pod .check__label { font-size: var(--fs-xs); color: var(--color-muted); }
+
 .category-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));

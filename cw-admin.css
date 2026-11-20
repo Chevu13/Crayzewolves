@@ -216,6 +216,14 @@ a.adm-row:hover .adm-row__title { color: var(--color-gold); }
    Na uskom ekranu pada u nov red ispod naziva, da se dugmad ne stisnu u
    nedodirljive kvadratiće. */
 .adm-row__acts { display: flex; align-items: center; gap: 4px; flex: none; margin-left: auto; }
+
+/* Podkategorija stoji uvucena ispod svoje nadkategorije i nosi tanju liniju
+   sa leve strane — u spisku od trideset redova to je jedino po čemu se na
+   prvi pogled vidi šta kome pripada. */
+.adm-row--pod {
+  margin-left: var(--space-4);
+  border-left: 2px solid rgba(212, 162, 78, 0.28);
+}
 .adm-row__acts .btn[disabled] { opacity: 0.35; pointer-events: none; }
 
 /* Uži select u redu spiska — služi za premeštanje proizvoda u drugu

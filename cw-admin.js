@@ -678,7 +678,8 @@ window.CW = window.CW || {};
         name: f.elements.name.value.trim(),
         kind: f.elements.kind.value,
         icon: f.elements.icon.value,
-        blurb: f.elements.blurb.value.trim()
+        blurb: f.elements.blurb.value.trim(),
+        parentId: f.elements.parentId ? f.elements.parentId.value : ''
       };
       if (!fieldError(f, 'name', catData.name ? '' : 'Unesi naziv kategorije.')) {
         f.elements.name.focus();
@@ -694,7 +695,8 @@ window.CW = window.CW || {};
          (`products_shop_matches_fulfillment`), pa bi prvi sledeći upis pukao. */
       var posao = postojeci
         ? CW.api.categories.update(postojeci, {
-            name: catData.name, icon: catData.icon, blurb: catData.blurb
+            name: catData.name, icon: catData.icon, blurb: catData.blurb,
+            parentId: catData.parentId
           })
         : CW.api.categories.create(catData);
 

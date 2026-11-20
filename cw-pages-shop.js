@@ -56,14 +56,28 @@ CW.pages.catalog = function (ctx) {
   };
 
   /* ---- filtering ---- */
+  /* Nadkategorija pokazuje i ono sto stoji u njenim policama. Proizvod se
+     vezuje za jednu podkategoriju; da se nadkategorija puni rucno, dve liste
+     bi se razisle prvom sledecom izmenom. */
+  var podKat = CW.data.categories
+    .filter(function (c) { return c.parentId === catId; })
+    .map(function (c) { return c.id; });
+
   var base = CW.data.products.filter(function (p) {
     if (catId === 'all') return true;
     if (vrsta) return (p.shop || 'merch') === vrsta.shop;
-    return p.categoryId === catId;
+    return p.categoryId === catId || podKat.indexOf(p.categoryId) !== -1;
   });
 
   var list = base.filter(function (p) {
-    if (filters.cat.length && filters.cat.indexOf(p.categoryId) === -1) return false;
+    /* Kvacica na nadkategoriji pusta i njene police — inace bi klik na
+       „Gejming periferija“ vratio prazno, jer nijedan proizvod ne stoji u
+       njoj samoj. */
+    if (filters.cat.length && !filters.cat.some(function (k) {
+      if (p.categoryId === k) return true;
+      var r = CW.find('categories', p.categoryId);
+      return Boolean(r && r.parentId === k);
+    })) return false;
     if (filters.collection.length && filters.collection.indexOf(p.collectionId) === -1) return false;
     if (filters.max !== null && p.price > filters.max * 100) return false;
     if (filters.q && (p.name + ' ' + p.shortDesc).toLowerCase().indexOf(filters.q.toLowerCase()) === -1) return false;
@@ -113,9 +127,26 @@ CW.pages.catalog = function (ctx) {
 
   /* Kategorije koje u ovom spisku ZAISTA imaju proizvod. Prazna polica nema
      šta da ponudi u filteru, a ponuđena pa prazna izgleda kao kvar. */
-  var kategorije = CW.data.categories.map(function (c) {
-    return { id: c.id, name: c.name, n: base.filter(function (p) { return p.categoryId === c.id; }).length };
-  }).filter(function (c) { return c.n > 0; });
+  /* Spisak za levi meni: nadkategorija pa njene police, i to samo one u
+     kojima u ovom spisku zaista ima proizvoda. */
+  var kategorije = (function () {
+    function broj(id) { return base.filter(function (p) { return p.categoryId === id; }).length; }
+    var red = [];
+    CW.data.categories
+      .filter(function (c) { return !c.parentId; })
+      .forEach(function (nad) {
+        var deca = CW.data.categories.filter(function (c) { return c.parentId === nad.id; });
+        var svoji = broj(nad.id);
+        var ukupno = svoji + deca.reduce(function (z, d) { return z + broj(d.id); }, 0);
+        if (!ukupno) return;
+        red.push({ id: nad.id, name: nad.name, n: ukupno, pod: false });
+        deca.forEach(function (d) {
+          var nd = broj(d.id);
+          if (nd) red.push({ id: d.id, name: d.name, n: nd, pod: true });
+        });
+      });
+    return red;
+  })();
 
   var maxPrice = Math.ceil(Math.max.apply(null, base.map(function (p) { return p.price; })) / 100);
 
@@ -248,7 +279,10 @@ CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base, katego
      samo jedna, biranje nema smisla — svih 60 proizvoda je ionako u njoj. */
   var kat = (kategorije && kategorije.length > 1)
     ? kategorije.map(function (c) {
-        return kvacica('cat', c.id, c.name, filters.cat.indexOf(c.id) !== -1, c.n);
+        var k = kvacica('cat', c.id, c.name, filters.cat.indexOf(c.id) !== -1, c.n);
+        /* Podkategorija se uvlaci — bez toga je spisak od trideset kvačica
+           ravan zid u kome se ne vidi šta kome pripada. */
+        return c.pod ? k.replace('class="check"', 'class="check check--pod"') : k;
       }).join('')
     : '';
 

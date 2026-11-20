@@ -161,7 +161,8 @@ window.CW = window.CW || {};
             name: c.name,
             icon: c.icon || 'tag',
             blurb: c.blurb || '',
-            shop: c.shop || 'merch'
+            shop: c.shop || 'merch',
+            parentId: c.parent_id || ''
           };
         });
       }
