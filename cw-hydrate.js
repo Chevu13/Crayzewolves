@@ -97,6 +97,14 @@ window.CW = window.CW || {};
     var products = CW.sb.from('products').select('*').order('sort_order').get();
     var cats = CW.sb.from('post_categories').select('*').order('sort_order').get();
 
+    /* Police prodavnice. Do sada su stajale zakucane u cw-data-shop.js, pa je
+       kategorija napravljena u panelu nestajala u prazno: panel je pisao u
+       `shop_categories`, a sajt čitao četiri reda iz koda. Redosled i
+       skrivanje koje urednik namesti u panelu važe tek odavde. */
+    var shopCats = CW.sb.from('shop_categories').select('*')
+      .eq('is_active', true).order('sort_order').get()
+      .catch(function () { return []; });
+
     /* Zaliha digitalnog proizvoda NIJE kolona `stock` nego broj slobodnih
        Steam kodova. Kodove posetilac ne sme da čita — kod je roba — pa
        postoji pogled `product_availability` koji pušta samo cifru.
@@ -115,7 +123,7 @@ window.CW = window.CW || {};
       .eq('is_active', true).order('sort_order').get()
       .catch(function () { return []; });
 
-    return Promise.all([posts, products, cats, availability, shipping]).then(function (r) {
+    return Promise.all([posts, products, cats, availability, shipping, shopCats]).then(function (r) {
       var dbPosts = r[0] || [], dbProducts = r[1] || [], dbCats = r[2] || [];
 
       var slobodnoKodova = {};
@@ -139,6 +147,22 @@ window.CW = window.CW || {};
       if (dbCats.length) {
         CW.data.newsCategories = dbCats.map(function (c) {
           return { id: c.id, name: c.name };
+        });
+      }
+
+      /* Prazan odgovor znači da dopuna još nije puštena ili da je sve
+         sakriveno — tada ostaju police iz koda, da prodavnica ne ostane bez
+         ijedne kategorije. */
+      var dbShopCats = r[5] || [];
+      if (dbShopCats.length) {
+        CW.data.categories = dbShopCats.map(function (c) {
+          return {
+            id: c.id,
+            name: c.name,
+            icon: c.icon || 'tag',
+            blurb: c.blurb || '',
+            shop: c.shop || 'merch'
+          };
         });
       }
 

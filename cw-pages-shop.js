@@ -202,6 +202,7 @@ CW.pages.catalog = function (ctx) {
   var perPage = 9;
 
   var filters = {
+    cat: q.cat ? q.cat.split(',') : [],
     collection: q.collection ? q.collection.split(',') : [],
     size: q.size ? q.size.split(',') : [],
     color: q.color ? q.color.split(',') : [],
@@ -218,6 +219,7 @@ CW.pages.catalog = function (ctx) {
   });
 
   var list = base.filter(function (p) {
+    if (filters.cat.length && filters.cat.indexOf(p.categoryId) === -1) return false;
     if (filters.collection.length && filters.collection.indexOf(p.collectionId) === -1) return false;
     if (filters.max !== null && p.price > filters.max * 100) return false;
     if (filters.q && (p.name + ' ' + p.shortDesc).toLowerCase().indexOf(filters.q.toLowerCase()) === -1) return false;
@@ -265,10 +267,20 @@ CW.pages.catalog = function (ctx) {
     return order.indexOf(a) - order.indexOf(b);
   });
 
+  /* Kategorije koje u ovom spisku ZAISTA imaju proizvod. Prazna polica nema
+     šta da ponudi u filteru, a ponuđena pa prazna izgleda kao kvar. */
+  var kategorije = CW.data.categories.map(function (c) {
+    return { id: c.id, name: c.name, n: base.filter(function (p) { return p.categoryId === c.id; }).length };
+  }).filter(function (c) { return c.n > 0; });
+
   var maxPrice = Math.ceil(Math.max.apply(null, base.map(function (p) { return p.price; })) / 100);
 
   /* ---- active filter tokens ---- */
   var tokens = [];
+  filters.cat.forEach(function (c) {
+    var k = CW.find('categories', c);
+    tokens.push({ label: k ? k.name : c, key: 'cat', val: c });
+  });
   filters.collection.forEach(function (c) {
     var col = CW.find('collections', c);
     tokens.push({ label: col ? col.name : c, key: 'collection', val: c });
@@ -281,7 +293,7 @@ CW.pages.catalog = function (ctx) {
   if (filters.max !== null) tokens.push({ label: 'do ' + CW.money(filters.max * 100), key: 'max', val: filters.max });
   if (filters.q) tokens.push({ label: '“' + filters.q + '”', key: 'q', val: filters.q });
 
-  var filterPanel = CW.pages._filterPanel(filters, allSizes, allColors, maxPrice, base);
+  var filterPanel = CW.pages._filterPanel(filters, allSizes, allColors, maxPrice, base, kategorije);
 
   var skeleton = '<div class="product-grid">' + CW.times(6, CW.c.productSkeleton) + '</div>';
 
@@ -359,8 +371,72 @@ CW.pages.catalog = function (ctx) {
 };
 
 /* Filter panel — reused by the desktop rail and the mobile drawer */
-CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base) {
+CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base, kategorije) {
   function countFor(fn) { return base.filter(fn).length; }
+
+  /* Grupa se crta samo ako ima sta da ponudi.
+
+     Ranije je svaka grupa ispisivala svoj naslov pa tek onda polja, pa su
+     Kolekcija, Velicina i Boja stajale kao prazni naslovi sa crtom ispod —
+     nijedan proizvod nema kolekciju, a velicinu i boju ima samo odeca, koje
+     jos nema u ponudi. Ovako se iste te grupe same vrate onog dana kad
+     podaci stignu, bez ijedne izmene u kodu. */
+  function grupa(naslov, sadrzaj, uvek) {
+    if (!uvek && !sadrzaj) return '';
+    return '<div class="filter-group">' +
+      '<div class="filter-group__title">' + CW.esc(naslov) + '</div>' +
+      sadrzaj +
+    '</div>';
+  }
+
+  function kvacica(ime, vrednost, tekst, cekirano, broj) {
+    return '<label class="check">' +
+      '<input type="checkbox" name="' + ime + '" value="' + CW.esc(vrednost) + '"' +
+        (cekirano ? ' checked' : '') + '>' +
+      '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
+      '<span class="check__label">' + CW.esc(tekst) +
+        (broj != null ? ' <span class="t-muted">(' + broj + ')</span>' : '') +
+      '</span>' +
+    '</label>';
+  }
+
+  /* Kategorija je glavna podela u prodavnici, pa stoji prva. Kad je u spisku
+     samo jedna, biranje nema smisla — svih 60 proizvoda je ionako u njoj. */
+  var kat = (kategorije && kategorije.length > 1)
+    ? kategorije.map(function (c) {
+        return kvacica('cat', c.id, c.name, filters.cat.indexOf(c.id) !== -1, c.n);
+      }).join('')
+    : '';
+
+  var kolekcije = CW.data.collections.map(function (c) {
+    var n = countFor(function (p) { return p.collectionId === c.id; });
+    if (!n) return '';
+    return kvacica('collection', c.id, c.name, filters.collection.indexOf(c.id) !== -1, n);
+  }).join('');
+
+  var velicine = sizes.map(function (sz) {
+    return '<label class="variant-btn' + (filters.size.indexOf(sz) !== -1 ? ' is-selected' : '') + '" style="cursor:pointer">' +
+      '<input type="checkbox" name="size" value="' + CW.esc(sz) + '" class="visually-hidden"' +
+        (filters.size.indexOf(sz) !== -1 ? ' checked' : '') + '>' +
+      CW.esc(sz) + '</label>';
+  }).join('');
+
+  var boje = colors.map(function (c) {
+    var col = CW.shopOptions.colors[c];
+    if (!col) return '';
+    var on = filters.color.indexOf(c) !== -1;
+    return '<label style="cursor:pointer" title="' + CW.esc(col.name) + '">' +
+      '<input type="checkbox" name="color" value="' + c + '" class="visually-hidden"' + (on ? ' checked' : '') + '>' +
+      '<span class="variant-color' + (on ? ' is-selected' : '') + '" style="background:' + col.hex + ';display:block;width:32px;height:32px"></span>' +
+      '<span class="visually-hidden">' + CW.esc(col.name) + '</span>' +
+    '</label>';
+  }).join('');
+
+  /* Cena ima smisla tek kad se proizvodi po njoj razlikuju. */
+  var cene = base.map(function (p) { return p.price; });
+  var najniza = cene.length ? Math.min.apply(null, cene) : 0;
+  var najvisa = cene.length ? Math.max.apply(null, cene) : 0;
+  var imaRaspon = najvisa > najniza;
 
   return '' +
   '<form data-act="filter-form">' +
@@ -371,69 +447,27 @@ CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base) {
       '</div>' +
     '</div>' +
 
-    '<div class="filter-group">' +
-      '<div class="filter-group__title">Kolekcija</div>' +
-      CW.data.collections.map(function (c) {
-        var n = countFor(function (p) { return p.collectionId === c.id; });
-        if (!n) return '';
-        return '<label class="check">' +
-          '<input type="checkbox" name="collection" value="' + c.id + '"' + (filters.collection.indexOf(c.id) !== -1 ? ' checked' : '') + '>' +
-          '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-          '<span class="check__label">' + CW.esc(c.name) + ' <span class="t-muted">(' + n + ')</span></span>' +
-        '</label>';
-      }).join('') +
-    '</div>' +
+    grupa('Kategorija', kat) +
+    grupa('Kolekcija', kolekcije) +
+    grupa('Veličina', velicine && '<div class="row row--wrap" style="gap:6px">' + velicine + '</div>') +
+    grupa('Boja', boje && '<div class="row row--wrap" style="gap:10px">' + boje + '</div>') +
 
-    '<div class="filter-group">' +
-      '<div class="filter-group__title">Veličina</div>' +
-      '<div class="row row--wrap" style="gap:6px">' +
-        sizes.map(function (s) {
-          return '<label class="variant-btn' + (filters.size.indexOf(s) !== -1 ? ' is-selected' : '') + '" style="cursor:pointer">' +
-            '<input type="checkbox" name="size" value="' + CW.esc(s) + '" class="visually-hidden"' + (filters.size.indexOf(s) !== -1 ? ' checked' : '') + '>' +
-            CW.esc(s) + '</label>';
-        }).join('') +
-      '</div>' +
-    '</div>' +
+    grupa('Cena', imaRaspon
+      ? '<div class="range">' +
+          '<label class="visually-hidden" for="price-max">Najviša cena</label>' +
+          '<input type="range" id="price-max" name="max" min="5" max="' + maxPrice + '" step="5" value="' + (filters.max || maxPrice) + '">' +
+          '<div class="row row--between">' +
+            '<span class="t-xs">' + CW.money(0) + '</span>' +
+            '<span class="t-xs t-gold" data-price-out>do ' + CW.money((filters.max || maxPrice) * 100) + '</span>' +
+          '</div>' +
+        '</div>'
+      : '') +
 
-    '<div class="filter-group">' +
-      '<div class="filter-group__title">Boja</div>' +
-      '<div class="row row--wrap" style="gap:10px">' +
-        colors.map(function (c) {
-          var col = CW.shopOptions.colors[c];
-          if (!col) return '';
-          var on = filters.color.indexOf(c) !== -1;
-          return '<label style="cursor:pointer" title="' + CW.esc(col.name) + '">' +
-            '<input type="checkbox" name="color" value="' + c + '" class="visually-hidden"' + (on ? ' checked' : '') + '>' +
-            '<span class="variant-color' + (on ? ' is-selected' : '') + '" style="background:' + col.hex + ';display:block;width:32px;height:32px"></span>' +
-            '<span class="visually-hidden">' + CW.esc(col.name) + '</span>' +
-          '</label>';
-        }).join('') +
-      '</div>' +
-    '</div>' +
-
-    '<div class="filter-group">' +
-      '<div class="filter-group__title">Cena</div>' +
-      '<div class="range">' +
-        '<label class="visually-hidden" for="price-max">Najviša cena</label>' +
-        '<input type="range" id="price-max" name="max" min="5" max="' + maxPrice + '" step="5" value="' + (filters.max || maxPrice) + '">' +
-        '<div class="row row--between">' +
-          '<span class="t-xs">' + CW.money(0) + '</span>' +
-          '<span class="t-xs t-gold" data-price-out>do ' + CW.money((filters.max || maxPrice) * 100) + '</span>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-
-    '<div class="filter-group">' +
-      '<div class="filter-group__title">Dostupnost</div>' +
-      '<label class="check">' +
-        '<input type="checkbox" name="avail" value="in"' + (filters.avail.indexOf('in') !== -1 ? ' checked' : '') + '>' +
-        '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-        '<span class="check__label">Samo dostupno</span></label>' +
-      '<label class="check">' +
-        '<input type="checkbox" name="avail" value="sale"' + (filters.avail.indexOf('sale') !== -1 ? ' checked' : '') + '>' +
-        '<span class="check__box">' + CW.icon('check', 13) + '</span>' +
-        '<span class="check__label">Na sniženju</span></label>' +
-    '</div>' +
+    grupa('Dostupnost',
+      kvacica('avail', 'in', 'Samo dostupno', filters.avail.indexOf('in') !== -1) +
+      (countFor(function (p) { return p.compareAt; })
+        ? kvacica('avail', 'sale', 'Na sniženju', filters.avail.indexOf('sale') !== -1)
+        : '')) +
 
     '<div class="stack stack-1" style="padding-top:var(--space-3)">' +
       /* Na širokom ekranu filteri rade u trenutku klika, pa dugme visi bez

@@ -365,7 +365,7 @@
     var text = form.querySelector('[name=q]');
     q.q = text && text.value.trim() ? text.value.trim() : null;
 
-    ['collection', 'size', 'color', 'avail'].forEach(function (name) {
+    ['cat', 'collection', 'size', 'color', 'avail'].forEach(function (name) {
       var vals = CW.qsa('[name="' + name + '"]:checked', form).map(function (i) { return i.value; });
       q[name] = vals.length ? vals.join(',') : null;
     });
