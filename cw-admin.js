@@ -362,8 +362,9 @@ window.CW = window.CW || {};
     /* Filter kategorije na spisku proizvoda. Izbor se pamti na CW.admin, jer
        se spisak posle svake strelice iscrtava iznova. */
     if (ev.target && ev.target.id === 'adm-prod-filter') {
-      CW.admin._prodFilter = ev.target.value;
-      CW.admin._reloadProds();
+      /* Izbor ide u adresu, pa osvežavanje strane i dugme nazad rade kako
+         čovek očekuje, a veza sa ekrana Kategorije otvara baš tu policu. */
+      CW.router.setQuery({ cat: ev.target.value || null });
       return;
     }
 

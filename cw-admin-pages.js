@@ -538,7 +538,11 @@ CW.admin = CW.admin || {};
   /* ======================================================================
      PROIZVODI
      ====================================================================== */
-  A.products = function () {
+  A.products = function (ctx) {
+    /* Izabrana kategorija stoji u adresi, ne u pamćenju panela. Tako se na
+       spisak može doći linkom sa ekrana Kategorije, a izbor preživi i
+       osvežavanje strane. */
+    A._prodFilter = (ctx && ctx.query && ctx.query.cat) || '';
     CW.onMount(function () { A._reloadProds(); });
 
     return A.shell('/admin/proizvodi', 'Proizvodi',
@@ -1212,6 +1216,9 @@ CW.admin = CW.admin || {};
                 '<button class="btn btn--ghost btn--sm" type="button" title="Dole" ' +
                   'data-act="adm-cat-down" data-id="' + CW.esc(c.id) + '"' +
                   (i === red.length - 1 ? ' disabled' : '') + '>' + CW.icon('chevronD', 14) + '</button>' +
+                '<a class="btn btn--ghost btn--sm" ' +
+                  'href="#/admin/proizvodi?cat=' + encodeURIComponent(c.id) + '">' +
+                  (n ? 'Poređaj (' + n + ')' : 'Proizvodi') + '</a>' +
                 '<button class="btn btn--ghost btn--sm" type="button" ' +
                   'data-act="adm-cat-edit" data-id="' + CW.esc(c.id) + '">Izmeni</button>' +
                 '<button class="btn btn--ghost btn--sm" type="button" ' +
