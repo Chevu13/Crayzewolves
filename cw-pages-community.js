@@ -683,7 +683,10 @@ CW.pages.article = function (ctx) {
     '</header>' +
 
     '<div class="container container--wide mt-4">' +
-      '<div class="article-hero">' +
+      /* Objava koja ima svoju mobilnu sliku dobija drugu meru na telefonu —
+         vidi .article-hero--mob u cw-pages.css. Bez te oznake stilu nema po
+         čemu da zna da ispod <picture> stoji uspravna slika. */
+      '<div class="article-hero' + (n.imageMobile ? ' article-hero--mob' : '') + '">' +
         (n.image ? CW.imgPost(n, { fit: 'contain', cls: 'article-hero__img', eager: true, ph: n.title })
                  : '<div class="ph" style="height:100%;aspect-ratio:auto" data-ph="SLIKA ČLANKA"></div>') +
       '</div>' +

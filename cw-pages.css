@@ -113,7 +113,10 @@
   overflow: hidden;
   text-decoration: none;
 }
-.hero-slide--tall { max-height: 700px; }
+/* 700px je sečao baner na monitoru od 1920px: pri toj širini 12:5 traži 796px,
+   pa je slajd postajao širi od svoje slike. Sada mera staje tek iznad toga, a
+   na još širim ekranima visinu drži visina prozora. */
+.hero-slide--tall { max-height: min(80vh, 820px); }
 /* Baner nosi svoj natpis, pa zastor samo blago potamni dno zbog dugmeta. */
 .hero-slide--art .home-hero__scrim {
   background: linear-gradient(to top, rgba(11, 11, 10, 0.72) 0%, rgba(11, 11, 10, 0) 38%);
@@ -904,6 +907,31 @@
 
   /* --- Article --- */
   .article-hero { aspect-ratio: 4 / 3; border-radius: 0; margin-inline: calc(var(--gutter-mobile) * -1); border-inline: 0; }
+
+  /* Kad objava ima svoju mobilnu sliku (1080×1920), heroj je uspravan i
+     slika ide preko celog ekrana, bez traka sa strane.
+
+     `!important` je ovde jedini način: meru i način uklapanja CW.img ispisuje
+     kao INLINE stil na <img>, i to iz PC slike (1200×800). <picture> na
+     telefonu podmetne uspravnu sliku, ali inline mera ostaje ona stara — pa
+     je 9:16 slika stajala ulepljena u 3:2 kutiju, sa crnim sa obe strane. */
+  .article-hero--mob { aspect-ratio: 9 / 16; }
+
+  /* <picture> je samo omot i sam po sebi nema visinu, pa je slika računala
+     svoju i ostavljala prazno ispod sebe u heroju. Isti potez kao kod
+     .home-hero__bg picture. */
+  .article-hero--mob > picture { display: block; width: 100%; height: 100%; }
+  .article-hero--mob .article-hero__img {
+    aspect-ratio: 9 / 16 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+
+    /* .article-hero__img ima max-height: min(62vh, 560px) — kočnica da se
+       uspravan poster ne razvuče u toranj kad je ubacen kao PC slika. Kad
+       objava ima svoju mobilnu sliku, ta kočnica je baš ono sto smeta:
+       urednik je namerno dao sliku 9:16 da uzme ekran. */
+    max-height: none !important;
+  }
   .prose { font-size: var(--fs-body); }
   .prose blockquote { font-size: 1.125rem; padding: var(--space-2); }
 

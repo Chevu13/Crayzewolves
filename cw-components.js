@@ -738,21 +738,24 @@ CW.c.postSlider = function (posts, opts) {
        slike. Bez banera se uzima naslovna slika, pa joj dodajemo sitan
        naslov u uglu da se zna šta je. */
     var baner = Boolean(n.imageBanner || n.imageBannerMobile);
-    var slika = baner
-      ? CW.imgPost({
-          image: n.imageBanner || n.imageBannerMobile,
-          imageMobile: n.imageBannerMobile
-        }, opcije)
-      /* Naslovna slika je 3:2, a slajd je širok — da je razvučemo preko cele
-         širine, odsekli bismo joj vrh i dno, a baš tu objave obično imaju
-         svoj natpis. Zato ide cela, a prazninu sa strane puni ista slika
-         zamućena, pa slajd i dalje izgleda popunjeno. */
-      : '<div class="hero-slide__blur" aria-hidden="true">' +
-          CW.imgPost(n, { ratio: 'auto', fit: 'cover' }) +
-        '</div>' +
-        CW.imgPost(n, {
-          ratio: 'auto', fit: 'contain', eager: opcije.eager, ph: n.title
-        });
+    var izvor = baner
+      ? { image: n.imageBanner || n.imageBannerMobile, imageMobile: n.imageBannerMobile }
+      : n;
+
+    /* Slika ide CELA, a prazninu sa strane puni ista slika zamućena.
+
+       Ranije je baner išao preko cele širine (cover), uz pretpostavku da je
+       tačno 12:5 kao i slajd. Na širokim monitorima to ne stoji: slajd udari
+       u svoju najveću visinu, postane širi od 12:5, i cover počne da jede
+       vrh i dno — a tu baner nosi natpis. Zato sada i baner i naslovna slika
+       idu istim putem, pa nijedna ne gubi ivice ni na jednoj širini. */
+    var slika =
+      '<div class="hero-slide__blur" aria-hidden="true">' +
+        CW.imgPost(izvor, { ratio: 'auto', fit: 'cover' }) +
+      '</div>' +
+      CW.imgPost(izvor, {
+        ratio: 'auto', fit: 'contain', eager: opcije.eager, ph: n.title
+      });
 
     return '<a class="hero-slide' + (opts.tall ? ' hero-slide--tall' : '') +
         (baner ? ' hero-slide--art' : '') + '" ' +
