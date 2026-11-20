@@ -687,7 +687,10 @@ CW.pages.article = function (ctx) {
          vidi .article-hero--mob u cw-pages.css. Bez te oznake stilu nema po
          čemu da zna da ispod <picture> stoji uspravna slika. */
       '<div class="article-hero' + (n.imageMobile ? ' article-hero--mob' : '') + '">' +
-        (n.image ? CW.imgPost(n, { fit: 'contain', cls: 'article-hero__img', eager: true, ph: n.title })
+        /* Bez nametnutog `contain`: CW.img vidi da su odnos kutije i odnos
+           slike isti, pa sam bira `cover`. Trake sa strane tako ne mogu ni
+           da nastanu. */
+        (n.image ? CW.imgPost(n, { cls: 'article-hero__img', eager: true, ph: n.title })
                  : '<div class="ph" style="height:100%;aspect-ratio:auto" data-ph="SLIKA ČLANKA"></div>') +
       '</div>' +
     '</div>' +

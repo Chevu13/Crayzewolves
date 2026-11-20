@@ -286,7 +286,19 @@
 
 /* Article page */
 .article-head { max-width: var(--container-text); margin-inline: auto; }
-.article-hero { position: relative; aspect-ratio: 21 / 9; border-radius: var(--radius-card); overflow: hidden; border: var(--border); }
+/* Heroj clanka ide preko cele sirine, a visinu uzima od same slike.
+
+   Ranije je kutija bila zakucana na 21:9. Baneri koji stizu iz panela nisu
+   svi tog oblika — saradnja sa Leonida3tv je skoro kvadratna — pa je slika
+   stajala uklopljena po visini i ostavljala crne trake od po trista piksela
+   sa obe strane. Sa odnosom koji dolazi od slike nema ni traka ni secenja:
+   baner popuni sirinu, a kutija se spusti koliko treba. */
+.article-hero {
+  position: relative;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: var(--border);
+}
 .article-body { max-width: var(--container-text); margin-inline: auto; }
 .article-meta {
   display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;
