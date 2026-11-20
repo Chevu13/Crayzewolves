@@ -308,7 +308,7 @@ CW.c.cartDrawer = function () {
       icon: 'cart',
       title: 'Korpa je prazna',
       text: 'Još ništa nije ovde. Pogledaj šta ima u zvaničnom shopu.',
-      actions: '<a class="btn btn--primary" href="#/shop" data-act="close-overlays">Otvori shop</a>'
+      actions: '<a class="btn btn--primary" href="#/shop/all" data-act="close-overlays">Otvori shop</a>'
     });
   } else {
     body = cart.map(function (l) { return CW.c.lineItem(l, true); }).join('');

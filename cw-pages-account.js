@@ -661,7 +661,7 @@ CW.pages.accountOrders = function () {
         : CW.c.empty({
             icon: 'package', title: 'Još nema porudžbina',
             text: 'Kad naručiš, porudžbina će se pojaviti ovde, sa statusom i praćenjem.',
-            actions: '<a class="btn btn--primary" href="#/shop">Otvori shop</a>'
+            actions: '<a class="btn btn--primary" href="#/shop/all">Otvori shop</a>'
           });
     }).catch(function (e) {
       host.innerHTML = CW.c.empty({ icon: 'alert', title: 'Ne mogu da učitam porudžbine', text: e.message });
@@ -846,14 +846,14 @@ CW.pages.wishlist = function () {
     ? '<div class="stack stack-3">' +
         '<div class="row row--between row--wrap" style="gap:12px">' +
           '<span class="toolbar__count">' + items.length + ' ' + brojArtikala(items.length) + '</span>' +
-          '<a class="btn btn--quiet btn--sm" href="#/shop">Nastavi kupovinu</a>' +
+          '<a class="btn btn--quiet btn--sm" href="#/shop/all">Nastavi kupovinu</a>' +
         '</div>' +
         '<div class="product-grid">' + items.map(CW.c.productCard).join('') + '</div>' +
       '</div>'
     : CW.c.empty({
         icon: 'heart', title: 'Lista želja je prazna',
         text: 'Klikni na srce na proizvodu da ga sačuvaš ovde.',
-        actions: '<a class="btn btn--primary btn--lg" href="#/shop">Otvori shop</a>'
+        actions: '<a class="btn btn--primary btn--lg" href="#/shop/all">Otvori shop</a>'
       });
 
   /* Wishlist is intentionally readable while signed out — it lives in the
@@ -1048,7 +1048,7 @@ CW.pages.notFound = function () {
       '<p class="t-lead mx-auto mt-3" style="max-width:48ch">Stranica koju tražiš ne postoji, premeštena je, ili nikad nije izašla iz draft kanala. Evo puta nazad.</p>' +
       '<div class="notfound__links">' +
         '<a class="btn btn--primary btn--lg" href="#/">Nazad na početnu</a>' +
-        '<a class="btn btn--secondary btn--lg" href="#/shop">Otvori shop</a>' +
+        '<a class="btn btn--secondary btn--lg" href="#/shop/all">Otvori shop</a>' +
         '<button class="btn btn--quiet btn--lg" type="button" data-act="open-search">' + CW.icon('search', 17) + 'Pretraži sajt</button>' +
       '</div>' +
     '</div>' +

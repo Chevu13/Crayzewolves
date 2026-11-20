@@ -32,10 +32,7 @@
     .add('newsletter/odjava',   CW.pages.newsletterUnsubscribe, { title: function () { return 'Odjava'; } })
 
     /* --- shop --- */
-    .add('shop',                CW.pages.shop,         {
-      title: function () { return 'Zvanični shop'; },
-      description: function () { return 'Zvanični Wolfpack shop — šolje, oprema i gaming proizvodi sa grbom zajednice. Dostava po Srbiji i regionu.'; }
-    })
+    .add('shop',                CW.pages.shopRedirect, { title: function () { return 'Shop'; } })
     .add('shop/:category',      CW.pages.catalog,      { title: function (c) { var k = CW.find('categories', c.params.category); return k ? k.name : 'Svi proizvodi'; } })
     .add('proizvod/:slug',      CW.pages.product,      {
       title: function (c) { var p = CW.productBySlug(c.params.slug); return p ? p.name : 'Proizvod'; },

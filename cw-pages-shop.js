@@ -1,186 +1,30 @@
 /* ==========================================================================
    WOLFPACK — SHOP PAGES
-   Shop landing · Category listing · Product detail · Cart · Checkout ·
-   Order confirmation
+   Spisak proizvoda · Proizvod · Korpa · Plaćanje · Potvrda porudžbine
    ========================================================================== */
 
 window.CW = window.CW || {};
 CW.pages = CW.pages || {};
 
 /* ==========================================================================
-   SHOP LANDING
+   SHOP
+   --------------------------------------------------------------------------
+   Odvojene ulazne strane prodavnice vise nema. Na `#/shop` je stajao spisak
+   polica, kolekcija i promo blokova, a ispod njega je svejedno trebalo
+   kliknuti jos jednom da bi se stiglo do proizvoda. Meni u zaglavlju je i
+   ranije vodio pravo na `#/shop/all`, pa je ta strana bila usputna stanica
+   kroz koju niko nije hteo da prodje.
+
+   Adresa `#/shop` ostaje i vodi na ceo asortiman: stare veze, obelezivaci i
+   ono sto je vec podeljeno ne smeju da zavrse na "stranica ne postoji".
    ========================================================================== */
-CW.pages.shop = function () {
-  var newArrivals = CW.data.products.filter(function (p) { return (p.badges || []).indexOf('new') !== -1; });
-  var bestSellers = CW.data.products.filter(function (p) { return (p.badges || []).indexOf('bestseller') !== -1; });
-  var limited = CW.data.products.filter(function (p) { return p.collectionId === 'limited'; });
-  var drop = limited[0];
-  var esports = CW.data.products.filter(function (p) { return p.collectionId === 'esports'; });
-  var lifestyle = CW.data.products.filter(function (p) { return p.collectionId === 'lifestyle'; });
-  var essentials = CW.data.products.filter(function (p) { return p.collectionId === 'essential'; });
-  var recents = CW.store.recentlyViewed().map(CW.product).filter(Boolean);
-
-  /* Slika u zaglavlju: prvi proizvod koji prodavac istakne u panelu, pa
-     ostali redom. Pre je ovde stajala ugrađena slika šolje — kad je šolja
-     izbačena iz ponude, u zaglavlju je i dalje stajala, sa starim grbom. */
-  var uZaglavlju = CW.data.products.filter(function (p) { return p.image; })
-    .sort(function (a, b) { return (a.featuredSlot || 99) - (b.featuredSlot || 99); })[0];
-
-  function rail(title, eyebrow, items, href, desc) {
-    if (!items.length) return '';
-    return '<section class="section container container--wide">' +
-      CW.c.sectionHead({
-        eyebrow: eyebrow, title: title, desc: desc,
-        action: '<a class="btn btn--quiet" href="' + href + '">Pogledaj sve ' + CW.icon('arrowR', 15) + '</a>'
-      }) +
-      '<div class="product-grid product-grid--4">' + items.slice(0, 4).map(CW.c.productCard).join('') + '</div>' +
-    '</section>';
-  }
-
-  return '' +
-  /* ---------- HERO ---------- */
-  '<section class="shop-hero">' +
-    '<div class="container container--wide">' +
-      '<div class="shop-hero__grid">' +
-        '<div>' +
-          CW.c.crumbs([{ label: 'Početna', path: '/' }, { label: 'Shop', path: '/shop' }]) +
-          '<div class="t-eyebrow mt-3">Official Merchandise</div>' +
-          '<h1 class="t-hero mt-2">Wolfpack<br><span class="t-gold">Gear</span></h1>' +
-          '<p class="t-lead mt-3">Kreiran za igrače, za udobnost kroz svaki meč i stil koji prati tvoj način igre.</p>' +
-          '<div class="row row--wrap mt-4" style="gap:12px">' +
-            '<a class="btn btn--primary btn--lg" href="#/shop/all">Svi proizvodi</a>' +
-            '<a class="btn btn--secondary btn--lg" href="#/shop/all?collection=limited">Limitirana izdanja</a>' +
-          '</div>' +
-        '</div>' +
-        (uZaglavlju
-          ? '<a class="brackets" href="#/proizvod/' + uZaglavlju.id + '" ' +
-              'aria-label="' + CW.esc(uZaglavlju.name) + '" ' +
-              'style="display:block;border:var(--border);border-radius:var(--radius-card);overflow:hidden">' +
-              CW.img(uZaglavlju.image, { ratio: '4 / 3', ph: uZaglavlju.name }) + '</a>'
-          : '') +
-      '</div>' +
-    '</div>' +
-  '</section>' +
-
-  /* ---------- CATEGORIES ---------- */
-  '<section class="section--tight container container--wide">' +
-    '<div class="category-tiles">' +
-      CW.data.categories.map(function (c) {
-        var count = CW.data.products.filter(function (p) { return p.categoryId === c.id; }).length;
-        return '<a class="category-tile" href="#/shop/' + c.id + '">' +
-          '<span class="category-tile__icon">' + CW.icon(c.icon, 24) + '</span>' +
-          '<span class="category-tile__name">' + CW.esc(c.name) + '</span>' +
-          '<span class="category-tile__count">' + count + ' ' + CW.plural(count, 'artikal', 'artikla', 'artikala') + '</span>' +
-        '</a>';
-      }).join('') +
-    '</div>' +
-  '</section>' +
-
-  /* ---------- LIMITED DROP ---------- */
-  (drop ?
-  '<section class="section--tight container container--wide">' +
-    '<div class="drop-banner brackets">' +
-      '<div>' +
-        '<div class="row row--wrap" style="gap:8px">' +
-          '<span class="badge badge--limited">Limitirano izdanje</span>' +
-          '<span class="badge badge--low">' + drop.dropInfo.remaining + ' od ' + drop.dropInfo.total + ' preostalo</span>' +
-          '<span class="badge badge--neutral">Ističe za ' + drop.dropInfo.endsInDays + ' dana</span>' +
-        '</div>' +
-        '<h2 class="t-h1 mt-2">' + CW.esc(drop.name) + '</h2>' +
-        '<p class="t-lead mt-2">' + CW.esc(drop.shortDesc) + '</p>' +
-        '<div class="row row--wrap mt-3" style="gap:12px;align-items:center">' +
-          '<span class="t-price" style="font-size:2rem">' + CW.money(drop.price) + '</span>' +
-          '<a class="btn btn--primary btn--lg" href="#/proizvod/' + drop.slug + '">Shop the drop</a>' +
-        '</div>' +
-      '</div>' +
-      '<div class="text-center">' +
-        '<div class="drop-banner__num">' + drop.dropInfo.remaining + '</div>' +
-        '<div class="t-label mt-2">pieces remaining</div>' +
-        '<div class="capacity mt-3">' +
-          '<div class="capacity__bar"><div class="capacity__fill" style="width:' +
-            Math.round((1 - drop.dropInfo.remaining / drop.dropInfo.total) * 100) + '%"></div></div>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-  '</section>' : '') +
-
-  rail('Novo u shopu', '', newArrivals, '#/shop/all?sort=new') +
-  rail('Najprodavanije', '', bestSellers, '#/shop/all?sort=popular', 'Ono što se prvo kupi, pa se kupi ponovo.') +
-
-  /* ---------- COLLECTIONS ---------- */
-  '<section class="section section--surface">' +
-    '<div class="container container--wide">' +
-      CW.c.sectionHead({ title: 'Kolekcije', desc: 'Svaka kolekcija ima svoj razlog.' }) +
-      '<div class="collection-tiles">' +
-        CW.data.collections.filter(function (c) { return c.id !== 'limited'; }).map(function (c) {
-          return '<a class="collection-tile" href="#/shop/all?collection=' + c.id + '">' +
-            '<div class="scrim"></div>' +
-            '<div class="collection-tile__content">' +
-              '<div class="t-label" style="color:var(--color-gold)">' + CW.esc(c.tagline) + '</div>' +
-              '<h3 class="collection-tile__title mt-1">' + CW.esc(c.name) + '</h3>' +
-              '<p class="t-sm mt-2 clamp-3">' + CW.esc(c.blurb) + '</p>' +
-              '<span class="link-arrow mt-2">Pogledaj kolekciju ' + CW.icon('arrowR', 15) + '</span>' +
-            '</div>' +
-          '</a>';
-        }).join('') +
-      '</div>' +
-    '</div>' +
-  '</section>' +
-
-  rail('Esports kolekcija', '', esports, '#/shop/all?collection=esports', 'Ono u čemu igrači zaista igraju — isti materijal, isti kroj, ista štampa.') +
-
-  /* ---------- PROMO ---------- */
-  '<section class="section--tight container container--wide">' +
-    '<div class="promo">' +
-      '<a class="promo__panel" href="#/shop/all?collection=lifestyle">' +
-        '<div class="t-eyebrow t-eyebrow--gold">Lifestyle</div>' +
-        '<h3 class="t-h2 mt-1">Subtle mark.<br>Heavy fabric.</h3>' +
-        '<p class="t-body mt-2" style="max-width:40ch">Ton na ton, fleece 380 g/m². Napravljeno da izdrži i pranje i zimu.</p>' +
-        '<span class="link-arrow mt-2">Shop lifestyle ' + CW.icon('arrowR', 15) + '</span>' +
-      '</a>' +
-      '<a class="promo__panel" href="#/shop/all?collection=essential">' +
-        '<div class="t-eyebrow t-eyebrow--gold">Community Essentials</div>' +
-        '<h3 class="t-h2 mt-1">Symbol only.<br>Everyday.</h3>' +
-        '<p class="t-body mt-2" style="max-width:40ch">Najtiša linija koju pravimo. Za one koji već znaju.</p>' +
-        '<span class="link-arrow mt-2">Shop essentials ' + CW.icon('arrowR', 15) + '</span>' +
-      '</a>' +
-    '</div>' +
-  '</section>' +
-
-  rail('Za svaki dan', '', essentials, '#/shop/all?collection=essential') +
-  rail('Lifestyle kolekcija', '', lifestyle, '#/shop/all?collection=lifestyle') +
-
-  (recents.length ?
-  '<section class="section container container--wide">' +
-    CW.c.sectionHead({ title: 'Nedavno gledano' }) +
-    '<div class="product-grid product-grid--4">' + recents.slice(0, 4).map(CW.c.productCard).join('') + '</div>' +
-  '</section>' : '') +
-
-  /* ---------- TRUST + NEWSLETTER ---------- */
-  '<section class="section section--surface">' +
-    '<div class="container container--wide">' +
-      CW.c.trustStrip() +
-      '<div class="mt-5 cta-band">' +
-        '<div class="cta-band__inner">' +
-          '<div class="cta-band__text">' +
-            '<div class="t-eyebrow t-eyebrow--gold">Najave izdanja</div>' +
-            '<h2 class="t-h2 mt-1">Saznaj pre nego što se rasproda</h2>' +
-            '<p class="t-lead mt-2">Limitirana izdanja se prvo najavljuju na Discordu.</p>' +
-          '</div>' +
-          '<form class="newsletter" data-act="newsletter" data-source="shop" style="min-width:300px" novalidate>' +
-            '<label class="visually-hidden" for="shop-nl">Imejl adresa</label>' +
-            '<input class="input" id="shop-nl" name="email" type="email" placeholder="ime@primer.com" required>' +
-            '<button class="btn btn--primary" type="submit">Notify me</button>' +
-          '</form>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-  '</section>';
+CW.pages.shopRedirect = function () {
+  /* `replace`, ne obicna promena: inace bi dugme nazad vracalo ovde, pa
+     odavde opet na /shop/all -- posetilac bi ostao zarobljen. */
+  window.location.replace('#/shop/all');
+  return '';
 };
 
-/* ==========================================================================
-   CATEGORY / PRODUCT LISTING
-   ========================================================================== */
 CW.pages.catalog = function (ctx) {
   var catId = ctx.params.category;
   /* Dve „kategorije" koje to zapravo nisu: vrsta robe. Stoje uz prave
@@ -777,7 +621,7 @@ CW.pages.cart = function (ctx) {
           icon: 'cart',
           title: 'Korpa je prazna',
           text: 'Korpa je još prazna. Počni od onoga što je na stanju.',
-          actions: '<a class="btn btn--primary btn--lg" href="#/shop">Otvori shop</a>' +
+          actions: '<a class="btn btn--primary btn--lg" href="#/shop/all">Otvori shop</a>' +
                    '<a class="btn btn--quiet btn--lg" href="#/nalog/lista-zelja">Lista želja</a>'
         }) +
       '</section>' +
@@ -803,7 +647,7 @@ CW.pages.cart = function (ctx) {
         '</div></div>' +
 
         '<div class="row row--between mt-3 row--wrap" style="gap:12px">' +
-          '<a class="btn btn--quiet" href="#/shop">' + CW.icon('arrowL', 15) + 'Nastavi kupovinu</a>' +
+          '<a class="btn btn--quiet" href="#/shop/all">' + CW.icon('arrowL', 15) + 'Nastavi kupovinu</a>' +
           '<span class="t-sm">Cene su sa PDV-om. Dostava se računa na kasi.</span>' +
         '</div>' +
       '</div>' +
@@ -879,7 +723,7 @@ CW.pages.checkout = function (ctx) {
       CW.c.empty({
         icon: 'cart', title: 'Nema šta da se plati',
         text: 'Korpa je prazna. Dodaj nešto pre plaćanja.',
-        actions: '<a class="btn btn--primary" href="#/shop">Otvori shop</a>'
+        actions: '<a class="btn btn--primary" href="#/shop/all">Otvori shop</a>'
       }) + '</section>';
   }
 
@@ -1206,7 +1050,7 @@ CW.pages.confirmation = function () {
       CW.c.empty({
         icon: 'package', title: 'Nema nedavne porudžbine',
         text: 'Ovde nema šta da se prikaže. Ako si upravo poručio/la, proveri mejl za potvrdu.',
-        actions: '<a class="btn btn--primary" href="#/shop">Nazad u shop</a>'
+        actions: '<a class="btn btn--primary" href="#/shop/all">Nazad u shop</a>'
       }) + '</section>';
   }
 
@@ -1328,7 +1172,7 @@ CW.pages.confirmation = function () {
     '</div>' +
 
     '<div class="row mt-4" style="gap:12px;flex-wrap:wrap">' +
-      '<a class="btn btn--primary" href="#/shop">Nastavi kupovinu</a>' +
+      '<a class="btn btn--primary" href="#/shop/all">Nastavi kupovinu</a>' +
       '<a class="btn btn--secondary" href="#/nalog/porudzbine">Istorija porudžbina</a>' +
     '</div>' +
   '</section>' +

@@ -925,7 +925,7 @@ function newsletterIshod(ctx, vrsta) {
         '<p class="t-lead mx-auto mt-3" style="max-width:46ch">' + CW.esc(lede) + '</p>' +
         '<div class="notfound__links">' +
           '<a class="btn btn--primary btn--lg" href="#/">Nazad na početnu</a>' +
-          '<a class="btn btn--secondary btn--lg" href="#/shop">Otvori shop</a>' +
+          '<a class="btn btn--secondary btn--lg" href="#/shop/all">Otvori shop</a>' +
         '</div>';
     }
 
@@ -1135,7 +1135,7 @@ CW.pages.contact = function (ctx) {
         '<div class="contact-method">' + CW.icon('zap', 20) +
           '<div><b class="t-h4">Usluge</b>' +
           '<div class="t-sm mt-1">Ponuda i rok na osnovu tvog upita.</div>' +
-          '<a class="link-arrow mt-2" href="#/shop">Pogledaj shop ' + CW.icon('arrowR', 14) + '</a></div></div>' +
+          '<a class="link-arrow mt-2" href="#/shop/all">Pogledaj shop ' + CW.icon('arrowR', 14) + '</a></div></div>' +
 
         '<div class="contact-method">' + CW.icon('package', 20) +
           '<div><b class="t-h4">Porudžbine</b>' +
