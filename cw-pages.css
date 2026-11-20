@@ -806,7 +806,38 @@
 
   /* Filters move into a drawer */
   .catalog__filters { display: none; }
-  .filter-trigger { display: inline-flex; }
+  /* Filteri na telefonu: plutajuća pilula pri dnu ekrana, a ne dugme u
+     traci na vrhu. Dugme na vrhu odlazi sa prvim prevlačenjem, pa je kupac
+     koji je stigao do trideset petog proizvoda morao da se vraća na početak
+     da bi sužio spisak.
+
+     Dno, a ne vrh: palac je tamo. Po sredini, a ne u uglu — desni ugao drže
+     obaveštenja (.toast-region), pa bi se pilula povremeno gubila ispod njih.
+
+     Ispod je z-index fioke, da pilula ne pluta preko otvorenih filtera. */
+  .filter-trigger {
+    display: inline-flex;
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: var(--z-sticky);
+
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: var(--color-gold);
+    color: var(--color-black);
+    border: 0;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  }
+  .filter-trigger:hover,
+  .filter-trigger:focus-visible { background: var(--color-gold); color: var(--color-black); }
+
+  /* Traka iznad spiska ostaje bez dugmeta, pa broj i sortiranje dobijaju
+     ceo red umesto da se stiskaju u tri dela. */
+  .toolbar .filter-trigger { position: fixed; }
 
   /* Week grid is unreadable at this width — day list takes over */
   .week-grid { display: none; }

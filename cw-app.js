@@ -1325,7 +1325,16 @@
       var guard = setTimeout(startOnce, (CW.CONFIG && CW.CONFIG.hydrateTimeoutMs) || 2000);
       try {
         CW.hydrate()
-          .then(function () { clearTimeout(guard); startOnce(); })
+          .then(function () {
+            clearTimeout(guard);
+            /* Ako je čuvar već nacrtao stranicu ugrađenim sadržajem, pravi
+               podaci stižu POSLE prvog crtanja. Bez ovog osvežavanja
+               posetilac ostaje na demo objavama sve do prve promene adrese
+               — na početnoj je to značilo stari baner umesto pravog. */
+            var kasnilo = started;
+            startOnce();
+            if (kasnilo) CW.router.refresh();
+          })
           .catch(function () { clearTimeout(guard); startOnce(); });
       } catch (e) {
         clearTimeout(guard);
