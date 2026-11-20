@@ -387,10 +387,54 @@
      jer se spisak iscrtava iznova. */
   var pendingFilter = null;
 
+  /* Fioka sa filterima na telefonu. Bočni spisak se klonira, pa se id-evi
+     prefiksuju da u dokumentu ne stoje dva elementa sa istim id-em i da
+     svaka oznaka i dalje pokazuje na svoje polje.
+
+     `vrati` je pozicija spiska unutar fioke: posle svake izmene strana se
+     iscrtava iznova i fioka se otvara ponovo, pa bi bez ovoga posetilac
+     svaki put ispadao na vrh spiska filtera.
+  */
+  function openFilterDrawer(vrati) {
+    var panel = document.querySelector('.catalog__filters');
+    var markup = panel ? panel.innerHTML
+      .replace(/id="([^"]+)"/g, 'id="m-$1"')
+      .replace(/for="([^"]+)"/g, 'for="m-$1"')
+      /* Bočni spisak je već povezan i nosi oznaku data-live. Klon je nasledi
+         kroz innerHTML, pa bi wireFilterControls preskočio formu u fioci i
+         kvačice tamo ne bi radile nista. */
+      .replace(/ data-live="1"/g, '')
+      .replace(/ data-wired="1"/g, '') : '';
+
+    CW.ui.openOverlay(
+      '<div class="drawer drawer--left" role="dialog" aria-modal="true" aria-label="Filteri">' +
+        '<div class="drawer__head">' +
+          '<span class="drawer__title">Filteri</span>' +
+          '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Zatvori filtere">' + CW.icon('x', 22) + '</button>' +
+        '</div>' +
+        '<div class="drawer__body">' + markup + '</div>' +
+      '</div>');
+
+    var telo = document.querySelector('#overlay-root .drawer__body');
+    if (telo && vrati) telo.scrollTop = vrati;
+
+    /* Povezuju se samo klonirana polja — ponovno povezivanje cele strane
+       udvostrucilo bi osluškivace na bočnom spisku. */
+    wireFilterControls(document.getElementById('overlay-root'));
+  }
+
   function applyFilters(form) {
     var active = document.activeElement;
     var inForm = active && form.contains(active);
+    var fioka = form.closest('#overlay-root');
+    var telo = fioka ? fioka.querySelector('.drawer__body') : null;
+
     pendingFilter = {
+      /* Izmena iz fioke: posle iscrtavanja je otvaramo ponovo, na istom
+         mestu u spisku. Bez toga bi prva kvačica zatvorila fioku i
+         posetilac ne bi stigao da izabere drugi filter. */
+      fioka: Boolean(fioka),
+      fiokaY: telo ? telo.scrollTop : 0,
       y: window.scrollY,
       name: inForm ? active.getAttribute('name') : null,
       /* Vrednost pamtimo samo kod kvačica — tamo ih ima više sa istim
@@ -406,6 +450,11 @@
     if (!pendingFilter) return;
     var st = pendingFilter;
     pendingFilter = null;
+    if (st.fioka) {
+      openFilterDrawer(st.fiokaY);
+      return;
+    }
+
     function put() {
       window.scrollTo(0, st.y);
       if (!st.name) return;
@@ -427,17 +476,62 @@
     window.setTimeout(put, 600);
   }
 
+  /* Bočni spisak filtera ne sme da visi ispod poslednjeg proizvoda.
+
+     Katalog je mreža od dve kolone, pa visinu reda određuje viši stubac.
+     Kad filter suži spisak na jedan proizvod, spisak filtera postane viši od
+     rezultata i rastegne celu sekciju — trake sa filterima vise u prazno,
+     skoro do odeljka sa dostavom.
+
+     CSS ne ume da kaze "ne visi od komsije", pa se mera računa ovde: spisak
+     filtera staje tamo gde staju i proizvodi, a ako je duži od toga, kliza
+     unutar sebe. Donja granica postoji da spisak ne postane neupotrebljivo
+     nizak kad pretraga ne vrati nista.
+  */
+  function syncFilterRail() {
+    var rail = document.querySelector('.catalog__filters');
+    if (!rail) return;
+
+    var rezultati = rail.parentNode.querySelector(':scope > div');
+    if (!rezultati || window.innerWidth < 1024) { rail.style.maxHeight = ''; return; }
+
+    var zaglavlje = parseInt(getComputedStyle(document.documentElement)
+      .getPropertyValue('--header-h'), 10) || 72;
+    var ekran = window.innerHeight - zaglavlje - 32;
+
+    /* Mera se uzima BEZ već postavljene kape, inače bi svaki sledeći poziv
+       računao iz svog prethodnog rezultata. */
+    rail.style.maxHeight = '';
+    var visinaRezultata = rezultati.getBoundingClientRect().height;
+
+    rail.style.maxHeight = Math.max(260, Math.min(ekran, visinaRezultata)) + 'px';
+  }
+
+  /* Slike stižu posle prvog crtanja i menjaju visinu spiska, pa se mera
+     ponavlja dok se raspored ne smiri. */
+  function syncFilterRailSoon() {
+    syncFilterRail();
+    window.setTimeout(syncFilterRail, 250);
+    window.setTimeout(syncFilterRail, 800);
+  }
+
+  window.addEventListener('resize', CW.debounce(syncFilterRail, 150));
+
   /** Live feedback inside a filter panel — works for the rail and the drawer. */
   function wireFilterControls(root) {
     if (!root) return;
     restoreAfterFilter();
+    syncFilterRailSoon();
 
-    /* Bočni spisak filtera radi bez dugmeta: kvačica menja spisak odmah.
-       U fioci na telefonu ne — tamo bi prvo crtanje zatvorilo fioku, pa
-       posetilac ne bi stigao da izabere drugi filter. Fioka zadržava
-       „Primeni filtere". */
+    /* Spisak filtera radi bez dugmeta, i sa strane i u fioci: kvačica menja
+       spisak odmah.
+
+       U fioci je ranije stajalo dugme „Primeni filtere“, jer je prvo
+       iscrtavanje zatvaralo fioku. Sada se fioka posle iscrtavanja otvara
+       ponovo, na istom mestu (vidi applyFilters i openFilterDrawer), pa
+       dugme više nema šta da radi. */
     CW.qsa('[data-act="filter-form"]', root).forEach(function (form) {
-      if (form.dataset.live || form.closest('#overlay-root')) return;
+      if (form.dataset.live) return;
       form.dataset.live = '1';
 
       form.addEventListener('change', function (ev) {
@@ -666,24 +760,7 @@
       /* ---------- CATALOG FILTERS ---------- */
       case 'open-filters': {
         ev.preventDefault();
-        var panel = document.querySelector('.catalog__filters');
-        /* The desktop panel is cloned into the drawer, so ids are re-prefixed
-           to avoid duplicates in the document and keep every label bound to
-           the control it actually describes. */
-        var markup = panel ? panel.innerHTML
-          .replace(/id="([^"]+)"/g, 'id="m-$1"')
-          .replace(/for="([^"]+)"/g, 'for="m-$1"') : '';
-        CW.ui.openOverlay(
-          '<div class="drawer drawer--left" role="dialog" aria-modal="true" aria-label="Filteri">' +
-            '<div class="drawer__head">' +
-              '<span class="drawer__title">Filteri</span>' +
-              '<button class="btn-icon" type="button" data-act="close-overlays" aria-label="Zatvori filtere">' + CW.icon('x', 22) + '</button>' +
-            '</div>' +
-            '<div class="drawer__body">' + markup + '</div>' +
-          '</div>');
-        /* Wire only the cloned controls — re-running the full page wiring
-           would double-bind the listeners on the desktop panel. */
-        wireFilterControls(document.getElementById('overlay-root'));
+        openFilterDrawer();
         break;
       }
 

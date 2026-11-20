@@ -168,7 +168,7 @@ CW.pages.catalog = function (ctx) {
   if (filters.max !== null) tokens.push({ label: 'do ' + CW.money(filters.max * 100), key: 'max', val: filters.max });
   if (filters.q) tokens.push({ label: '“' + filters.q + '”', key: 'q', val: filters.q });
 
-  var filterPanel = CW.pages._filterPanel(filters, allSizes, allColors, maxPrice, base, kategorije);
+  var filterPanel = CW.pages._filterPanel(filters, allSizes, allColors, maxPrice, base, kategorije, list.length);
 
   var skeleton = '<div class="product-grid">' + CW.times(6, CW.c.productSkeleton) + '</div>';
 
@@ -246,7 +246,7 @@ CW.pages.catalog = function (ctx) {
 };
 
 /* Filter panel — reused by the desktop rail and the mobile drawer */
-CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base, kategorije) {
+CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base, kategorije, ukupno) {
   function countFor(fn) { return base.filter(fn).length; }
 
   /* Grupa se crta samo ako ima sta da ponudi.
@@ -348,9 +348,12 @@ CW.pages._filterPanel = function (filters, sizes, colors, maxPrice, base, katego
         : '')) +
 
     '<div class="stack stack-1" style="padding-top:var(--space-3)">' +
-      /* Na širokom ekranu filteri rade u trenutku klika, pa dugme visi bez
-         posla — ostaje samo u fioci na telefonu (cw-app.js, open-filters). */
-      '<button class="btn btn--primary btn--full" type="submit" data-drawer-only>Primeni filtere</button>' +
+      /* Filteri rade u trenutku klika i u fioci, pa ovo vise nije „primeni“
+         nego „gotov sam“: zatvara fioku i vraca na spisak. Broj uz natpis
+         kaze sta ceka iza nje, da posetilac ne mora da zatvara i gleda. */
+      '<button class="btn btn--primary btn--full" type="button" data-drawer-only ' +
+        'data-act="close-overlays">Prikaži proizvode' +
+        (ukupno != null ? ' (' + ukupno + ')' : '') + '</button>' +
       '<button class="btn btn--ghost btn--full" type="button" data-act="clear-filters">Poništi sve</button>' +
     '</div>' +
   '</form>';
