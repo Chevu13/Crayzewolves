@@ -566,7 +566,18 @@
   text-transform: uppercase; color: var(--color-offwhite);
 }
 
-.category-tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-2); }
+/* Broj polica bira urednik u panelu, pa ga raspored ne sme pretpostavljati.
+   Dok je ovde stajalo šest kolona, sedma kategorija je padala sama u nov red
+   sa pet praznih mesta pored sebe. `auto-fit` računa koliko ih stane i puni
+   red do kraja — i na četiri police i na dvanaest.
+
+   Zato ovde nema ni četiri pravila za četiri širine ekrana: jedna mera
+   (150px najmanje po pločici) pokriva sve, od telefona do monitora. */
+.category-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-2);
+}
 .category-tile {
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   padding: var(--space-3) var(--space-2);
@@ -799,7 +810,6 @@
   .product-grid, .product-grid--4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .philosophy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .collection-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .category-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .ugc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -822,7 +832,6 @@
   .grid--3, .grid--4, .grid--5, .grid--6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .product-grid, .product-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .collection-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .category-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ugc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -875,7 +884,6 @@
   .grid--3, .grid--4, .grid--5, .grid--6 { grid-template-columns: minmax(0, 1fr); }
   .philosophy-grid { grid-template-columns: minmax(0, 1fr); }
   .collection-tiles { grid-template-columns: minmax(0, 1fr); }
-  .category-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ugc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trust-strip { grid-template-columns: minmax(0, 1fr); }
@@ -1012,7 +1020,6 @@
 /* -------------------- ≤ 379 : SMALL PHONE -------------------- */
 @media (max-width: 379px) {
   .product-grid, .product-grid--4 { grid-template-columns: minmax(0, 1fr); }
-  .category-tiles { grid-template-columns: minmax(0, 1fr); }
   .stat-grid { grid-template-columns: minmax(0, 1fr); }
   .logo__word { font-size: 0.9375rem; }
 }
