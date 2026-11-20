@@ -65,7 +65,14 @@
 /* Brojevi stoje u traci po dnu heroja, pa hero i na monitoru ima "pod". */
 .home-hero__meta {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Kolone su širine svog sadržaja, a višak prostora se deli IZMEĐU njih.
+     Sa četiri jednake kolone poslednji broj je počinjao na tri četvrtine
+     širine i ostavljao prazan rep desno, pa je traka delovala nezavršeno
+     pored reda ispod nje, koji je usidren i levo i desno. Ovako prvi broj
+     stoji na levoj ivici, poslednji na desnoj — isto kao naslov i prekidač
+     u sekciji Izdvajamo iz shopa. */
+  grid-template-columns: repeat(4, max-content);
+  justify-content: space-between;
   gap: var(--space-3);
   margin-top: var(--space-6);
   padding-top: var(--space-3);
