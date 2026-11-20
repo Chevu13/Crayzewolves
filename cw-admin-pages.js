@@ -1305,6 +1305,17 @@ CW.admin = CW.admin || {};
   };
 
   A._reloadNews = function () {
+    /* Newsletter postoji samo u sloju koji priča sa bazom (cw-admin-supabase.js).
+       Kad baza nije povezana, panel radi na demo podacima i ovog dela nema —
+       bolje jedna rečenica nego TypeError koji obori ceo ekran. */
+    if (!CW.api.newsletter) {
+      var h = document.getElementById('adm-news-list');
+      if (h) h.innerHTML = empty('mail', 'Newsletter radi tek kad je baza povezana.');
+      var b = document.getElementById('adm-news-broj');
+      if (b) b.innerHTML = '';
+      return;
+    }
+
     CW.api.newsletter.all().then(function (red) {
       var potvrdjeni = red.filter(function (r) { return r.status === 'confirmed'; });
       var cekaju = red.filter(function (r) { return r.status === 'pending'; });
