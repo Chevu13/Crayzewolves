@@ -218,6 +218,14 @@ a.adm-row:hover .adm-row__title { color: var(--color-gold); }
 .adm-row__acts { display: flex; align-items: center; gap: 4px; flex: none; margin-left: auto; }
 .adm-row__acts .btn[disabled] { opacity: 0.35; pointer-events: none; }
 
+/* Uži select u redu spiska — služi za premeštanje proizvoda u drugu
+   kategoriju, pa ne sme da gura naziv proizvoda iz reda. */
+.select--sm {
+  padding: 6px 26px 6px 10px;
+  font-size: var(--fs-xs);
+  max-width: 190px;
+}
+
 @media (max-width: 720px) {
   .adm-row__acts { margin-left: 46px; margin-top: 8px; flex-wrap: wrap; }
 }

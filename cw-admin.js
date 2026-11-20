@@ -309,6 +309,29 @@ window.CW = window.CW || {};
     if (ev.target && ev.target.name === 'featured' && CW.admin._syncFeatured) {
       CW.admin._syncFeatured();
     }
+
+    /* Filter kategorije na spisku proizvoda. Izbor se pamti na CW.admin, jer
+       se spisak posle svake strelice iscrtava iznova. */
+    if (ev.target && ev.target.id === 'adm-prod-filter') {
+      CW.admin._prodFilter = ev.target.value;
+      CW.admin._reloadProds();
+      return;
+    }
+
+    /* Premeštanje proizvoda u drugu kategoriju pravo iz spiska. Bez ovoga bi
+       svaki od desetina proizvoda tražio otvaranje punog editora. */
+    if (ev.target && ev.target.getAttribute &&
+        ev.target.getAttribute('data-act') === 'adm-prod-cat-set') {
+      var premId = ev.target.getAttribute('data-id');
+      ev.target.disabled = true;
+      CW.api.products.setCategory(premId, ev.target.value).then(function () {
+        CW.toast('Proizvod je premešten.', 'success');
+        CW.admin._reloadProds();
+      }).catch(function (e) {
+        ev.target.disabled = false;
+        CW.toast(e.message || 'Premeštanje nije uspelo.', 'error');
+      });
+    }
   });
 
   document.addEventListener('click', function (ev) {
@@ -370,6 +393,18 @@ window.CW = window.CW || {};
         CW.toast('Proizvod je obrisan.', 'success');
         window.location.hash = '#/admin/proizvodi';
       });
+      return;
+    }
+
+    if (act === 'adm-prod-up' || act === 'adm-prod-down') {
+      ev.preventDefault();
+      t.disabled = true;
+      CW.api.products.reorder(t.getAttribute('data-id'), act === 'adm-prod-up' ? -1 : 1)
+        .then(function () { CW.admin._reloadProds(); })
+        .catch(function (e) {
+          t.disabled = false;
+          CW.toast(e.message || 'Pomeranje nije uspelo.', 'error');
+        });
       return;
     }
 

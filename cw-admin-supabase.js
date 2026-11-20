@@ -208,6 +208,50 @@ window.CW = window.CW || {};
   api.posts = collection('posts', postFromDb, postToDb, 'published_at', true);
   api.products = collection('products', productFromDb, productToDb, 'sort_order', false);
 
+  /* Redosled proizvoda važi UNUTAR kategorije -- tako ga urednik i vidi u
+     prodavnici. Kao i kod kategorija, ceo niz se prenumeriše od nule i
+     upisuju se samo redovi kojima se broj promenio; nasleđeni sort_order je
+     kod većine proizvoda nula, pa bi zamena dva broja vrtela u mestu. */
+  api.products.reorder = function (id, smer) {
+    return api.products.all().then(function (sve) {
+      var meta = null;
+      sve.forEach(function (p) { if (p.id === id) meta = p; });
+      if (!meta) throw new Error('Proizvod nije pronađen.');
+
+      var red = sve.filter(function (p) { return (p.categoryId || '') === (meta.categoryId || ''); })
+                   .sort(function (a, b) {
+                     return (a.sortOrder || 0) - (b.sortOrder || 0) ||
+                            a.name.localeCompare(b.name, 'sr');
+                   });
+
+      var i = -1;
+      red.forEach(function (p, idx) { if (p.id === id) i = idx; });
+      var j = smer < 0 ? i - 1 : i + 1;
+      if (j < 0 || j >= red.length) return null;
+
+      red.splice(j, 0, red.splice(i, 1)[0]);
+
+      return Promise.all(red.map(function (p, idx) {
+        if ((p.sortOrder || 0) === idx) return null;
+        return CW.sb.from('products').eq('id', p.id).update({ sort_order: idx });
+      }).filter(Boolean));
+    });
+  };
+
+  /* Premeštanje u drugu kategoriju iz spiska. Novi proizvod ide na kraj
+     odredišne police, da ne upadne nasumično u sredinu. */
+  api.products.setCategory = function (id, categoryId) {
+    return api.products.all().then(function (sve) {
+      var uCilju = sve.filter(function (p) { return p.categoryId === categoryId && p.id !== id; });
+      var poslednji = uCilju.reduce(function (m, p) { return Math.max(m, p.sortOrder || 0); }, -1);
+      return CW.sb.from('products').eq('id', id).update({
+        category_id: categoryId || null,
+        sort_order: poslednji + 1,
+        updated_at: new Date().toISOString()
+      });
+    });
+  };
+
   /* Kategorija pripada JEDNOJ prodavnici. To nije ukras nego uslov iz baze:
      `products_shop_matches_fulfillment` ne da da digitalan proizvod sedne u
      merch kategoriju. Zato panel prvo pita koja je prodavnica, pa onda naziv. */
