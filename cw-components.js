@@ -757,7 +757,15 @@ CW.c.postSlider = function (posts, opts) {
         ratio: 'auto', fit: 'contain', eager: opcije.eager, ph: n.title
       });
 
+    /* Jedan slajd nema sa cim da uskladjuje visinu, pa ne mora ni da stoji u
+       zakucanom odnosu. Tada slika vodi: puna sirina, visina po slici.
+
+       Sa vise slajdova odnos ostaje zakucan — inace bi traka poskakivala
+       pri svakom prevlacenju, jer baneri nisu svi istog oblika. */
+    var sam = list.length === 1;
+
     return '<a class="hero-slide' + (opts.tall ? ' hero-slide--tall' : '') +
+        (sam ? ' hero-slide--solo' : '') +
         (baner ? ' hero-slide--art' : '') + '" ' +
         'href="#/vesti/' + n.id + '" aria-label="' + CW.esc(n.title) + '">' +
       '<div class="home-hero__bg">' + slika +

@@ -129,6 +129,47 @@
   background: linear-gradient(to top, rgba(11, 11, 10, 0.72) 0%, rgba(11, 11, 10, 0) 38%);
 }
 
+/* Slajder sa jednim slajdom: slika ide preko cele širine, a visinu daje sama
+   slika. Dok je i on stajao u zakucanom odnosu 12:5, objava bez svog banera
+   (naslovna slika je 3:2) uklapala se po visini i ostavljala crne trake sa
+   obe strane — tako je izgledala sekcija Saradnja.
+
+   Tri stvari moraju da se poklope:
+
+     1. pozadina prestaje da bude apsolutna, da bi slika uopšte davala
+        visinu slajdu — inače slajd visi o `aspect-ratio` koji upravo
+        sklanjamo;
+     2. `!important` jer meru i način uklapanja CW.img ispisuje kao INLINE
+        stil, a inline se drugačije ne nadjačava;
+     3. zamućena kopija se gasi — ona popunjava prazninu sa strane, a ovde
+        praznine više nema.
+
+   Kapa visine posle toga seku je po vrhu i dnu umesto da ostavlja trake,
+   isto pravilo kao kod heroja članka na blogu. */
+.hero-slide--solo {
+  aspect-ratio: auto;
+  min-height: 0;
+  max-height: none;
+  display: block;
+}
+.hero-slide--solo .hero-slide__blur { display: none; }
+.hero-slide--solo .home-hero__bg { position: relative; inset: auto; }
+.hero-slide--solo .home-hero__bg > picture { display: block; width: 100%; }
+.hero-slide--solo .home-hero__bg .cw-img {
+  position: relative;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 78vh;
+  aspect-ratio: auto !important;
+  object-fit: cover !important;
+}
+/* Dugme „Pročitaj" i dalje stoji preko slike, pa mu treba svoj sloj. */
+.hero-slide--solo .hero-slide__body {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 2;
+}
+
 /* Zamućena kopija iste slike ispod one cele — bez nje bi sa strane stajale
    crne pruge. Uvećana je da zamućenje ne otkrije ivice. */
 .hero-slide__blur {
@@ -286,7 +327,7 @@
 
 /* Article page */
 .article-head { max-width: var(--container-text); margin-inline: auto; }
-/* Heroj clanka ide preko cele sirine, a visinu uzima od same slike.
+/* Heroj clanka ide preko cele širine, a visinu uzima od same slike.
 
    Ranije je kutija bila zakucana na 21:9. Baneri koji stizu iz panela nisu
    svi tog oblika — saradnja sa Leonida3tv je skoro kvadratna — pa je slika
@@ -843,6 +884,16 @@
     border: 0;
     font-weight: 600;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  }
+  /* Spisak je prošao — pilula odlazi dole, bez skoka. */
+  .filter-trigger {
+    transition: opacity var(--dur-base) var(--ease-out),
+                transform var(--dur-base) var(--ease-out);
+  }
+  .filter-trigger.is-gone {
+    opacity: 0;
+    transform: translateX(-50%) translateY(140%);
+    pointer-events: none;
   }
   .filter-trigger:hover,
   .filter-trigger:focus-visible { background: var(--color-gold); color: var(--color-black); }

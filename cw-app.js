@@ -423,7 +423,7 @@
     wireFilterControls(document.getElementById('overlay-root'));
   }
 
-  function applyFilters(form) {
+  function applyFilters(form, vratiFioku) {
     var active = document.activeElement;
     var inForm = active && form.contains(active);
     var fioka = form.closest('#overlay-root');
@@ -433,7 +433,12 @@
       /* Izmena iz fioke: posle iscrtavanja je otvaramo ponovo, na istom
          mestu u spisku. Bez toga bi prva kvačica zatvorila fioku i
          posetilac ne bi stigao da izabere drugi filter. */
-      fioka: Boolean(fioka),
+      /* Fioka se posle izbora ZATVARA i pokazuje proizvode — zbog toga je
+         posetilac i otvorio filtere. Ostaje otvorena samo dok se kuca u
+         polju za pretragu, gde bi zatvaranje na svako slovo bilo nemoguće
+         za rad. Samo iscrtavanje je svejedno ruši, pa je „zatvori“ ovde
+         zapravo „ne otvaraj ponovo“. */
+      fioka: Boolean(fioka) && Boolean(vratiFioku),
       fiokaY: telo ? telo.scrollTop : 0,
       y: window.scrollY,
       name: inForm ? active.getAttribute('name') : null,
@@ -507,12 +512,30 @@
     rail.style.maxHeight = Math.max(260, Math.min(ekran, visinaRezultata)) + 'px';
   }
 
+  /* Plutajuća pilula „Filteri“ prati spisak proizvoda i nestaje kad on
+     prođe. Dok je bila samo `fixed`, stajala je preko podnožja i preko
+     odeljka sa dostavom — tamo nema šta da filtrira. */
+  function syncFilterPill() {
+    var pill = document.querySelector('.filter-trigger');
+    var katalog = document.querySelector('.catalog');
+    if (!pill || !katalog) return;
+
+    var dno = katalog.getBoundingClientRect().bottom;
+    /* Pilula sedi oko 24px od dna ekrana; kad spisak završi iznad nje,
+       nema više šta da ponudi. */
+    pill.classList.toggle('is-gone', dno < window.innerHeight - 24);
+  }
+
+  window.addEventListener('scroll', syncFilterPill, { passive: true });
+  window.addEventListener('resize', syncFilterPill);
+
   /* Slike stižu posle prvog crtanja i menjaju visinu spiska, pa se mera
      ponavlja dok se raspored ne smiri. */
   function syncFilterRailSoon() {
     syncFilterRail();
-    window.setTimeout(syncFilterRail, 250);
-    window.setTimeout(syncFilterRail, 800);
+    syncFilterPill();
+    window.setTimeout(function () { syncFilterRail(); syncFilterPill(); }, 250);
+    window.setTimeout(function () { syncFilterRail(); syncFilterPill(); }, 800);
   }
 
   window.addEventListener('resize', CW.debounce(syncFilterRail, 150));
@@ -539,10 +562,11 @@
         applyFilters(form);
       });
 
+
       /* Pretraga ne sme da krene na svako slovo — čeka da se kucanje smiri. */
       var text = form.querySelector('[name=q]');
       if (text) {
-        text.addEventListener('input', CW.debounce(function () { applyFilters(form); }, 400));
+        text.addEventListener('input', CW.debounce(function () { applyFilters(form, true); }, 400));
       }
     });
 
